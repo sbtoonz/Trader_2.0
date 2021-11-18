@@ -175,9 +175,18 @@ public class OdinStore : MonoBehaviour
        SellItem(i);
     }
 
-    public bool CanBuy(int i, int playerbank)
+    public bool CanBuy(int i)
     {
-       var cost = _storeInventory.ElementAt(i).Value;
+        var inv =  Player.m_localPlayer.GetInventory();
+        int playerbank = 0;
+        foreach (var item in inv.m_inventory)
+        {
+            if (item.m_shared.m_name == "Coins")
+            {
+                playerbank = item.m_stack;
+            }
+        }
+        var cost = _storeInventory.ElementAt(i).Value;
 
        if (playerbank >= cost)
        {
