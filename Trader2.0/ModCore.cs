@@ -2,10 +2,10 @@
 using BepInEx;
 using HarmonyLib;
 
-namespace ModFrame
+namespace Trader20
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
-    public class NewMod : BaseUnityPlugin
+    public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "New Mod";
         private const string ModVersion = "1.0";
