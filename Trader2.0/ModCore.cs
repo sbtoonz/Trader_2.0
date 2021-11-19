@@ -21,8 +21,6 @@ namespace Trader20
             Harmony harmony = new(ModGUID);
             harmony.PatchAll(assembly);
             assetBundle = Utilities.LoadAssetBundle("traderbundle");
-
-            ItemsToYML.Test();
         }
 
         

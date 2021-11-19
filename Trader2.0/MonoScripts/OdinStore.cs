@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -48,6 +49,14 @@ public class OdinStore : MonoBehaviour
         }
     }
 
+    private void OnGUI()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Hide();
+        }
+    }
+
     private void OnDestroy()
     {
         if (m_instance == this)
@@ -56,9 +65,9 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    IEnumerator  ClearStore()
+   async void  ClearStore()
     {
-        if (CurrentStoreList.Count >= 1)
+        if (CurrentStoreList.Count >= _storeInventory.Count + 1)
         {
             foreach (var GO in CurrentStoreList)
             {
@@ -67,9 +76,8 @@ public class OdinStore : MonoBehaviour
             
             CurrentStoreList.Clear();
             ReadItems();
+            
         }
-        StartCoroutine(ReadItems());
-        yield break;
     }
 
     /// <summary>
@@ -99,14 +107,13 @@ public class OdinStore : MonoBehaviour
         CurrentStoreList.Add(elementthing);
     }
 
-    IEnumerator  ReadItems()
+    async void  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
             AddItemToDisplayList(itemData.Key,1, itemData.Value);
         }
-        yield break;
     }
 
     /// <summary>
@@ -222,6 +229,6 @@ public class OdinStore : MonoBehaviour
     public void Show()
     {
         m_StorePanel.SetActive(true);
-        StartCoroutine(ClearStore());
+        ClearStore();
     }
 }

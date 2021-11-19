@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Trader20;
 using UnityEngine;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
@@ -74,7 +75,10 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 	private void OnEnable()
 	{
-		LoadStore();
+		Task.Run(async () =>
+		{
+			LoadStore();
+		});
 	}
 
 	async void LoadStore()
