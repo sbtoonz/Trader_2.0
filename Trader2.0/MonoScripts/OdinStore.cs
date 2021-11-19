@@ -67,7 +67,7 @@ public class OdinStore : MonoBehaviour
 
    async void  ClearStore()
     {
-        if (CurrentStoreList.Count >= _storeInventory.Count + 1)
+        if (CurrentStoreList.Count != _storeInventory.Count)
         {
             foreach (var GO in CurrentStoreList)
             {
@@ -186,7 +186,10 @@ public class OdinStore : MonoBehaviour
     public void BuyButtonAction()
     {
        var i = FindIndex(tempElement._drop);
-       SellItem(i);
+       if(CanBuy(i))
+       {
+           SellItem(i);
+       }
     }
 
     public bool CanBuy(int i)
