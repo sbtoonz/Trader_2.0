@@ -59,6 +59,10 @@ public class OdinStore : MonoBehaviour
         }
     }
 
+    internal bool IsActive()
+    {
+        return m_StorePanel.activeSelf;
+    }
     private void OnDestroy()
     {
         if (m_instance == this)
