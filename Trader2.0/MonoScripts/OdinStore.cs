@@ -26,6 +26,8 @@ public class OdinStore : MonoBehaviour
     
     //ElementData
     [SerializeField] private GameObject ElementGO;
+
+    [SerializeField] private NewTrader _trader;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, int> _storeInventory = new Dictionary<ItemDrop, int>();
@@ -65,7 +67,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-   async void  ClearStore()
+   private void  ClearStore()
     {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
@@ -189,6 +191,7 @@ public class OdinStore : MonoBehaviour
        if(CanBuy(i))
        {
            SellItem(i);
+           _trader.OnSold();
        }
     }
 

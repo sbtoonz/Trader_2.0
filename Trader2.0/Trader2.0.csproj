@@ -275,7 +275,7 @@
     <Compile Include="..\UnityProject\Trader2.0\Assets\Scripts\NewTrader.cs">
       <Link>MonoScripts\NewTrader.cs</Link>
     </Compile>
-    <Compile Include="ItemsToYML.cs" />
+    <Compile Include="YMLParser.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="MonoScripts\OdinStore.cs" />
     <Compile Include="Patches.cs" />

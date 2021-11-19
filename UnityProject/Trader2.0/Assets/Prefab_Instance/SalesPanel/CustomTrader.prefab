@@ -864,7 +864,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -195, y: 74}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5494880942761007943
@@ -891,6 +891,7 @@ MonoBehaviour:
   Bkg2: {fileID: 114364093007178536}
   ElementGO: {fileID: 5344753315730512436, guid: b76b7b3286e1f004f83b79e7a39903fc,
     type: 3}
+  _trader: {fileID: 3367674191020224475, guid: b2e9c1882ce65744d8f6550ec1f5e6dc, type: 3}
 --- !u!114 &5702439459277600244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1078,10 +1079,10 @@ RectTransform:
   m_Father: {fileID: 224200963108403294}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.02609253, y: 0.020248413}
-  m_SizeDelta: {x: 0.052001953, y: -0.040527344}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -258, y: 72}
+  m_SizeDelta: {x: 100.052, y: 99.95947}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1612860730344721
 GameObject:
@@ -1665,9 +1666,9 @@ RectTransform:
   m_Father: {fileID: 224983350485018963}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -12.899994}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -50, y: 37.100006}
   m_SizeDelta: {x: 670.8305, y: 386.62408}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1898677699555419
@@ -2409,7 +2410,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 84.37568}
+  m_AnchoredPosition: {x: 0, y: 84.37548}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &6387859233545234470
@@ -2530,7 +2531,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2445572196805718407}
   m_HandleRect: {fileID: 6115882292397544657}
   m_Direction: 2
-  m_Value: -0.0000021701264
+  m_Value: 0.00000018084386
   m_Size: 0.7187484
   m_NumberOfSteps: 0
   m_OnValueChanged:

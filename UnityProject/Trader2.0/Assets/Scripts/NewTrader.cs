@@ -1,22 +1,10 @@
 ﻿// Trader
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Trader20;
 using UnityEngine;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
-	[Serializable]
-	public class TradeItem
-	{
-		public ItemDrop m_prefab;
-
-		public int m_stack = 1;
-
-		public int m_price = 100;
-	}
-
 	public string m_name = "Knarr";
 
 	public float m_standRange = 15f;
@@ -24,8 +12,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public float m_greetRange = 5f;
 
 	public float m_byeRange = 5f;
-
-	public List<TradeItem> m_items = new List<TradeItem>();
 
 	[Header("Dialog")]
 	public float m_hideDialogDelay = 5f;
@@ -52,8 +38,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 	public EffectList m_randomStartTradeFX = new EffectList();
 
-	public EffectList m_randomBuyFX = new EffectList();
-
 	public EffectList m_randomSellFX = new EffectList();
 
 	private bool m_didGreet;
@@ -72,27 +56,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		m_lookAt = GetComponentInChildren<LookAt>();
 		InvokeRepeating("RandomTalk", m_randomTalkInterval, m_randomTalkInterval);
 	}
-
-	private void OnEnable()
-	{
-		Task.Run(async () =>
-		{
-			LoadStore();
-		});
-	}
-
-	async void LoadStore()
-	{
-		var items = ObjectDB.instance.m_items;
-		foreach (var GO in items)
-		{
-			if (GO.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons != null && GO.GetComponent<ItemDrop>().m_itemData.m_shared.m_description != null)
-			{
-				OdinStore.instance.AddItemToDict(GO.GetComponent<ItemDrop>(), 100);
-			}
-		}
-	}
-
+	
 	private void Update()
 	{
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
@@ -151,14 +115,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		m_randomStartTradeFX.Create(base.transform.position, Quaternion.identity);
 		return false;
 	}
-
-	private void DiscoverItems(Player player)
-	{
-		foreach (TradeItem item in m_items)
-		{
-			player.AddKnownItem(item.m_prefab.m_itemData);
-		}
-	}
+	
 
 	private void Say(List<string> texts, string trigger)
 	{
@@ -177,12 +134,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public bool UseItem(Humanoid user, ItemDrop.ItemData item)
 	{
 		return false;
-	}
-
-	public void OnBought(TradeItem item)
-	{
-		Say(m_randomBuy, "Buy");
-		m_randomBuyFX.Create(base.transform.position, Quaternion.identity);
 	}
 
 	public void OnSold()

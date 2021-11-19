@@ -1,6 +1,8 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Runtime.Remoting.Messaging;
 using HarmonyLib;
 using UnityEngine;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Trader20
 {
@@ -26,6 +28,15 @@ namespace Trader20
                 
                 GameObject.Instantiate(Trader20.CustomTraderScreen,
                     __instance.GetComponentInParent<Localize>().transform, false);
+            }
+        }
+
+        [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
+        public static class ObjectDBPatch
+        {
+            public static void Prefix(ObjectDB __instance)
+            {
+                
             }
         }
     }
