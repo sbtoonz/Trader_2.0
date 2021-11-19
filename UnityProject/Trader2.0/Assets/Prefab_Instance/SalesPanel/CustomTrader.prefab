@@ -838,6 +838,8 @@ GameObject:
   - component: {fileID: 224200963108403294}
   - component: {fileID: 5494880942761007943}
   - component: {fileID: 5702439459277600244}
+  - component: {fileID: 990162025723631895}
+  - component: {fileID: 16226287832785907}
   m_Layer: 5
   m_Name: CustomTrader
   m_TagString: Untagged
@@ -860,10 +862,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 16.585999, y: 3.631897}
-  m_SizeDelta: {x: 33.172363, y: 7.2638855}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 159, y: -141}
+  m_SizeDelta: {x: 713.17236, y: 397.2639}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5494880942761007943
 MonoBehaviour:
@@ -901,6 +903,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b57abe9fe70780745b43bc2196dd697c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &990162025723631895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385034288943148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 1664737648681116}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!114 &16226287832785907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385034288943148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
 --- !u!1 &1400458117677133
 GameObject:
   m_ObjectHideFlags: 0
@@ -2373,7 +2409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 84.37624}
+  m_AnchoredPosition: {x: 0, y: 84.37568}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &6387859233545234470
@@ -2494,8 +2530,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2445572196805718407}
   m_HandleRect: {fileID: 6115882292397544657}
   m_Direction: 2
-  m_Value: -0.000008680506
-  m_Size: 0.5906093
+  m_Value: -0.0000023509701
+  m_Size: 0.71778804
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

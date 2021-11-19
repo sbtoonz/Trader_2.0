@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -30,7 +31,7 @@ public class OdinStore : MonoBehaviour
     public static OdinStore instance => m_instance;
     internal static ElementFormat tempElement;
     internal static Material litpanel;
-    internal List<GameObject> CurrentStoreList;
+    internal List<GameObject> CurrentStoreList = new List<GameObject>();
     private void Awake() 
     {
         m_instance = this;
@@ -55,12 +56,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
-    /// </summary>
-    /// <param name="_drop"></param>
-    /// <param name="stack"></param>
-    public void AddItemToDisplayList(ItemDrop _drop, int stack, int cost)
+    IEnumerator  ClearStore()
     {
         if (CurrentStoreList.Count >= 1)
         {
@@ -68,8 +64,21 @@ public class OdinStore : MonoBehaviour
             {
                 Destroy(GO);
             }
+            
             CurrentStoreList.Clear();
+            ReadItems();
         }
+        StartCoroutine(ReadItems());
+        yield break;
+    }
+
+    /// <summary>
+    /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
+    /// </summary>
+    /// <param name="_drop"></param>
+    /// <param name="stack"></param>
+    async public void AddItemToDisplayList(ItemDrop _drop, int stack, int cost)
+    {
         ElementFormat newElement = new ElementFormat();
         newElement._drop = _drop;
         newElement.Icon = _drop.m_itemData.m_shared.m_icons.FirstOrDefault();
@@ -83,23 +92,21 @@ public class OdinStore : MonoBehaviour
         name.gameObject.AddComponent<Localize>();
         
         newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-        
-        var tmp = Instantiate(newElement.Element, ListRoot.transform, false);
-        tmp.GetComponent<Button>().onClick.AddListener(delegate
-        {
-            UpdateGenDescription(newElement);
-        });
-        CurrentStoreList.Add(tmp);
+
+        var elementthing = Instantiate(newElement.Element, ListRoot.transform, false);
+            elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
         newElement.Element.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+        CurrentStoreList.Add(elementthing);
     }
 
-    public void ReadItems()
+    IEnumerator  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
-            AddItemToDisplayList(itemData.Key,itemData.Key.m_itemData.m_stack, itemData.Value);
+            AddItemToDisplayList(itemData.Key,1, itemData.Value);
         }
+        yield break;
     }
 
     /// <summary>
@@ -215,6 +222,6 @@ public class OdinStore : MonoBehaviour
     public void Show()
     {
         m_StorePanel.SetActive(true);
-        ReadItems();
+        StartCoroutine(ClearStore());
     }
 }

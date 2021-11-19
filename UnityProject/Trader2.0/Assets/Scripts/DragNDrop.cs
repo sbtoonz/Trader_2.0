@@ -2,61 +2,21 @@
 using UnityEngine.EventSystems;
 public class DragNDrop : MonoBehaviour
 {
- public static void ApplyDragWindowCntrl(GameObject go)
+    private Canvas canvas;
+    private RectTransform rectTransform;
+    void Awake()
     {
-        DragNDrop drag = go.AddComponent<DragNDrop>();
-        EventTrigger trigger = go.AddComponent<EventTrigger>();
-        EventTrigger.Entry beginDragEntry = new EventTrigger.Entry();
-        beginDragEntry.eventID = EventTriggerType.BeginDrag;
-        beginDragEntry.callback.AddListener((_) => { drag.BeginDrag(); });
-        trigger.triggers.Add(beginDragEntry);
-        EventTrigger.Entry dragEntry = new EventTrigger.Entry();
-        dragEntry.eventID = EventTriggerType.Drag;
-        dragEntry.callback.AddListener((_) => { drag.Drag(); });
-        trigger.triggers.Add(dragEntry);
+        rectTransform = transform as RectTransform;
+        Transform testCanvasTransform = transform.parent;
+        do
+        {
+            canvas = testCanvasTransform.GetComponentInParent<Canvas>();
+            testCanvasTransform = testCanvasTransform.parent;
+        } while (canvas == null);
     }
-    private RectTransform window;
-    //delta drag
-    private Vector2 delta;
-    private void Awake()
+
+    public void OnDrag(PointerEventData eventData)
     {
-        window = (RectTransform)transform;
-    }
-    /// <summary>
-    ///     BeginDrag event trigger
-    /// </summary>
-    public void BeginDrag()
-    {
-        delta = Input.mousePosition - window.position;
-    }
-    /// <summary>
-    ///     Drag event trigger
-    /// </summary>
-    public void Drag()
-    {
-        Vector2 newPos = (Vector2)Input.mousePosition - delta;
-        Vector2 Transform = new Vector2(window.rect.width * transform.root.lossyScale.x, window.rect.height * transform.root.lossyScale.y);
-        Vector2 OffsetMin, OffsetMax;
-        OffsetMin.x = newPos.x - window.pivot.x * Transform.x;
-        OffsetMin.y = newPos.y - window.pivot.y * Transform.y;
-        OffsetMax.x = newPos.x + (1 - window.pivot.x) * Transform.x;
-        OffsetMax.y = newPos.y + (1 - window.pivot.y) * Transform.y;
-        if (OffsetMin.x < 0)
-        {
-            newPos.x = window.pivot.x * Transform.x;
-        }
-        else if (OffsetMax.x > Screen.width)
-        {
-            newPos.x = Screen.width - (1 - window.pivot.x) * Transform.x;
-        }
-        if (OffsetMin.y < 0)
-        {
-            newPos.y = window.pivot.y * Transform.y;
-        }
-        else if (OffsetMax.y > Screen.height)
-        {
-            newPos.y = Screen.height - (1 - window.pivot.y) * Transform.y;
-        }
-        window.position = newPos;
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 }
