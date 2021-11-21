@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Runtime.Remoting.Messaging;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UIElements;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Trader20
 {
@@ -41,24 +40,24 @@ namespace Trader20
             {
                 if(ObjectDB.instance.m_items.Count <= 0) return;
                 var tmp = ObjectDB.instance.m_items;
-
                 StoreEntry _entry = new();
-                
-                foreach (var GO in tmp)
+                ItemDataEntry _itemData = new();
+                if (File.ReadLines("config.yaml").Count() != 0)
                 {
-                    if (GO.GetComponent<ItemDrop>() != null)
+                    YMLParser.ReadSerializedData();
+                    YMLParser.ParseSerializedData();
+                }
+                else
+                {
+                    foreach (ItemDrop drop in from GO in tmp where GO.GetComponent<ItemDrop>() != null select GO.GetComponent<ItemDrop>() into drop where drop.m_itemData.m_shared.m_icons.Length > 0 select drop)
                     {
-                        var drop = GO.GetComponent<ItemDrop>();
-                        if (drop.m_itemData.m_shared.m_icons.Length > 0)
-                        {
-                            _entry.ItemName = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
-                            _entry.ItemCost = 0;
-                            _entry.enabled = false;
-
-                            var lineentry= YMLParser.Serilizer(_entry);
-                            YMLParser.WriteSerializedData(lineentry);
-                        }
-                    }
+                        _itemData.ItemNameString = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
+                        _itemData.ItemCostInt = 0;
+                        _itemData.enabled = false;
+                        _entry._DataEntry = _itemData;
+                        var lineentry= YMLParser.Serializers(_entry);
+                        YMLParser.WriteSerializedData(lineentry);
+                    }  
                 }
             }
         }

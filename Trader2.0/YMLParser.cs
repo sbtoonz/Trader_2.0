@@ -1,6 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -8,7 +8,8 @@ namespace Trader20
 {
     public class YMLParser
     {
-        public static string Serilizer(StoreEntry data)
+        public static List<StoreEntry> test = new();
+        public static string Serializers(StoreEntry data)
         {
             var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
             var yml = serializer.Serialize(data);
@@ -29,13 +30,40 @@ namespace Trader20
             {
                 File.WriteAllText("config.yaml", data);
             }
+
+        }
+
+        public static void ReadSerializedData()
+        {
+            var deseralizer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+            var tmp = deseralizer.Deserialize<StoreEntry>(File.ReadAllText("config.yaml"));
+            test.Add(tmp);
+
+        }
+
+        public static void ParseSerializedData()
+        {
+            foreach (var store in test)
+            {
+
+            }
         }
     }
 
     public class StoreEntry
     {
-        public string ItemName;
-        public int ItemCost;
-        public bool enabled;
+        [YamlMember(Alias = "Item_Entry", ApplyNamingConventions = false, Order = 0)]
+        public ItemDataEntry _DataEntry { get; set; }
+
     }
+
+    public class ItemDataEntry
+    {
+        [YamlMember(Alias = "Item_Enabled", ApplyNamingConventions = false, Description = "Item enabled for sale", Order = 3)] public bool enabled { get; set; }
+        [YamlMember(Alias = "Item_Cost", ApplyNamingConventions = false, Description = "Item Cost in trader shop", Order = 2)]public int ItemCostInt { get; set; }
+        [YamlMember(Alias = "Item_Prefab", ApplyNamingConventions = false, Description = "Item Prefab Name", Order = 1)]public string ItemNameString{ get; set; }
+    }
+
+
 }
