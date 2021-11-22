@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
+using YamlDotNet.Core.Events;
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -37,23 +40,11 @@ namespace Trader20
         {
             var deseralizer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
-            var tmp = deseralizer.Deserialize<StoreEntry>(File.ReadAllText("config.yaml"));
-            test.Add(tmp);
-
-        }
-
-        public static void ParseSerializedData()
-        {
-            foreach (var store in test)
-            {
-
-            }
         }
     }
 
     public class StoreEntry
     {
-        [YamlMember(Alias = "Item_Entry", ApplyNamingConventions = false, Order = 0)]
         public ItemDataEntry _DataEntry { get; set; }
 
     }

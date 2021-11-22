@@ -45,7 +45,6 @@ namespace Trader20
                 if (File.ReadLines("config.yaml").Count() != 0)
                 {
                     YMLParser.ReadSerializedData();
-                    YMLParser.ParseSerializedData();
                 }
                 else
                 {
