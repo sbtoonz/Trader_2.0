@@ -18,16 +18,16 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private Button BuyButton;
     [SerializeField] private Text SelectedName;
 
-    [SerializeField] private Image Bkg1;
-    [SerializeField] private Image Bkg2;
+    [SerializeField] internal Image Bkg1;
+    [SerializeField] internal Image Bkg2;
     
     
     //ElementData
     [SerializeField] private GameObject ElementGO;
 
     [SerializeField] private NewTrader _trader;
-    [SerializeField] private Image ButtonImage;
-    [SerializeField] private Image Coins;
+    [SerializeField] internal Image ButtonImage;
+    [SerializeField] internal Image Coins;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
@@ -49,6 +49,11 @@ public class OdinStore : MonoBehaviour
         {
             Debug.Log(ex);
         }
+    }
+
+    private void OnEnable()
+    {
+        UpdateCoins();
     }
 
     private void OnGUI()
@@ -180,14 +185,25 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
-        SelectedCost.text = element.Price.ToString();
         SelectedItemDescription.text = element._drop.m_itemData.m_shared.m_description;
         SelectedItemDescription.gameObject.AddComponent<Localize>();
-        SelectedCost.gameObject.AddComponent<Localize>();
         ItemDropIcon.sprite = element.Icon;
         tempElement = element;
     }
 
+    public void UpdateCoins()
+    {
+        
+        var inv = Player.m_localPlayer.m_inventory;
+
+        foreach (var inventory in inv.m_inventory)
+        {
+            if (inventory.m_dropPrefab.name == "Coins")
+            {
+                SelectedCost.text = inventory.m_stack.ToString();
+            }
+        }
+    }
     public void BuyButtonAction()
     {
        var i = FindIndex(tempElement._drop);
@@ -213,7 +229,9 @@ public class OdinStore : MonoBehaviour
 
        if (playerbank >= cost)
        {
-           inv.RemoveItem("Coins", cost);
+           playerbank -= cost;
+           var coins = inv.GetItem("Coins");
+           coins.m_stack = playerbank;
            return true;
        }
 

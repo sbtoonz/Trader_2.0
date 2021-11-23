@@ -18,8 +18,8 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private Button BuyButton;
     [SerializeField] private Text SelectedName;
 
-    [SerializeField] private Image Bkg1;
-    [SerializeField] private Image Bkg2;
+    [SerializeField] internal Image Bkg1;
+    [SerializeField] internal Image Bkg2;
     
     
     //ElementData
@@ -27,8 +27,8 @@ public class OdinStore : MonoBehaviour
     
     [SerializeField] private NewTrader _trader;
 
-    [SerializeField] private Image ButtonImage;
-    [SerializeField] private Image Coins;
+    [SerializeField] internal Image ButtonImage;
+    [SerializeField] internal Image Coins;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, int> _storeInventory = new Dictionary<ItemDrop, int>();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Trader20
 {
@@ -27,9 +28,14 @@ namespace Trader20
             public static void Prefix(StoreGui __instance)
             {
                 Trader20.CustomTraderScreen = ZNetScene.instance.GetPrefab("CustomTrader");
-                
+                var odinStore = Trader20.CustomTraderScreen.GetComponent<OdinStore>();
                 GameObject.Instantiate(Trader20.CustomTraderScreen,
                     __instance.GetComponentInParent<Localize>().transform, false);
+                odinStore.Bkg1.sprite = __instance.transform.Find("Store").transform.Find("bkg").GetComponent<Image>().sprite;
+                odinStore.Bkg2.sprite = __instance.transform.Find("Store").transform.Find("border (1)").GetComponent<Image>().sprite;
+                odinStore.Coins.sprite = __instance.transform.Find("Store").transform.Find("coins").GetComponent<Image>().sprite;
+                odinStore.ButtonImage.sprite = __instance.transform.Find("Store").transform.Find("BuyButton").GetComponent<Image>().sprite;
+                
                 
                 if(ObjectDB.instance.m_items.Count <= 0) return;
                 Dictionary<string, ItemDataEntry> entry = new();
