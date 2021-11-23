@@ -20,8 +20,9 @@ namespace Trader20
             }
         }
 
+        [HarmonyPriority(Priority.Last)]
         [HarmonyPatch(typeof(StoreGui), nameof(StoreGui.Awake))]
-        public static class HudPatch
+        public static class ItemListPatch
         {
             public static void Prefix(StoreGui __instance)
             {
@@ -29,15 +30,7 @@ namespace Trader20
                 
                 GameObject.Instantiate(Trader20.CustomTraderScreen,
                     __instance.GetComponentInParent<Localize>().transform, false);
-            }
-        }
-
-        [HarmonyPriority(Priority.Last)]
-        [HarmonyPatch(typeof(StoreGui), nameof(StoreGui.Awake))]
-        public static class ItemListPatch
-        {
-            public static void Prefix()
-            {
+                
                 if(ObjectDB.instance.m_items.Count <= 0) return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
