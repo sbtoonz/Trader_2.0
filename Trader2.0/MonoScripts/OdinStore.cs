@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -58,12 +56,6 @@ public class OdinStore : MonoBehaviour
             Hide();
         }
     }
-
-    private void OnEnable()
-    {
-        _trader = Trader20.Trader20.Knarr.GetComponent<NewTrader>();
-    }
-
     internal bool IsActive()
     {
         return m_StorePanel.activeSelf;
@@ -200,7 +192,7 @@ public class OdinStore : MonoBehaviour
        if(CanBuy(i))
        {
            SellItem(i);
-           //_trader.OnSold();
+           NewTrader.instance.OnSold();
        }
     }
 

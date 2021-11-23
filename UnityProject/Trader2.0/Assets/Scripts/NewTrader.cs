@@ -1,10 +1,12 @@
 ﻿// Trader
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
+	private static NewTrader m_instance;
 	public string m_name = "Knarr";
 
 	public float m_standRange = 15f;
@@ -48,6 +50,8 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 	private LookAt m_lookAt;
 
+	public static NewTrader instance => m_instance;
+
 	[SerializeField] internal OdinStore _store;
 
 	private void Start()
@@ -56,7 +60,19 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		m_lookAt = GetComponentInChildren<LookAt>();
 		InvokeRepeating("RandomTalk", m_randomTalkInterval, m_randomTalkInterval);
 	}
-	
+
+	private void Awake()
+	{
+		m_instance = this;
+	}
+
+	private void OnDestroy()
+	{
+		if (m_instance == this)
+		{
+			m_instance = null;
+		}
+	}
 	private void Update()
 	{
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);

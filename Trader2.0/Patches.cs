@@ -49,7 +49,7 @@ namespace Trader20
                 if (File.ReadLines(Trader20.paths+"/trader_config.yaml").Count() != 0)
                 {
                     var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
-                    var entry_ =YMLParser.ReadSerializedData(file.ReadToEnd());
+                    var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                     List<Dictionary<string, ItemDataEntry>> PopulatedList = new List<Dictionary<string, ItemDataEntry>>();
                     PopulatedList.Add(entry_);
                     foreach (var store in PopulatedList)
@@ -58,6 +58,7 @@ namespace Trader20
                         {
                             var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
                                 .GetComponent<ItemDrop>();
+                            drop.m_itemData.m_stack = VARIABLE.Value.ItemCount;
                             OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt);
                         }
                     }
