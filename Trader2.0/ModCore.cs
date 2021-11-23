@@ -14,6 +14,7 @@ namespace Trader20
         internal static GameObject Knarr;
         internal static GameObject CustomTraderScreen;
         internal static AssetBundle assetBundle { get; set; }
+        internal static string paths = Paths.ConfigPath;
     
         public void Awake()
         {

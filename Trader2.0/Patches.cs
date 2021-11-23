@@ -39,24 +39,52 @@ namespace Trader20
             public static void Prefix()
             {
                 if(ObjectDB.instance.m_items.Count <= 0) return;
-                var tmp = ObjectDB.instance.m_items;
-                StoreEntry _entry = new();
-                ItemDataEntry _itemData = new();
-                if (File.ReadLines("config.yaml").Count() != 0)
+                StoreEntry entry = new()
                 {
-                    YMLParser.ReadSerializedData();
+                    _DataEntry = new List<ItemDataEntry>()
+                };
+                List<StoreEntry> listEntry = new();
+                if (!File.Exists(Trader20.paths + "/trader_config.yaml"))
+                {
+                   var file = File.Create(Trader20.paths + "/trader_config.yaml");
+                   file.Close();
+                }
+                if (File.ReadLines(Trader20.paths+"/trader_config.yaml").Count() != 0)
+                {
+                    var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
+                    var entry_ =YMLParser.ReadSerializedData(file.ReadToEnd());
+                    List<StoreEntry> PopulatedList = new List<StoreEntry>();
+                    PopulatedList.Add(entry_);
+                    foreach (var store in PopulatedList)
+                    {
+                        foreach (var VARIABLE in store._DataEntry)
+                        {
+                            if (!VARIABLE.enabled) continue;
+                            var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.ItemNameString)
+                                .GetComponent<ItemDrop>();
+                            OdinStore.instance.AddItemToDict(drop, VARIABLE.ItemCostInt);
+                        }
+                    }
                 }
                 else
                 {
-                    foreach (ItemDrop drop in from GO in tmp where GO.GetComponent<ItemDrop>() != null select GO.GetComponent<ItemDrop>() into drop where drop.m_itemData.m_shared.m_icons.Length > 0 select drop)
+                    var i = 0;
+                    var items = ObjectDB.instance.m_items;
+                    foreach (var go in items.Where(go => go.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons.Length >= 1))
                     {
-                        _itemData.ItemNameString = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
-                        _itemData.ItemCostInt = 0;
-                        _itemData.enabled = false;
-                        _entry._DataEntry = _itemData;
-                        var lineentry= YMLParser.Serializers(_entry);
-                        YMLParser.WriteSerializedData(lineentry);
-                    }  
+                        ItemDataEntry tempentry = new();
+                        tempentry.enabled = false;
+                        tempentry.ItemCostInt = 100;
+                        tempentry.ItemNameString = go.name;
+                        entry._DataEntry.Add(tempentry);
+                        listEntry.Add(entry);
+                    }
+
+                    foreach (var VARIABLE in listEntry)
+                    {
+                        var s =YMLParser.Serializers(VARIABLE);
+                        YMLParser.WriteSerializedData(s);
+                    }
                 }
             }
         }

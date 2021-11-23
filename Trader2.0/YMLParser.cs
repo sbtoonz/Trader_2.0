@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEngine;
-using YamlDotNet.Core.Events;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -21,39 +18,44 @@ namespace Trader20
 
         public static void WriteSerializedData(string data)
         {
-            if (File.ReadAllText("config.yaml", Encoding.Default).Length == data.Length)
+            if (File.ReadAllText(Trader20.paths+"/trader_config.yaml", Encoding.Default).Length == data.Length)
             {
                 return;
             }
-            if(File.ReadAllText("config.yaml", Encoding.Default).Length > 0)
+            if(File.ReadAllText(Trader20.paths+"/trader_config.yaml", Encoding.Default).Length > 0)
             {
-                File.AppendAllText("config.yaml", data);
+                File.AppendAllText(Trader20.paths+"/trader_config.yaml", data);
             }
             else
             {
-                File.WriteAllText("config.yaml", data);
+                File.WriteAllText(Trader20.paths+"/trader_config.yaml", data);
             }
 
         }
 
-        public static void ReadSerializedData()
+        public static StoreEntry ReadSerializedData(string s)
         {
-            var deseralizer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
+            var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
+            var tmp = deserializer.Deserialize<StoreEntry>(s);
+
+            return tmp;
+
         }
     }
 
     public class StoreEntry
     {
-        public ItemDataEntry _DataEntry { get; set; }
+        [YamlMember(Alias = "Item_Entry", ApplyNamingConventions = false, Description = "Item Entry", Order = 0)]
+        public List<ItemDataEntry> _DataEntry { get; set; }
 
     }
 
     public class ItemDataEntry
     {
-        [YamlMember(Alias = "Item_Enabled", ApplyNamingConventions = false, Description = "Item enabled for sale", Order = 3)] public bool enabled { get; set; }
-        [YamlMember(Alias = "Item_Cost", ApplyNamingConventions = false, Description = "Item Cost in trader shop", Order = 2)]public int ItemCostInt { get; set; }
-        [YamlMember(Alias = "Item_Prefab", ApplyNamingConventions = false, Description = "Item Prefab Name", Order = 1)]public string ItemNameString{ get; set; }
+        public bool enabled { get; set; }
+        public int ItemCostInt { get; set; }
+        public string ItemNameString{ get; set; }
     }
 
 
