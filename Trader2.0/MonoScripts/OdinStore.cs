@@ -59,6 +59,11 @@ public class OdinStore : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        _trader = Trader20.Trader20.Knarr.GetComponent<NewTrader>();
+    }
+
     internal bool IsActive()
     {
         return m_StorePanel.activeSelf;
@@ -91,7 +96,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     /// <param name="_drop"></param>
     /// <param name="stack"></param>
-    async public void AddItemToDisplayList(ItemDrop _drop, int stack, int cost)
+    public void AddItemToDisplayList(ItemDrop _drop, int stack, int cost)
     {
         ElementFormat newElement = new ElementFormat();
         newElement._drop = _drop;
@@ -167,7 +172,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     /// <param name="itemDrop"></param>
     /// <returns></returns>
-    public int FindIndex(ItemDrop itemDrop)
+    private int FindIndex(ItemDrop itemDrop)
     {
         var templist = _storeInventory.Keys.ToList();
         var index = templist.IndexOf(itemDrop);
@@ -195,17 +200,17 @@ public class OdinStore : MonoBehaviour
        if(CanBuy(i))
        {
            SellItem(i);
-           _trader.OnSold();
+           //_trader.OnSold();
        }
     }
 
-    public bool CanBuy(int i)
+    private bool CanBuy(int i)
     {
         var inv =  Player.m_localPlayer.GetInventory();
         int playerbank = 0;
         foreach (var item in inv.m_inventory)
         {
-            if (item.m_shared.m_name == "Coins")
+            if (item.m_dropPrefab.name == "Coins")
             {
                 playerbank = item.m_stack;
             }
@@ -214,6 +219,7 @@ public class OdinStore : MonoBehaviour
 
        if (playerbank >= cost)
        {
+           inv.RemoveItem("Coins", cost);
            return true;
        }
 
