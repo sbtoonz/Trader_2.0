@@ -26,6 +26,8 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private GameObject ElementGO;
 
     [SerializeField] private NewTrader _trader;
+    [SerializeField] private Image ButtonImage;
+    [SerializeField] private Image Coins;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();

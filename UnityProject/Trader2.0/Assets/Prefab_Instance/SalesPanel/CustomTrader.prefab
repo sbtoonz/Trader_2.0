@@ -768,7 +768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -176.45, y: 0.00000095364}
+  m_AnchoredPosition: {x: -176.45, y: 0}
   m_SizeDelta: {x: 149.93, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222817926390585498
@@ -891,6 +891,8 @@ MonoBehaviour:
   ElementGO: {fileID: 5344753315730512436, guid: b76b7b3286e1f004f83b79e7a39903fc,
     type: 3}
   _trader: {fileID: 3367674191020224475, guid: b2e9c1882ce65744d8f6550ec1f5e6dc, type: 3}
+  ButtonImage: {fileID: 114960693980261177}
+  Coins: {fileID: 114139914419827574}
 --- !u!114 &990162025723631895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2496,7 +2498,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6115882292397544657}
   m_Direction: 2
   m_Value: -0.0000003616877
-  m_Size: 0.7187212
+  m_Size: 0.71874297
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
