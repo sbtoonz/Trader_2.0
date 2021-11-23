@@ -28,7 +28,7 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private NewTrader _trader;
     
     //StoreInventoryListing
-    internal Dictionary<ItemDrop, int> _storeInventory = new Dictionary<ItemDrop, int>();
+    internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
     public static OdinStore instance => m_instance;
     internal static ElementFormat tempElement;
     internal static Material litpanel;
@@ -115,7 +115,7 @@ public class OdinStore : MonoBehaviour
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
-            AddItemToDisplayList(itemData.Key,1, itemData.Value);
+            AddItemToDisplayList(itemData.Key,1, itemData.Value.Key);
         }
     }
 
@@ -133,7 +133,7 @@ public class OdinStore : MonoBehaviour
             Quaternion.identity).GetComponent(typeof(ItemDrop));
         if (itemDrop == null || itemDrop.m_itemData == null) return;
         
-        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Key.m_itemData.m_stack;
+        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Value;
         itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
 
     }
@@ -144,9 +144,9 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     /// <param name="itemDrop"></param>
     /// <param name="price"></param>
-    public void AddItemToDict(ItemDrop itemDrop, int price)
+    public void AddItemToDict(ItemDrop itemDrop, int price, int stack)
     {
-        _storeInventory.Add(itemDrop, price);
+        _storeInventory.Add(itemDrop, new KeyValuePair<int, int>(price, stack) );
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public class OdinStore : MonoBehaviour
                 playerbank = item.m_stack;
             }
         }
-        var cost = _storeInventory.ElementAt(i).Value;
+        var cost = _storeInventory.ElementAt(i).Value.Key;
 
        if (playerbank >= cost)
        {

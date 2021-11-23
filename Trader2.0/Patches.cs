@@ -51,8 +51,7 @@ namespace Trader20
                         {
                             var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
                                 .GetComponent<ItemDrop>();
-                            drop.m_itemData.m_stack = VARIABLE.Value.ItemCount;
-                            OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt);
+                            OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt, VARIABLE.Value.ItemCount);
                         }
                     }
                 }
