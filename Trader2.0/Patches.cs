@@ -39,11 +39,8 @@ namespace Trader20
             public static void Prefix()
             {
                 if(ObjectDB.instance.m_items.Count <= 0) return;
-                StoreEntry entry = new()
-                {
-                    _DataEntry = new List<ItemDataEntry>()
-                };
-                List<StoreEntry> listEntry = new();
+                Dictionary<string, ItemDataEntry> entry = new();
+                List<Dictionary<string, ItemDataEntry>> listEntry = new();
                 if (!File.Exists(Trader20.paths + "/trader_config.yaml"))
                 {
                    var file = File.Create(Trader20.paths + "/trader_config.yaml");
@@ -53,41 +50,18 @@ namespace Trader20
                 {
                     var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
                     var entry_ =YMLParser.ReadSerializedData(file.ReadToEnd());
-                    List<StoreEntry> PopulatedList = new List<StoreEntry>();
+                    List<Dictionary<string, ItemDataEntry>> PopulatedList = new List<Dictionary<string, ItemDataEntry>>();
                     PopulatedList.Add(entry_);
                     foreach (var store in PopulatedList)
                     {
-                        foreach (var VARIABLE in store._DataEntry)
+                        foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
                         {
-                            if (!VARIABLE.enabled) continue;
-                            var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.ItemNameString)
+                            var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
                                 .GetComponent<ItemDrop>();
-                            OdinStore.instance.AddItemToDict(drop, VARIABLE.ItemCostInt);
+                            OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt);
                         }
                     }
                 }
-                else
-                {
-                    var i = 0;
-                    var items = ObjectDB.instance.m_items;
-                    foreach (var go in items.Where(go => go.GetComponent<ItemDrop>().m_itemData.m_shared.m_icons.Length >= 1))
-                    {
-                        ItemDataEntry tempentry = new();
-                        tempentry.enabled = false;
-                        tempentry.ItemCostInt = 100;
-                        tempentry.ItemNameString = go.name;
-                        entry._DataEntry.Add(tempentry);
-                        listEntry.Add(entry);
-                    }
-
-                    foreach (var VARIABLE in listEntry)
-                    {
-                        var s =YMLParser.Serializers(VARIABLE);
-                        YMLParser.WriteSerializedData(s);
-                    }
-                }
-
-                Trader20.Knarr = ZNetScene.instance.GetPrefab("Knarr");
             }
         }
 

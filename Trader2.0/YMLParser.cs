@@ -8,8 +8,7 @@ namespace Trader20
 {
     public class YMLParser
     {
-        public static List<StoreEntry> test = new();
-        public static string Serializers(StoreEntry data)
+        public static string Serializers(Dictionary<string, ItemDataEntry> data)
         {
             var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
             var yml = serializer.Serialize(data);
@@ -33,29 +32,21 @@ namespace Trader20
 
         }
 
-        public static StoreEntry ReadSerializedData(string s)
+        public static Dictionary<string, ItemDataEntry> ReadSerializedData(string s)
         {
             var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
-            var tmp = deserializer.Deserialize<StoreEntry>(s);
+            var tmp = deserializer.Deserialize<Dictionary<string, ItemDataEntry>>(s);
 
             return tmp;
 
         }
     }
 
-    public class StoreEntry
-    {
-        [YamlMember(Alias = "Item_Entry", ApplyNamingConventions = false, Description = "Item Entry", Order = 0)]
-        public List<ItemDataEntry> _DataEntry { get; set; }
-
-    }
-
     public class ItemDataEntry
     {
-        public bool enabled { get; set; }
+        [YamlMember(Alias = "cost", ApplyNamingConventions = false)]
         public int ItemCostInt { get; set; }
-        public string ItemNameString{ get; set; }
     }
 
 
