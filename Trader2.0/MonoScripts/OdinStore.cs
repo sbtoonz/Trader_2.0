@@ -213,13 +213,13 @@ public class OdinStore : MonoBehaviour
 
     private bool CanBuy(int i)
     {
-        var inv =  Player.m_localPlayer.GetInventory();
+        var inv = Player.m_localPlayer.m_inventory;
         int playerbank = 0;
-        foreach (var item in inv.m_inventory)
+        foreach (var item in inv.GetAllItems())
         {
             if (item.m_dropPrefab.name == "Coins")
             {
-                playerbank = item.m_stack;
+                playerbank += item.m_stack;
             }
         }
         var cost = _storeInventory.ElementAt(i).Value.Key;
@@ -227,8 +227,8 @@ public class OdinStore : MonoBehaviour
        if (playerbank >= cost)
        {
            playerbank -= cost;
-           var coins = inv.GetItem("Coins");
-           coins.m_stack = playerbank;
+           //Todo: Fix the trader taking coins for your stuff 
+           
            return true;
        }
 
