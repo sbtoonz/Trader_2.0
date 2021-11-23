@@ -86,6 +86,8 @@ namespace Trader20
                         YMLParser.WriteSerializedData(s);
                     }
                 }
+
+                Trader20.Knarr = ZNetScene.instance.GetPrefab("Knarr");
             }
         }
 

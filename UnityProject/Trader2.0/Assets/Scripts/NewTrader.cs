@@ -1,5 +1,5 @@
 ﻿// Trader
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -139,6 +139,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public void OnSold()
 	{
 		Say(m_randomSell, "Sell");
-		m_randomSellFX.Create(base.transform.position, Quaternion.identity);
+		//m_randomSellFX.Create(base.transform.position, Quaternion.identity);
 	}
 }
