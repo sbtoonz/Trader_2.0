@@ -35,6 +35,7 @@ public class OdinStore : MonoBehaviour
     internal static ElementFormat tempElement;
     internal static Material litpanel;
     internal List<GameObject> CurrentStoreList = new List<GameObject>();
+    internal List<ElementFormat> _elements = new List<ElementFormat>();
     private void Awake() 
     {
         m_instance = this;
@@ -49,11 +50,6 @@ public class OdinStore : MonoBehaviour
         {
             Debug.Log(ex);
         }
-    }
-
-    private void OnEnable()
-    {
-        UpdateCoins();
     }
 
     private void OnGUI()
@@ -110,14 +106,15 @@ public class OdinStore : MonoBehaviour
         name.gameObject.AddComponent<Localize>();
         
         newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-
+        
         var elementthing = Instantiate(newElement.Element, ListRoot.transform, false);
             elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
         newElement.Element.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+        _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
     }
 
-    async void  ReadItems()
+    private void  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
@@ -258,5 +255,10 @@ public class OdinStore : MonoBehaviour
     {
         m_StorePanel.SetActive(true);
         ClearStore();
+        if(_elements.Count >=1)
+        {
+            UpdateGenDescription(_elements[0]);
+        }
+        UpdateCoins();
     }
 }
