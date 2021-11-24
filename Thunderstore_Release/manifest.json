@@ -1,0 +1,10 @@
+{
+ "name": "KnarrTheTrader",
+  "author": "OdinPlus",
+  "description": "Another Trader?",
+  "version_number": "0.0.1",
+  "website_url": "https://github.com/sbtoonz/Trader_2.0",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.1600"
+  ]
+}

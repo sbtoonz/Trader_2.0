@@ -16,9 +16,9 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        private const string ModVersion = "0.0.1";
+        public const string ModVersion = "0.0.1";
         private const string ModGUID = "com.zarboz.Trader20";
-        public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion };
+        public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject Knarr;
         internal static GameObject CustomTraderScreen;

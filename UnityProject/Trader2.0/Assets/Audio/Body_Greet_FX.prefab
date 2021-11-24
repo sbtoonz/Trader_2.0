@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3284063765137738349}
   - component: {fileID: 7636702041284557510}
   m_Layer: 0
-  m_Name: 3Steps_Greet_FX 1
+  m_Name: Body_Greet_FX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 469224316, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_timeout: 4
+  m_timeout: 6
   m_triggerOnAwake: 1
 --- !u!114 &-664904942111523951
 MonoBehaviour:

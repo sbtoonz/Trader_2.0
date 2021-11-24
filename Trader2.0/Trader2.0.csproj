@@ -357,6 +357,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Thunderstore_Release\icon.png">
+      <Link>Thunderstore_Release\icon.png</Link>
+    </Content>
+    <Content Include="..\Thunderstore_Release\manifest.json">
+      <Link>Thunderstore_Release\manifest.json</Link>
+    </Content>
+    <Content Include="..\Thunderstore_Release\plugins\Trader20.dll">
+      <Link>Thunderstore_Release\plugins\Trader20.dll</Link>
+    </Content>
+    <Content Include="..\Thunderstore_Release\README.md">
+      <Link>Thunderstore_Release\README.md</Link>
+    </Content>
     <Content Include="ILRepack.targets" />
     <Content Include="Libs\ServerSync.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
