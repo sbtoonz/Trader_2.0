@@ -10,7 +10,7 @@ public class DragNDrop : MonoBehaviour
         Transform testCanvasTransform = transform.parent;
         do
         {
-            canvas = testCanvasTransform.GetComponentInParent<Canvas>();
+            canvas = testCanvasTransform.GetComponent<Canvas>();
             testCanvasTransform = testCanvasTransform.parent;
         } while (canvas == null);
     }

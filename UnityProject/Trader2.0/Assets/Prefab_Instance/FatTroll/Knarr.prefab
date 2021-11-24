@@ -1632,6 +1632,7 @@ GameObject:
   - component: {fileID: 2875022028034829214}
   - component: {fileID: 3367674191020224475}
   - component: {fileID: 8248588759842237965}
+  - component: {fileID: 5212895232100809140}
   m_Layer: 0
   m_Name: Knarr
   m_TagString: Untagged
@@ -1690,31 +1691,175 @@ MonoBehaviour:
   m_randomTalk:
   - You've probably met my cousin
   - Have you seen Haldor around?
+  - You waste most of your money by spending it.
+  - "Another Viking, I wonder what you\u2019ll want? More weapons? Fine..."
+  - Shop smart, shop Knarr
   m_randomGreets:
   - Welcome to the shop!
   - Hello traveler
+  - Shop smart, shop Knarr
+  - Haldor's only taken the worthless items. I still have the good stuff.
+  - Whadya buyin!? Heard that in a game once.
   m_randomGoodbye:
   - See you soon!
   - Come back when you like.
+  - If you see Haldor kick him for me.
+  - If you need to learn how to talk to an asshole. Just go see Haldor
+  - Please rate me on Yelp
   m_randomStartTrade:
   - Feel free to look at my wares
   - Check out my items.
+  - "Want the best deals? The trick is to stop thinking of it as \u2018your\u2019
+    money"
+  - well, they had to do something with the coins
   m_randomBuy:
   - Wonderful choice
   m_randomSell:
   - Enjoy
   - Here's your things
   - Stock up while you can.
+  - Shop smart, shop Knarr
+  - i'll spend that on a hot tub and some mead
   m_randomTalkFX:
     m_effectPrefabs: []
   m_randomGreetFX:
-    m_effectPrefabs: []
+    m_effectPrefabs:
+    - m_prefab: {fileID: 5248099147093257264, guid: 70a21485dd1d0344c8860c39def18570,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 5248099147093257264, guid: 0d3e5186efe62af4e89260d256d2a4e7,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: b7c585350f5736f4ba5f30bfd414fadb,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: 1199234a07984174b878f9b754736afa,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
   m_randomGoodbyeFX:
-    m_effectPrefabs: []
+    m_effectPrefabs:
+    - m_prefab: {fileID: 7234588427659894939, guid: 4ad26a6471059274caf81f7bd0205f78,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: 6d306683a31f19c4da59d117283d2a97,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: 18b1a1ea4a3332c46b024a7908cbda54,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: da39deb96cf14a04288c20eaeb3d5d96,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: 5944b259581c3344a84e9381765106fd,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
   m_randomStartTradeFX:
     m_effectPrefabs: []
   m_randomSellFX:
-    m_effectPrefabs: []
+    m_effectPrefabs:
+    - m_prefab: {fileID: 7234588427659894939, guid: 6299f3ec46231cb4cb6f0f8b7fcdadd4,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: cb22d59bc9db00b469af2f788dddada7,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: 233d1089491622f4d9a1f4c28c06e66b,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
+    - m_prefab: {fileID: 7234588427659894939, guid: f9497d5eb516bea4eaa543e98e85896e,
+        type: 3}
+      m_enabled: 1
+      m_variant: 0
+      m_attach: 1
+      m_inheritParentRotation: 0
+      m_inheritParentScale: 0
+      m_randomRotation: 0
+      m_scale: 0
+      m_childTransform: 
   _store: {fileID: 5494880942761007943, guid: 3bf1ea413417e5e45a3773756a1d6d93, type: 3}
 --- !u!114 &8248588759842237965
 MonoBehaviour:
@@ -1732,6 +1877,26 @@ MonoBehaviour:
   m_distant: 0
   m_type: 0
   m_syncInitialScale: 0
+--- !u!114 &5212895232100809140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6458935346658124851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 712945444, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_exteriorRadius: 5
+  m_noBuild: 1
+  m_clearArea: 1
+  m_applyRandomDamage: 0
+  m_hasInterior: 0
+  m_interiorRadius: 20
+  m_interiorEnvironment: 
+  m_interiorPrefab: {fileID: 0}
 --- !u!1 &6672571811596794341
 GameObject:
   m_ObjectHideFlags: 0

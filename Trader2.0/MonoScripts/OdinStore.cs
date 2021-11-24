@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Patches = Trader20.Patches;
 using Random = UnityEngine.Random;
 
 public class OdinStore : MonoBehaviour
@@ -62,9 +64,34 @@ public class OdinStore : MonoBehaviour
 
     private void OnGUI()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (IsActive())
+        {
+            Patches.PreventMainMenu.AllowMainMenu = false;
+        }
+        if (Player.m_localPlayer is not Player player)
+        {
+            return;
+        }
+        if (Vector3.Distance(NewTrader.instance.transform.position, Player.m_localPlayer.transform.position) > 15)
         {
             Hide();
+            Patches.PreventMainMenu.AllowMainMenu = true;
+        }
+        if ( Input.GetKeyDown(KeyCode.Escape))
+        {
+            ZInput.ResetButtonStatus("JoyButtonB");
+            Hide();
+            Patches.PreventMainMenu.AllowMainMenu = true;
+        }
+        if (InventoryGui.IsVisible() || Minimap.IsOpen())
+        {
+            Hide();
+            Patches.PreventMainMenu.AllowMainMenu = true;
+        }
+        if (Player.m_localPlayer == null || Player.m_localPlayer.IsDead() || Player.m_localPlayer.InCutscene())
+        {
+            Hide();
+            Patches.PreventMainMenu.AllowMainMenu = true;
         }
     }
     internal bool IsActive()
@@ -117,7 +144,8 @@ public class OdinStore : MonoBehaviour
         
         var elementthing = Instantiate(newElement.Element, ListRoot.transform, false);
             elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
-        newElement.Element.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+            elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+            elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.coins;
         _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
     }
@@ -198,16 +226,7 @@ public class OdinStore : MonoBehaviour
 
     public void UpdateCoins()
     {
-        
-        var inv = Player.m_localPlayer.m_inventory;
-
-        foreach (var inventory in inv.m_inventory)
-        {
-            if (inventory.m_dropPrefab.name == "Coins")
-            {
-                SelectedCost.text = inventory.m_stack.ToString();
-            }
-        }
+        SelectedCost.text = GetPlayerCoins().ToString();
     }
     public void BuyButtonAction()
     {
