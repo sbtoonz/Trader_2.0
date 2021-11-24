@@ -7,6 +7,7 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 using ServerSync;
+using UnityEngine.Experimental.Playables;
 
 
 namespace Trader20
@@ -62,17 +63,19 @@ namespace Trader20
                     foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
                     {
                         
-                        configEntry(VARIABLE.Key, VARIABLE.Value);
-                        
+                        var tmp = configEntry(VARIABLE.Key, VARIABLE.Value);
+                        //I am kind of lost here
+
                     }
                 }
             }
         }
 
-        private void configEntry(string name, ItemDataEntry itemDataEntry)
+        private CustomSyncedValue<KeyValuePair<string, ItemDataEntry>> configEntry(string name, ItemDataEntry itemDataEntry)
         {
             CustomSyncedValue<KeyValuePair<string, ItemDataEntry>> temp =
                 new(configSync, ModGUID, new KeyValuePair<string, ItemDataEntry>(name, itemDataEntry));
+            return temp;
         }
 
 
