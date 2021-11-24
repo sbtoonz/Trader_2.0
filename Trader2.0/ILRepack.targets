@@ -5,6 +5,7 @@
         <ItemGroup>
             <InputAssemblies Include="$(TargetPath)" />
             <InputAssemblies Include="$(OutputPath)\YamlDotNet.dll" />
+            <InputAssemblies Include="$(OutputPath)\ServerSync.dll" />
         </ItemGroup>
         <ItemGroup>
             <LibraryPaths Include="$(OutputPath)" />

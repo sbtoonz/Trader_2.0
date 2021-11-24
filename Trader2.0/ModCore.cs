@@ -2,6 +2,8 @@
 using BepInEx;
 using HarmonyLib;
 using UnityEngine;
+using ServerSync;
+
 
 namespace Trader20
 {
@@ -22,6 +24,8 @@ namespace Trader20
             Harmony harmony = new(ModGUID);
             harmony.PatchAll(assembly);
             assetBundle = Utilities.LoadAssetBundle("traderbundle");
+
+            
         }
 
         

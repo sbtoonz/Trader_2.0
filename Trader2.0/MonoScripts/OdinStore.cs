@@ -36,6 +36,14 @@ public class OdinStore : MonoBehaviour
     internal static Material litpanel;
     internal List<GameObject> CurrentStoreList = new List<GameObject>();
     internal List<ElementFormat> _elements = new List<ElementFormat>();
+    internal ItemDrop.ItemData? coins1 = null;
+    internal ItemDrop.ItemData? coins2 = null;
+    internal ItemDrop.ItemData? coins3 = null;
+    internal ItemDrop.ItemData? coins4 = null;
+    internal ItemDrop.ItemData? coins5 = null;
+    internal ItemDrop.ItemData? coins6 = null;
+    internal ItemDrop.ItemData? coins7 = null;
+    internal ItemDrop.ItemData? coins8 = null;
     private void Awake() 
     {
         m_instance = this;
@@ -203,36 +211,177 @@ public class OdinStore : MonoBehaviour
     }
     public void BuyButtonAction()
     {
-       var i = FindIndex(tempElement._drop);
-       if(CanBuy(i))
-       {
-           SellItem(i);
-           NewTrader.instance.OnSold();
-       }
+        if (tempElement._drop is null) return;
+        var i = FindIndex(tempElement._drop);
+        if (!CanBuy(i)) return;
+        SellItem(i);
+        NewTrader.instance.OnSold();
     }
 
     private bool CanBuy(int i)
     {
         var inv = Player.m_localPlayer.m_inventory;
+
+        
         int playerbank = 0;
         foreach (var item in inv.GetAllItems())
         {
             if (item.m_dropPrefab.name == "Coins")
             {
                 playerbank += item.m_stack;
+                if (item.m_stack < item.m_shared.m_maxStackSize) continue;
+                if (coins1 == null)
+                {
+                    coins1 = item;
+                }
+                else if(coins2 == null)
+                {
+                    coins2 = item;
+                }
+                else if (coins3 == null)
+                {
+                    coins3 = item;
+                }
+                else if (coins4 == null)
+                {
+                    coins4 = item;
+                }
+                else if (coins5 == null)
+                {
+                    coins5 = item;
+                }
+                else if (coins6 == null)
+                {
+                    coins6 = item;
+                }
+                else if (coins7 == null)
+                {
+                    coins7 = item;
+                }
             }
         }
         var cost = _storeInventory.ElementAt(i).Value.Key;
 
-       if (playerbank >= cost)
-       {
-           playerbank -= cost;
-           //Todo: Fix the trader taking coins for your stuff 
-           
-           return true;
-       }
+        if (playerbank < cost) return playerbank <= cost && false;
+        if (coins1 != null && cost > coins1.m_stack)
+        {
+            if (coins2 != null)
+            {
+                var newstack = coins1.m_stack + coins2.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                newstack -= cost;
+                coins1.m_stack = newstack;
+            }
+        }
+        else if (coins1 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack)
+        {
+            if (coins3 != null)
+            {
+                var newstack2 = coins1.m_stack + coins2.m_stack + coins3.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                coins3.m_stack = 0;
+                inv.RemoveOneItem(coins3);
+                coins3 = null;
+                newstack2 -= cost;
+                coins1.m_stack = newstack2;
+            }
+        }
+        else if (coins1 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack)
+        {
+            if (coins4 != null)
+            {
+                var newstack3 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                coins3.m_stack = 0;
+                inv.RemoveOneItem(coins3);
+                coins3 = null;
+                coins4.m_stack = 0;
+                inv.RemoveOneItem(coins4);
+                coins4 = null;
+                newstack3 -= cost;
+                coins1.m_stack = newstack3;
+            }
+        }
+        else if (coins4 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack)
+        {
+            if (coins5 != null)
+            {
+                var newstack4 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                coins3.m_stack = 0;
+                inv.RemoveOneItem(coins3);
+                coins3 = null;
+                coins4.m_stack = 0;
+                inv.RemoveOneItem(coins4);
+                coins4 = null;
+                coins5.m_stack = 0;
+                inv.RemoveOneItem(coins5);
+                coins5 = null;
+                newstack4 -= cost;
+                coins1.m_stack = newstack4;
+            }
+        }
+        else if (coins5 != null && coins4 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack+ coins5.m_stack)
+        {
+            if (coins6 != null)
+            {
+                var newstack5 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack + coins6.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                coins3.m_stack = 0;
+                inv.RemoveOneItem(coins3);
+                coins3 = null;
+                coins4.m_stack = 0;
+                inv.RemoveOneItem(coins4);
+                coins4 = null;
+                coins5.m_stack = 0;
+                inv.RemoveOneItem(coins5);
+                coins5 = null;
+                coins6.m_stack = 0;
+                inv.RemoveOneItem(coins6);
+                coins6 = null;
+                newstack5 -= cost;
+                coins1.m_stack = newstack5;
+            }
+        }
+        else if (coins6 != null && coins5 != null && coins4 != null && coins3 != null && coins2 != null && coins1 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack+ coins5.m_stack + coins6.m_stack)
+        {
+            if (coins7 != null)
+            {
+                var newstack6 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack + coins6.m_stack + coins7.m_stack;
+                coins2.m_stack = 0;
+                inv.RemoveOneItem(coins2);
+                coins2 = null;
+                coins3.m_stack = 0;
+                inv.RemoveOneItem(coins3);
+                coins3 = null;
+                coins4.m_stack = 0;
+                inv.RemoveOneItem(coins4);
+                coins4 = null;
+                coins5.m_stack = 0;
+                inv.RemoveOneItem(coins5);
+                coins5 = null;
+                coins6.m_stack = 0;
+                inv.RemoveOneItem(coins6);
+                coins6 = null;
+                coins7.m_stack = 0;
+                inv.RemoveOneItem(coins7);
+                coins7 = null;
+                newstack6 -= cost;
+                coins1.m_stack = newstack6;
+            }
+        }
+        return true;
 
-       return playerbank <= cost && false;
     }
 
     /// <summary>
@@ -240,11 +389,11 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public class ElementFormat
     {
-        internal GameObject Element;
-        internal Sprite Icon;
-        internal string Name;
-        internal int Price;
-        internal ItemDrop _drop;
+        internal GameObject? Element;
+        internal Sprite? Icon;
+        internal string? Name;
+        internal int? Price;
+        internal ItemDrop? _drop;
     }
     public void Hide()
     {
