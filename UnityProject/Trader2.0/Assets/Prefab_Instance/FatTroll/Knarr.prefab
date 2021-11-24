@@ -1687,7 +1687,7 @@ MonoBehaviour:
   m_greetRange: 5
   m_byeRange: 5
   m_hideDialogDelay: 5
-  m_randomTalkInterval: 30
+  m_randomTalkInterval: 240
   m_randomTalk:
   - You've probably met my cousin
   - Have you seen Haldor around?

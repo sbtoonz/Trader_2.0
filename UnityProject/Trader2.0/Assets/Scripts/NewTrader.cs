@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
@@ -84,14 +85,20 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 			if (!m_didGreet && num < m_greetRange)
 			{
 				m_didGreet = true;
+				m_didGoodbye = false;
 				Say(m_randomGreets, "Greet");
-				m_randomGreetFX.Create(base.transform.position, Quaternion.identity);
+				GameObject FxGreet =
+					m_randomGreetFX.m_effectPrefabs[Random.Range(0, m_randomGreetFX.m_effectPrefabs.Length)].m_prefab;
+				Instantiate(FxGreet, transform.position, Quaternion.identity);
 			}
 			if (m_didGreet && !m_didGoodbye && num > m_byeRange)
 			{
 				m_didGoodbye = true;
+				m_didGreet = false;
 				Say(m_randomGoodbye, "Greet");
-				m_randomGoodbyeFX.Create(base.transform.position, Quaternion.identity);
+				GameObject FxBye =
+					m_randomGoodbyeFX.m_effectPrefabs[Random.Range(0, m_randomGoodbyeFX.m_effectPrefabs.Length)].m_prefab;
+				Instantiate(FxBye, transform.position, Quaternion.identity);
 			}
 		}
 		else
