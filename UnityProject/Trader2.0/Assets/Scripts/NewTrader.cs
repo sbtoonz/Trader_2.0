@@ -80,7 +80,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		{
 			m_animator.SetBool("Stand", value: true);
 			m_lookAt.SetLoockAtTarget(closestPlayer.GetHeadPoint());
-			float num = Vector3.Distance(closestPlayer.transform.position, base.transform.position);
+			float num = Vector3.Distance(closestPlayer.transform.position, instance.transform.position);
 			if (!m_didGreet && num < m_greetRange)
 			{
 				m_didGreet = true;

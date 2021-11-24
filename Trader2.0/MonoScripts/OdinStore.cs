@@ -11,31 +11,31 @@ public class OdinStore : MonoBehaviour
 {
     private static OdinStore m_instance;
     
-    [SerializeField] private GameObject m_StorePanel;
-    [SerializeField] private RectTransform ListRoot;
-    [SerializeField] private Text SelectedItemDescription;
-    [SerializeField] private Image ItemDropIcon;
-    [SerializeField] private Text SelectedCost;
-    [SerializeField] private Text StoreTitle;
-    [SerializeField] private Button BuyButton;
-    [SerializeField] private Text SelectedName;
+    [SerializeField] private GameObject? m_StorePanel;
+    [SerializeField] private RectTransform? ListRoot;
+    [SerializeField] private Text? SelectedItemDescription;
+    [SerializeField] private Image? ItemDropIcon;
+    [SerializeField] private Text? SelectedCost;
+    [SerializeField] private Text? StoreTitle;
+    [SerializeField] private Button? BuyButton;
+    [SerializeField] private Text? SelectedName;
 
-    [SerializeField] internal Image Bkg1;
-    [SerializeField] internal Image Bkg2;
+    [SerializeField] internal Image? Bkg1;
+    [SerializeField] internal Image? Bkg2;
     
     
     //ElementData
-    [SerializeField] private GameObject ElementGO;
+    [SerializeField] private GameObject? ElementGO;
 
-    [SerializeField] private NewTrader _trader;
-    [SerializeField] internal Image ButtonImage;
-    [SerializeField] internal Image Coins;
+    [SerializeField] private NewTrader? _trader;
+    [SerializeField] internal Image? ButtonImage;
+    [SerializeField] internal Image? Coins;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
     public static OdinStore instance => m_instance;
-    internal static ElementFormat tempElement;
-    internal static Material litpanel;
+    internal static ElementFormat? tempElement;
+    internal static Material? litpanel;
     internal List<GameObject> CurrentStoreList = new List<GameObject>();
     internal List<ElementFormat> _elements = new List<ElementFormat>();
     internal ItemDrop.ItemData? coins1 = null;
@@ -49,12 +49,12 @@ public class OdinStore : MonoBehaviour
     private void Awake() 
     {
         m_instance = this;
-        m_StorePanel.SetActive(false);
-        StoreTitle.text = "Odins Store";
+        m_StorePanel!.SetActive(false);
+        StoreTitle!.text = "Odins Store";
         try
         {
-            Bkg1.material = litpanel;
-            Bkg2.material = litpanel;
+            Bkg1!.material = litpanel;
+            Bkg2!.material = litpanel;
         }
         catch (Exception ex)
         {
@@ -62,11 +62,13 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    private void OnGUI()
+    private void Update()
     {
+        Patches.PreventMainMenu.AllowMainMenu = true;
+        if (!IsActive()) return;
         if (IsActive())
         {
-            Patches.PreventMainMenu.AllowMainMenu = false;
+            StoreGui.instance.m_hiddenFrames = 0;
         }
         if (Player.m_localPlayer is not Player player)
         {
@@ -75,34 +77,30 @@ public class OdinStore : MonoBehaviour
         if (Vector3.Distance(NewTrader.instance.transform.position, Player.m_localPlayer.transform.position) > 15)
         {
             Hide();
-            Patches.PreventMainMenu.AllowMainMenu = true;
         }
         if ( Input.GetKeyDown(KeyCode.Escape))
         {
             ZInput.ResetButtonStatus("JoyButtonB");
             Hide();
-            Patches.PreventMainMenu.AllowMainMenu = true;
         }
         if (InventoryGui.IsVisible() || Minimap.IsOpen())
         {
             Hide();
-            Patches.PreventMainMenu.AllowMainMenu = true;
         }
         if (Player.m_localPlayer == null || Player.m_localPlayer.IsDead() || Player.m_localPlayer.InCutscene())
         {
             Hide();
-            Patches.PreventMainMenu.AllowMainMenu = true;
         }
     }
     internal bool IsActive()
     {
-        return m_StorePanel.activeSelf;
+        return m_StorePanel!.activeSelf;
     }
     private void OnDestroy()
     {
         if (m_instance == this)
         {
-            m_instance = null;
+            m_instance = null!;
         }
     }
 
@@ -121,28 +119,29 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
-    /// </summary>
-    /// <param name="_drop"></param>
-    /// <param name="stack"></param>
-    public void AddItemToDisplayList(ItemDrop _drop, int stack, int cost)
+   /// <summary>
+   /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
+   /// </summary>
+   /// <param name="drop"></param>
+   /// <param name="stack"></param>
+   /// <param name="cost"></param>
+   public void AddItemToDisplayList(ItemDrop drop, int stack, int cost)
     {
         ElementFormat newElement = new ElementFormat();
-        newElement._drop = _drop;
-        newElement.Icon = _drop.m_itemData.m_shared.m_icons.FirstOrDefault();
-        newElement.Name = _drop.m_itemData.m_shared.m_name;
+        newElement._drop = drop;
+        newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
+        newElement.Name = drop.m_itemData.m_shared.m_name;
         newElement._drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
 
-        newElement.Element.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
+        newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
         var name = newElement.Element.transform.Find("name").GetComponent<Text>();
         name.text = newElement.Name;
         name.gameObject.AddComponent<Localize>();
         
         newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
         
-        var elementthing = Instantiate(newElement.Element, ListRoot.transform, false);
+        var elementthing = Instantiate(newElement.Element, ListRoot!.transform, false);
             elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
             elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
             elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.coins;
@@ -218,19 +217,19 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
-        SelectedItemDescription.text = element._drop.m_itemData.m_shared.m_description;
+        SelectedItemDescription!.text = element._drop!.m_itemData.m_shared.m_description;
         SelectedItemDescription.gameObject.AddComponent<Localize>();
-        ItemDropIcon.sprite = element.Icon;
+        ItemDropIcon!.sprite = element.Icon;
         tempElement = element;
     }
 
     public void UpdateCoins()
     {
-        SelectedCost.text = GetPlayerCoins().ToString();
+        SelectedCost!.text = GetPlayerCoins().ToString();
     }
     public void BuyButtonAction()
     {
-        if (tempElement._drop is null) return;
+        if (tempElement!._drop is null) return;
         var i = FindIndex(tempElement._drop);
         if (!CanBuy(i)) return;
         SellItem(i);
@@ -264,12 +263,12 @@ public class OdinStore : MonoBehaviour
     }
     public void Hide()
     {
-        m_StorePanel.SetActive(false);
+        m_StorePanel!.SetActive(false);
     }
 
     public void Show()
     {
-        m_StorePanel.SetActive(true);
+        m_StorePanel!.SetActive(true);
         ClearStore();
         if(_elements.Count >=1)
         {
@@ -278,7 +277,7 @@ public class OdinStore : MonoBehaviour
         UpdateCoins();
     }
 
-    public int GetPlayerCoins()
+    private int GetPlayerCoins()
     {
         return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }
