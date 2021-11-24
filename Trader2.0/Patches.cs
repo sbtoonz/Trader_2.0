@@ -30,39 +30,39 @@ namespace Trader20
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
-                    Trader20.coins = ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.GetIcon();
-                    Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen, __instance.GetComponentInParent<Localize>().transform, false);
-                    OdinStore.instance.Bkg1.sprite = __instance.transform.Find("Store/bkg").GetComponent<Image>().sprite;
-                    OdinStore.instance.Bkg2.sprite = Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>().sprite);
+                    Trader20.coins = ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData
+                        .GetIcon();
+                    Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
+                        __instance.GetComponentInParent<Localize>().transform, false);
+                    OdinStore.instance.Bkg1.sprite =
+                        __instance.transform.Find("Store/bkg").GetComponent<Image>().sprite;
+                    OdinStore.instance.Bkg2.sprite =
+                        Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>().sprite);
                     OdinStore.instance.Coins.sprite = Trader20.coins;
-                    OdinStore.instance.ButtonImage.sprite = Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
- 
+                    OdinStore.instance.ButtonImage.sprite =
+                        Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
+
                 }
-                
-               
+
+
                 //Fill CustomTrader store
-                if(ObjectDB.instance.m_items.Count <= 0) return;
+                if (ObjectDB.instance.m_items.Count <= 0) return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
-                if (!File.Exists(Trader20.paths + "/trader_config.yaml"))
+                if (File.ReadLines(Trader20.paths + "/trader_config.yaml").Count() == 0) return;
+                var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
+                var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+                List<Dictionary<string, ItemDataEntry>> PopulatedList =
+                    new();
+                PopulatedList.Add(entry_);
+                foreach (var store in PopulatedList)
                 {
-                   var file = File.Create(Trader20.paths + "/trader_config.yaml");
-                   file.Close();
-                }
-                if (File.ReadLines(Trader20.paths+"/trader_config.yaml").Count() != 0)
-                {
-                    var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
-                    var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
-                    List<Dictionary<string, ItemDataEntry>> PopulatedList = new List<Dictionary<string, ItemDataEntry>>();
-                    PopulatedList.Add(entry_);
-                    foreach (var store in PopulatedList)
+                    foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
                     {
-                        foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
-                        {
-                            var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
-                                .GetComponent<ItemDrop>();
-                            OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt, VARIABLE.Value.ItemCount);
-                        }
+                        var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
+                            .GetComponent<ItemDrop>();
+                        OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt,
+                            VARIABLE.Value.ItemCount);
                     }
                 }
             }

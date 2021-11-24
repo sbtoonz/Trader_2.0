@@ -104,7 +104,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-   private void  ClearStore()
+   internal void  ClearStore()
     {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
@@ -281,5 +281,10 @@ public class OdinStore : MonoBehaviour
     private int GetPlayerCoins()
     {
         return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+    }
+
+    public void DumpDict()
+    {
+        _storeInventory.Clear();
     }
 }

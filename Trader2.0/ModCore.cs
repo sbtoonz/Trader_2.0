@@ -24,9 +24,10 @@ namespace Trader20
         internal static GameObject CustomTraderScreen;
         internal static Sprite coins;
         internal static ConfigEntry<ItemDataEntry> _syncedValue;
+        public static Dictionary<string, ItemDataEntry> entry_ { get; set; }
         internal static AssetBundle assetBundle { get; set; }
         internal static string paths = Paths.ConfigPath;
-        private ConfigEntry<bool> serverConfigLocked;
+        public static ConfigEntry<bool> serverConfigLocked;
 
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
@@ -56,8 +57,22 @@ namespace Trader20
             if (File.ReadLines(paths+"/trader_config.yaml").Count() != 0)
             {
                 var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
-                var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+                entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 traderConfig.Value = entry_;
+                traderConfig.ValueChanged += Tes;
+            }
+        }
+
+        private void Tes()
+        {
+            OdinStore.instance.DumpDict();
+            OdinStore.instance.ClearStore();
+            foreach (var VARIABLE in traderConfig.Value)
+            {
+                var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
+                    .GetComponent<ItemDrop>();
+                OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt,
+                    VARIABLE.Value.ItemCount);
             }
         }
     }
