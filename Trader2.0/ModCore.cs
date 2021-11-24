@@ -19,6 +19,7 @@ namespace Trader20
         private const string ModVersion = "0.0.1";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion };
+        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject Knarr;
         internal static GameObject CustomTraderScreen;
         internal static Sprite coins;
@@ -56,28 +57,8 @@ namespace Trader20
             {
                 var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
                 var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
-                List<Dictionary<string, ItemDataEntry>> PopulatedList = new();
-                PopulatedList.Add(entry_);
-                foreach (var store in PopulatedList)
-                {
-                    foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
-                    {
-                        
-                        var tmp = configEntry(VARIABLE.Key, VARIABLE.Value);
-                        //I am kind of lost here
-
-                    }
-                }
+                traderConfig.Value = entry_;
             }
         }
-
-        private CustomSyncedValue<KeyValuePair<string, ItemDataEntry>> configEntry(string name, ItemDataEntry itemDataEntry)
-        {
-            CustomSyncedValue<KeyValuePair<string, ItemDataEntry>> temp =
-                new(configSync, ModGUID, new KeyValuePair<string, ItemDataEntry>(name, itemDataEntry));
-            return temp;
-        }
-
-
     }
 }

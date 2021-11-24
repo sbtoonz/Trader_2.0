@@ -71,7 +71,7 @@
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\Guilds\Guilds\Libs\ServerSync.dll</HintPath>
+      <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -358,6 +358,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ILRepack.targets" />
+    <Content Include="Libs\ServerSync.dll" />
     <Content Include="trader_config.yml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
