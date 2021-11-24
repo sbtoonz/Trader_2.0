@@ -220,168 +220,16 @@ public class OdinStore : MonoBehaviour
 
     private bool CanBuy(int i)
     {
-        var inv = Player.m_localPlayer.m_inventory;
-
-        
-        int playerbank = 0;
-        foreach (var item in inv.GetAllItems())
-        {
-            if (item.m_dropPrefab.name == "Coins")
-            {
-                playerbank += item.m_stack;
-                if (item.m_stack < item.m_shared.m_maxStackSize) continue;
-                if (coins1 == null)
-                {
-                    coins1 = item;
-                }
-                else if(coins2 == null)
-                {
-                    coins2 = item;
-                }
-                else if (coins3 == null)
-                {
-                    coins3 = item;
-                }
-                else if (coins4 == null)
-                {
-                    coins4 = item;
-                }
-                else if (coins5 == null)
-                {
-                    coins5 = item;
-                }
-                else if (coins6 == null)
-                {
-                    coins6 = item;
-                }
-                else if (coins7 == null)
-                {
-                    coins7 = item;
-                }
-            }
-        }
+        int playerbank = GetPlayerCoins();
         var cost = _storeInventory.ElementAt(i).Value.Key;
-
-        if (playerbank < cost) return playerbank <= cost && false;
-        if (coins1 != null && cost > coins1.m_stack)
+        if (playerbank >= cost)
         {
-            if (coins2 != null)
-            {
-                var newstack = coins1.m_stack + coins2.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                newstack -= cost;
-                coins1.m_stack = newstack;
-            }
+            Player.m_localPlayer.GetInventory()
+                .RemoveItem(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
+                    cost);
+            return true;
         }
-        else if (coins1 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack)
-        {
-            if (coins3 != null)
-            {
-                var newstack2 = coins1.m_stack + coins2.m_stack + coins3.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                coins3.m_stack = 0;
-                inv.RemoveOneItem(coins3);
-                coins3 = null;
-                newstack2 -= cost;
-                coins1.m_stack = newstack2;
-            }
-        }
-        else if (coins1 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack)
-        {
-            if (coins4 != null)
-            {
-                var newstack3 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                coins3.m_stack = 0;
-                inv.RemoveOneItem(coins3);
-                coins3 = null;
-                coins4.m_stack = 0;
-                inv.RemoveOneItem(coins4);
-                coins4 = null;
-                newstack3 -= cost;
-                coins1.m_stack = newstack3;
-            }
-        }
-        else if (coins4 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack)
-        {
-            if (coins5 != null)
-            {
-                var newstack4 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                coins3.m_stack = 0;
-                inv.RemoveOneItem(coins3);
-                coins3 = null;
-                coins4.m_stack = 0;
-                inv.RemoveOneItem(coins4);
-                coins4 = null;
-                coins5.m_stack = 0;
-                inv.RemoveOneItem(coins5);
-                coins5 = null;
-                newstack4 -= cost;
-                coins1.m_stack = newstack4;
-            }
-        }
-        else if (coins5 != null && coins4 != null && coins3 != null && coins2 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack+ coins5.m_stack)
-        {
-            if (coins6 != null)
-            {
-                var newstack5 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack + coins6.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                coins3.m_stack = 0;
-                inv.RemoveOneItem(coins3);
-                coins3 = null;
-                coins4.m_stack = 0;
-                inv.RemoveOneItem(coins4);
-                coins4 = null;
-                coins5.m_stack = 0;
-                inv.RemoveOneItem(coins5);
-                coins5 = null;
-                coins6.m_stack = 0;
-                inv.RemoveOneItem(coins6);
-                coins6 = null;
-                newstack5 -= cost;
-                coins1.m_stack = newstack5;
-            }
-        }
-        else if (coins6 != null && coins5 != null && coins4 != null && coins3 != null && coins2 != null && coins1 != null && cost > coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack+ coins5.m_stack + coins6.m_stack)
-        {
-            if (coins7 != null)
-            {
-                var newstack6 = coins1.m_stack + coins2.m_stack + coins3.m_stack + coins4.m_stack + coins5.m_stack + coins6.m_stack + coins7.m_stack;
-                coins2.m_stack = 0;
-                inv.RemoveOneItem(coins2);
-                coins2 = null;
-                coins3.m_stack = 0;
-                inv.RemoveOneItem(coins3);
-                coins3 = null;
-                coins4.m_stack = 0;
-                inv.RemoveOneItem(coins4);
-                coins4 = null;
-                coins5.m_stack = 0;
-                inv.RemoveOneItem(coins5);
-                coins5 = null;
-                coins6.m_stack = 0;
-                inv.RemoveOneItem(coins6);
-                coins6 = null;
-                coins7.m_stack = 0;
-                inv.RemoveOneItem(coins7);
-                coins7 = null;
-                newstack6 -= cost;
-                coins1.m_stack = newstack6;
-            }
-        }
-        return true;
-
+        return false;
     }
 
     /// <summary>
@@ -409,5 +257,10 @@ public class OdinStore : MonoBehaviour
             UpdateGenDescription(_elements[0]);
         }
         UpdateCoins();
+    }
+
+    public int GetPlayerCoins()
+    {
+        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }
 }
