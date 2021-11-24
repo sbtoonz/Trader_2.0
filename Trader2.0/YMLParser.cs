@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using YamlDotNet.Serialization;
@@ -43,7 +44,7 @@ namespace Trader20
         }
     }
 
-    public class ItemDataEntry
+    public class ItemDataEntry 
     {
         [YamlMember(Alias = "cost", ApplyNamingConventions = false)]
         public int ItemCostInt { get; set; }

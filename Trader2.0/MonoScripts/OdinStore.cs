@@ -234,6 +234,7 @@ public class OdinStore : MonoBehaviour
         if (!CanBuy(i)) return;
         SellItem(i);
         NewTrader.instance.OnSold();
+        SelectedCost.text = GetPlayerCoins().ToString();
     }
 
     private bool CanBuy(int i)
