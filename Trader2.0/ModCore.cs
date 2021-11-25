@@ -84,6 +84,7 @@ namespace Trader20
                 if (!drop)
                 {
                     Debug.LogError("Failed to load trader's item: " + variable.Key);
+                    Debug.LogError("Please Check your Prefab name "+ variable.Key);
                 }
             }
         }
