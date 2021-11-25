@@ -162,6 +162,8 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public void OnSold()
 	{
 		Say(m_randomSell, "Sell");
-		m_randomSellFX.Create(base.transform.position, Quaternion.identity);
+		GameObject RandomSell = m_randomSellFX.m_effectPrefabs[Random.Range(0, m_randomSellFX.m_effectPrefabs.Length)]
+			.m_prefab;
+		Instantiate(RandomSell, transform.position, Quaternion.identity);
 	}
 }

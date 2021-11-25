@@ -16,7 +16,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.2";
+        public const string ModVersion = "0.0.3";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -74,10 +74,17 @@ namespace Trader20
             OdinStore.instance.ClearStore();
             foreach (var variable in traderConfig.Value)
             {
-                var drop = ObjectDB.instance.GetItemPrefab(variable.Key)
-                    .GetComponent<ItemDrop>();
-                OdinStore.instance.AddItemToDict(drop, variable.Value.ItemCostInt,
-                    variable.Value.ItemCount);
+                var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
+                if(drop)
+                {
+                    OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
+                        variable.Value.ItemCount);
+                }
+
+                if (!drop)
+                {
+                    Debug.LogError("Failed to load trader's item: " + variable.Key);
+                }
             }
         }
     }

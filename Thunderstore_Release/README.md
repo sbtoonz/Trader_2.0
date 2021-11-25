@@ -46,3 +46,4 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.0.3
 * Updated the materials on the store background to get cloned at runtime from other UI elements that way when its dark the panel will be dark etc
+* Fixed reported errors on the menu patch

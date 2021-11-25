@@ -62,12 +62,19 @@ namespace Trader20
                 PopulatedList.Add(entry_);
                 foreach (var store in PopulatedList)
                 {
-                    foreach (KeyValuePair<string, ItemDataEntry> VARIABLE in store)
+                    foreach (KeyValuePair<string, ItemDataEntry> variable in store)
                     {
-                        var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
-                            .GetComponent<ItemDrop>();
-                        OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt,
-                            VARIABLE.Value.ItemCount);
+                        var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
+                        if(drop)
+                        {
+                            OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
+                                variable.Value.ItemCount);
+                        }
+
+                        if (!drop)
+                        {
+                            Debug.LogError("Failed to load trader's item: " + variable.Key);
+                        }
                     }
                 }
             }
