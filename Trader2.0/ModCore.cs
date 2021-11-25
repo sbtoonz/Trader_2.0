@@ -16,7 +16,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.1";
+        public const string ModVersion = "0.0.2";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -28,6 +28,7 @@ namespace Trader20
         internal static AssetBundle assetBundle { get; set; }
         internal static string paths = Paths.ConfigPath;
         public static ConfigEntry<bool> serverConfigLocked;
+        internal static ConfigEntry<string> CurrencyPrefabName;
 
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
@@ -46,9 +47,9 @@ namespace Trader20
             Assembly assembly = Assembly.GetExecutingAssembly();
             Harmony harmony = new(ModGUID);
             harmony.PatchAll(assembly);
-            assetBundle = Utilities.LoadAssetBundle("traderbundle");
+            assetBundle = Utilities.LoadAssetBundle("traderbundle")!;
             serverConfigLocked = config("General", "Lock Configuration", false, "Lock Configuration");
-            configSync.AddLockingConfigEntry<bool>(serverConfigLocked);
+            configSync.AddLockingConfigEntry(serverConfigLocked);
             if (!File.Exists(paths + "/trader_config.yaml"))
             {
                 var file = File.Create(paths + "/trader_config.yaml");
@@ -59,20 +60,24 @@ namespace Trader20
                 var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
                 entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 traderConfig.Value = entry_;
-                traderConfig.ValueChanged += Tes;
+                traderConfig.ValueChanged += OnValChangUpdateStore;
             }
+
+            CurrencyPrefabName = config("Genera", "Config Prefab Name", "Coins",
+                "This is the prefab name for the currency that Knarr uses in his trades");
         }
 
-        private void Tes()
+        private void OnValChangUpdateStore()
         {
+            if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             OdinStore.instance.DumpDict();
             OdinStore.instance.ClearStore();
-            foreach (var VARIABLE in traderConfig.Value)
+            foreach (var variable in traderConfig.Value)
             {
-                var drop = ObjectDB.instance.GetItemPrefab(VARIABLE.Key)
+                var drop = ObjectDB.instance.GetItemPrefab(variable.Key)
                     .GetComponent<ItemDrop>();
-                OdinStore.instance.AddItemToDict(drop, VARIABLE.Value.ItemCostInt,
-                    VARIABLE.Value.ItemCount);
+                OdinStore.instance.AddItemToDict(drop, variable.Value.ItemCostInt,
+                    variable.Value.ItemCount);
             }
         }
     }

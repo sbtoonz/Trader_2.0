@@ -30,14 +30,19 @@ namespace Trader20
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
-                    Trader20.coins = ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData
+                    Trader20.coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData
                         .GetIcon();
                     Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                         __instance.GetComponentInParent<Localize>().transform, false);
-                    OdinStore.instance.Bkg1.sprite =
-                        __instance.transform.Find("Store/bkg").GetComponent<Image>().sprite;
-                    OdinStore.instance.Bkg2.sprite =
-                        Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>().sprite);
+                    
+                    var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
+                    OdinStore.instance.Bkg1.sprite = bkg1.sprite;
+                    OdinStore.instance.Bkg1.material = bkg1.material;
+                    
+                    var Bkg2 = Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>());
+                    OdinStore.instance.Bkg2.sprite =Bkg2 .sprite;
+                    OdinStore.instance.Bkg2.material = Bkg2.material;
+                        
                     OdinStore.instance.Coins.sprite = Trader20.coins;
                     OdinStore.instance.ButtonImage.sprite =
                         Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
@@ -46,7 +51,7 @@ namespace Trader20
 
 
                 //Fill CustomTrader store
-                if (ObjectDB.instance.m_items.Count <= 0) return;
+                if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
                 if (File.ReadLines(Trader20.paths + "/trader_config.yaml").Count() == 0) return;
@@ -67,13 +72,7 @@ namespace Trader20
                 }
             }
         }
-
-        [HarmonyPatch(typeof(Menu), nameof(Menu.Update))]
-        public class PreventMainMenu
-        {
-            public static bool AllowMainMenu = true;
-            private static bool Prefix() => !OdinStore.instance.IsActive() && AllowMainMenu;
-        }
+        
 
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
         public static class SpawnKnarr
@@ -99,14 +98,18 @@ namespace Trader20
                             m_minAltitude = 10,
                             m_maxAltitude = 1000,
                             m_maxDistance = 1500,
-                            m_quantity = 1,
-                            m_biome = Heightmap.Biome.Meadows,
+                            m_quantity = 5,
+                            m_biome = Heightmap.Biome.BlackForest,
                             m_prefabName = ZNetScene.instance.GetPrefab("Knarr").name,
                             m_enable = true,
                             m_minDistanceFromSimilar = 100,
                             m_prioritized = true,
                             m_forestTresholdMax = 5,
-                            m_unique = true
+                            m_unique = true,
+                            m_iconPlaced = true,
+                            m_chanceToSpawn = 100,
+                            m_inForest = true,
+                            m_iconAlways = true
                         });
                     }
                 }

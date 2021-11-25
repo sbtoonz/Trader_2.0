@@ -64,7 +64,6 @@ public class OdinStore : MonoBehaviour
 
     private void Update()
     {
-        Patches.PreventMainMenu.AllowMainMenu = true;
         if (!IsActive()) return;
         if (IsActive())
         {
@@ -244,7 +243,7 @@ public class OdinStore : MonoBehaviour
         if (playerbank >= cost)
         {
             Player.m_localPlayer.GetInventory()
-                .RemoveItem(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
+                .RemoveItem(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
                     cost);
             return true;
         }
@@ -280,7 +279,7 @@ public class OdinStore : MonoBehaviour
 
     private int GetPlayerCoins()
     {
-        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab("Coins").GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }
 
     public void DumpDict()
