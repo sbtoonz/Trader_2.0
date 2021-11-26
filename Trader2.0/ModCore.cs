@@ -7,7 +7,7 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 using ServerSync;
-using UnityEngine.Experimental.Playables;
+using UnityEngine.Rendering;
 
 
 namespace Trader20
@@ -16,7 +16,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.3";
+        public const string ModVersion = "0.0.5";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -25,10 +25,12 @@ namespace Trader20
         internal static Sprite coins;
         internal static ConfigEntry<ItemDataEntry> _syncedValue;
         public static Dictionary<string, ItemDataEntry> entry_ { get; set; }
+        public static Dictionary<string, ItemDataEntry> entry1_ { get; set; }
         internal static AssetBundle assetBundle { get; set; }
         internal static string paths = Paths.ConfigPath;
         public static ConfigEntry<bool> serverConfigLocked;
         internal static ConfigEntry<string> CurrencyPrefabName;
+        internal bool DoYML = false;
 
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
@@ -63,11 +65,18 @@ namespace Trader20
                 traderConfig.ValueChanged += OnValChangUpdateStore;
             }
 
-            CurrencyPrefabName = config("Genera", "Config Prefab Name", "Coins",
+            CurrencyPrefabName = config("General", "Config Prefab Name", "Coins",
                 "This is the prefab name for the currency that Knarr uses in his trades");
+            
+       
         }
 
-        private void OnValChangUpdateStore()
+        private void Start()
+        {
+            if(SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) SetupWatcher();
+        }
+
+        private static void OnValChangUpdateStore()
         {
             if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             OdinStore.instance.DumpDict();
@@ -87,6 +96,25 @@ namespace Trader20
                     Debug.LogError("Please Check your Prefab name "+ variable.Key);
                 }
             }
+        }
+        
+
+        private void SetupWatcher()
+        {
+            FileSystemWatcher watcher = new();
+            watcher.Path = paths;
+            Debug.Log("Watcher set at " + paths);
+            watcher.Filter = "*.yaml";
+            watcher.Changed += OnChanged;
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
+            entry1_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+            traderConfig.Value.Clear();
+            traderConfig.Value = entry1_;
         }
     }
 }

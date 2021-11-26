@@ -1,0 +1,15 @@
+Wood:
+    cost: 10
+    stack: 10
+LeatherScraps:
+    cost: 10
+    stack: 5
+FineWood:
+    cost: 15
+    stack: 1
+SwordCheat:
+    cost: 1000
+    stack: 1
+LightSaber:
+    cost: 1
+    stack: 1
