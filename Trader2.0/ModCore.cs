@@ -73,7 +73,9 @@ namespace Trader20
         private void Start()
         {
             if(SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) SetupWatcher();
+            #if DEBUG
             SetupWatcher();
+            #endif
         }
 
         private async static void OnValChangUpdateStore()
