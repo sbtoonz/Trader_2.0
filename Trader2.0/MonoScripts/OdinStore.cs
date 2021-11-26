@@ -91,7 +91,8 @@ public class OdinStore : MonoBehaviour
             Hide();
         }
     }
-    internal bool IsActive()
+
+    private bool IsActive()
     {
         return m_StorePanel!.activeSelf;
     }
@@ -103,8 +104,8 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-   internal void  ClearStore()
-    {
+    private void  ClearStore()
+   {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
             foreach (var GO in CurrentStoreList)
@@ -117,6 +118,17 @@ public class OdinStore : MonoBehaviour
             
         }
     }
+
+   internal void ForceClearStore()
+   {
+       foreach (var GO in CurrentStoreList)
+       {
+           Destroy(GO);
+       }
+            
+       CurrentStoreList.Clear();
+       ReadItems();
+   }
 
    /// <summary>
    /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
@@ -148,7 +160,7 @@ public class OdinStore : MonoBehaviour
         CurrentStoreList.Add(elementthing);
     }
 
-    private void  ReadItems()
+    internal void  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {

@@ -1,10 +1,16 @@
-![](https://github.com/sbtoonz/Trader_2.0/raw/master/Images/Knarr.png)
 
+![](https://github.com/sbtoonz/Trader_2.0/raw/master/Images/Knarr.png)
+****
 
 This is a new trader you can find in Valheim. He is Haldors cousin...only by marriage though. 
 
 You can find this trader randomly spawned in the meadows. Alternatively you can always spawn him using the prefab name
 ``Knarr``
+
+Knarr has a fully server sync'd config and store configuration yaml file
+This file also has a filewatcher for it built into the mod
+that means that when you edit this file the store updates in game!
+
 
 ![](https://github.com/sbtoonz/Trader_2.0/raw/master/Images/ezgif.com-gif-maker%20(3).gif)
 ### Configuration
@@ -53,3 +59,11 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Made it fail gracefully if you put a bad entry in the YML
 * Made SellSFX play random instead of all at once
 * TODO: Tie SFX into audio mixer global group
+
+
+### V0.0.5
+* Added yaml file watcher for server only, if file is updated on server it is live updated in game
+* Setup custom value synchronization for the traders config entries clients get servers config values now
+
+### V0.0.6
+* Fix typo in README

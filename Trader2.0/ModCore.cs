@@ -30,7 +30,6 @@ namespace Trader20
         internal static string paths = Paths.ConfigPath;
         public static ConfigEntry<bool> serverConfigLocked;
         internal static ConfigEntry<string> CurrencyPrefabName;
-        internal bool DoYML = false;
 
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
@@ -74,13 +73,13 @@ namespace Trader20
         private void Start()
         {
             if(SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) SetupWatcher();
+            SetupWatcher();
         }
 
-        private static void OnValChangUpdateStore()
+        private async static void OnValChangUpdateStore()
         {
             if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             OdinStore.instance.DumpDict();
-            OdinStore.instance.ClearStore();
             foreach (var variable in traderConfig.Value)
             {
                 var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
@@ -96,6 +95,7 @@ namespace Trader20
                     Debug.LogError("Please Check your Prefab name "+ variable.Key);
                 }
             }
+            OdinStore.instance.ForceClearStore();
         }
         
 
@@ -103,18 +103,21 @@ namespace Trader20
         {
             FileSystemWatcher watcher = new();
             watcher.Path = paths;
-            Debug.Log("Watcher set at " + paths);
-            watcher.Filter = "*.yaml";
+            watcher.Filter = "trader_config.yaml";
             watcher.Changed += OnChanged;
             watcher.EnableRaisingEvents = true;
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
+            if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
             entry1_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
             traderConfig.Value.Clear();
             traderConfig.Value = entry1_;
+            
         }
+
     }
 }
