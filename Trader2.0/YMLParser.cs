@@ -44,7 +44,7 @@ namespace Trader20
         }
     }
 
-    public class ItemDataEntry 
+    public struct ItemDataEntry 
     {
         [YamlMember(Alias = "cost", ApplyNamingConventions = false)]
         public int ItemCostInt { get; set; }

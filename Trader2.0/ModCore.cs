@@ -23,7 +23,6 @@ namespace Trader20
         internal static GameObject Knarr;
         internal static GameObject CustomTraderScreen;
         internal static Sprite coins;
-        internal static ConfigEntry<ItemDataEntry> _syncedValue;
         public static Dictionary<string, ItemDataEntry> entry_ { get; set; }
         public static Dictionary<string, ItemDataEntry> entry1_ { get; set; }
         internal static AssetBundle assetBundle { get; set; }
@@ -53,34 +52,21 @@ namespace Trader20
             configSync.AddLockingConfigEntry(serverConfigLocked);
             if (!File.Exists(paths + "/trader_config.yaml"))
             {
-                var file = File.Create(paths + "/trader_config.yaml");
-                file.Close();
+                File.Create(paths + "/trader_config.yaml").Close();
             }
-            if (File.ReadLines(paths+"/trader_config.yaml").Count() != 0)
-            {
-                var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
-                entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
-                traderConfig.Value = entry_;
-                traderConfig.ValueChanged += OnValChangUpdateStore;
-            }
+
+            ReadYamlConfigFile(null!, null!);
+            traderConfig.ValueChanged += OnValChangUpdateStore;
 
             CurrencyPrefabName = config("General", "Config Prefab Name", "Coins",
                 "This is the prefab name for the currency that Knarr uses in his trades");
             
-       
-        }
-
-        private void Start()
-        {
-            if(SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) SetupWatcher();
-            #if DEBUG
             SetupWatcher();
-            #endif
         }
-
-        private async static void OnValChangUpdateStore()
+        
+        private static void OnValChangUpdateStore()
         {
-            if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
+            if (!ObjectDB.instance || ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             OdinStore.instance.DumpDict();
             foreach (var variable in traderConfig.Value)
             {
@@ -103,23 +89,21 @@ namespace Trader20
 
         private void SetupWatcher()
         {
-            FileSystemWatcher watcher = new();
-            watcher.Path = paths;
-            watcher.Filter = "trader_config.yaml";
-            watcher.Changed += OnChanged;
+            FileSystemWatcher watcher = new(paths, "trader_config.yaml");
+            watcher.Changed += ReadYamlConfigFile;
+            watcher.Created += ReadYamlConfigFile;
+            watcher.Renamed += ReadYamlConfigFile;
+            watcher.IncludeSubdirectories = true;
+            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
             watcher.EnableRaisingEvents = true;
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
+        private void ReadYamlConfigFile(object sender, FileSystemEventArgs e)
         {
-            if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
             entry1_ = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
-            traderConfig.Value.Clear();
-            traderConfig.Value = entry1_;
-            
+            traderConfig.AssignLocalValue(entry1_);
         }
-
     }
 }
