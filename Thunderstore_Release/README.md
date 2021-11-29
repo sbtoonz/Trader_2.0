@@ -67,3 +67,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.0.6
 * Fix typo in README
+
+### V0.0.7
+* Take PR from @blaxxun-boop of CLLC that fixes filewatcher on *nix servers 
