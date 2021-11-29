@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
 using Patches = Trader20.Patches;
@@ -33,24 +34,17 @@ public class OdinStore : MonoBehaviour
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, KeyValuePair<int, int>>> _storeInventory = new();
+    
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
     internal List<GameObject> CurrentStoreList = new();
     internal List<ElementFormat> _elements = new();
-    internal ItemDrop.ItemData? coins1 = null;
-    internal ItemDrop.ItemData? coins2 = null;
-    internal ItemDrop.ItemData? coins3 = null;
-    internal ItemDrop.ItemData? coins4 = null;
-    internal ItemDrop.ItemData? coins5 = null;
-    internal ItemDrop.ItemData? coins6 = null;
-    internal ItemDrop.ItemData? coins7 = null;
-    internal ItemDrop.ItemData? coins8 = null;
     private void Awake() 
     {
         m_instance = this;
         m_StorePanel!.SetActive(false);
-        StoreTitle!.text = "Odins Store";
+        StoreTitle!.text = "Knarr's Shop";
         try
         {
             Bkg1!.material = litpanel;
@@ -186,8 +180,10 @@ public class OdinStore : MonoBehaviour
     {
         var inv = Player.m_localPlayer.GetInventory();
         var itemDrop = _storeInventory.ElementAt(i).Key;
-        var itemcount = _storeInventory.ElementAt(i).Value.Value.Value;
-
+        var tempcount = 0;
+        tempcount-= _storeInventory.ElementAt(i).Value.Value.Key;
+        
+        itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
         if (inv.AddItem(itemDrop.m_itemData)) return;
         //spawn item on ground if no inventory room
         var vector = Random.insideUnitSphere * 0.5f;
@@ -208,9 +204,11 @@ public class OdinStore : MonoBehaviour
     /// <param name="itemDrop"></param>
     /// <param name="price"></param>
     /// <param name="stack"></param>
+    /// <param name="inv_count"></param>
     public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int inv_count)
     {
         _storeInventory.Add(itemDrop, new KeyValuePair<int, KeyValuePair<int, int>>(price, new KeyValuePair<int, int>(stack, inv_count)) );
+
     }
 
     /// <summary>
