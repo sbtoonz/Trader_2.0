@@ -50,6 +50,9 @@ namespace Trader20
         public int ItemCostInt { get; set; }
         [YamlMember(Alias = "stack", ApplyNamingConventions = false)]
         public int ItemCount { get; set; }
+        
+        [YamlMember(Alias = "inventory_count", ApplyNamingConventions = false)]
+        public int invcount { get; set; }
     }
 
 

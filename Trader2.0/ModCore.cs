@@ -16,7 +16,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.5";
+        public const string ModVersion = "0.0.7";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -74,7 +74,7 @@ namespace Trader20
                 if(drop)
                 {
                     OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
-                        variable.Value.ItemCount);
+                        variable.Value.ItemCount, variable.Value.invcount);
                 }
 
                 if (!drop)

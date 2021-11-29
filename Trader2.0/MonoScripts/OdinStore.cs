@@ -32,12 +32,12 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? Coins;
     
     //StoreInventoryListing
-    internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
+    internal Dictionary<ItemDrop, KeyValuePair<int, KeyValuePair<int, int>>> _storeInventory = new();
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
-    internal List<GameObject> CurrentStoreList = new List<GameObject>();
-    internal List<ElementFormat> _elements = new List<ElementFormat>();
+    internal List<GameObject> CurrentStoreList = new();
+    internal List<ElementFormat> _elements = new();
     internal ItemDrop.ItemData? coins1 = null;
     internal ItemDrop.ItemData? coins2 = null;
     internal ItemDrop.ItemData? coins3 = null;
@@ -108,54 +108,63 @@ public class OdinStore : MonoBehaviour
    {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
-            foreach (var GO in CurrentStoreList)
+            foreach (var go in CurrentStoreList)
             {
-                Destroy(GO);
+                Destroy(go);
             }
             
             CurrentStoreList.Clear();
             ReadItems();
             
         }
-    }
-
-   internal void ForceClearStore()
-   {
-       foreach (var GO in CurrentStoreList)
-       {
-           Destroy(GO);
-       }
-            
-       CurrentStoreList.Clear();
-       ReadItems();
    }
 
-   /// <summary>
-   /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
-   /// </summary>
-   /// <param name="drop"></param>
-   /// <param name="stack"></param>
-   /// <param name="cost"></param>
-   public void AddItemToDisplayList(ItemDrop drop, int stack, int cost)
+    internal void ForceClearStore()
     {
-        ElementFormat newElement = new ElementFormat();
-        newElement._drop = drop;
-        newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
-        newElement.Name = drop.m_itemData.m_shared.m_name;
-        newElement._drop.m_itemData.m_stack = stack;
-        newElement.Element = ElementGO;
+        foreach (var go in CurrentStoreList)
+        {
+            Destroy(go);
+        }
+            
+        CurrentStoreList.Clear();
+        ReadItems();
+    }
 
+    /// <summary>
+    /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
+    /// </summary>
+    /// <param name="drop"></param>
+    /// <param name="stack"></param>
+    /// <param name="cost"></param>
+    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost)
+    {
+        ElementFormat newElement = new();
+        newElement.Drop = drop;
+        newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
+        newElement.ItemName = drop.m_itemData.m_shared.m_name;
+        newElement.Drop.m_itemData.m_stack = stack;
+        newElement.Element = ElementGO;
+        
+        
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
-        var name = newElement.Element.transform.Find("name").GetComponent<Text>();
-        name.text = newElement.Name;
-        name.gameObject.AddComponent<Localize>();
+        var component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component.text = newElement.ItemName;
+        component.gameObject.AddComponent<Localize>();
         
         newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-        
+        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+        {
+            > 1 => "x" + stack,
+            1 => "",
+            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+        };
         var elementthing = Instantiate(newElement.Element, ListRoot!.transform, false);
-            elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
-            elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
-            elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.coins;
+        elementthing.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            UpdateGenDescription(newElement);
+        });
+        elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+        elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.coins;
         _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
     }
@@ -165,7 +174,7 @@ public class OdinStore : MonoBehaviour
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
-            AddItemToDisplayList(itemData.Key,1, itemData.Value.Key);
+            AddItemToDisplayList(itemData.Key,itemData.Value.Value.Key, itemData.Value.Key);
         }
     }
 
@@ -175,17 +184,21 @@ public class OdinStore : MonoBehaviour
     /// <param name="i"></param>
     public void SellItem(int i)
     {
-        //spawn item on ground if no inventory room
-        Vector3 vector = Random.insideUnitSphere * 0.5f;
-        var transform1 = Player.m_localPlayer.transform;
-        var itemDrop = (ItemDrop)Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
-            transform1.position + transform1.forward * 2f + Vector3.up + vector,
-            Quaternion.identity).GetComponent(typeof(ItemDrop));
-        if (itemDrop == null || itemDrop.m_itemData == null) return;
-        
-        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Value;
-        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
+        var inv = Player.m_localPlayer.GetInventory();
+        var itemDrop = _storeInventory.ElementAt(i).Key;
+        var itemcount = _storeInventory.ElementAt(i).Value.Value.Value;
 
+        if (inv.AddItem(itemDrop.m_itemData)) return;
+        //spawn item on ground if no inventory room
+        var vector = Random.insideUnitSphere * 0.5f;
+        var transform1 = Player.m_localPlayer.transform;
+        Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
+            transform1.position + transform1.forward * 2f + Vector3.up + vector,
+            Quaternion.identity);
+        if (itemDrop == null || itemDrop.m_itemData == null) return;
+
+        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Value.Key;
+        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
     }
 
 
@@ -194,16 +207,17 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     /// <param name="itemDrop"></param>
     /// <param name="price"></param>
-    public void AddItemToDict(ItemDrop itemDrop, int price, int stack)
+    /// <param name="stack"></param>
+    public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int inv_count)
     {
-        _storeInventory.Add(itemDrop, new KeyValuePair<int, int>(price, stack) );
+        _storeInventory.Add(itemDrop, new KeyValuePair<int, KeyValuePair<int, int>>(price, new KeyValuePair<int, int>(stack, inv_count)) );
     }
 
     /// <summary>
     /// Pass this method an ItemDrop as an argument to drop it from the storeInventory dictionary.
     /// </summary>
     /// <param name="itemDrop"></param>
-    /// <returns></returns>
+    /// <returns>returns true if specific item is removed from trader inventory. Use this in tandem with inventory management</returns>
     public bool RemoveItemFromDict(ItemDrop itemDrop)
     {
         return _storeInventory.Remove(itemDrop);
@@ -213,7 +227,7 @@ public class OdinStore : MonoBehaviour
     /// This methods invocation should return the index offset of the ItemDrop passed as an argument, this is for use with other functions that expect an index to be passed as an integer argument
     /// </summary>
     /// <param name="itemDrop"></param>
-    /// <returns></returns>
+    /// <returns>returns index of item within trader inventory</returns>
     private int FindIndex(ItemDrop itemDrop)
     {
         var templist = _storeInventory.Keys.ToList();
@@ -228,29 +242,41 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
-        SelectedItemDescription!.text = element._drop!.m_itemData.m_shared.m_description;
+        SelectedItemDescription!.text = element.Drop!.m_itemData.m_shared.m_description;
         SelectedItemDescription.gameObject.AddComponent<Localize>();
         ItemDropIcon!.sprite = element.Icon;
         tempElement = element;
     }
 
+    /// <summary>
+    /// Call this method to update the coins shown in UI with coins in player inventory
+    /// </summary>
     public void UpdateCoins()
     {
         SelectedCost!.text = GetPlayerCoins().ToString();
     }
+    
+    /// <summary>
+    /// Call this method upon attempting to buy something (this is tied to an onclick event)
+    /// </summary>
     public void BuyButtonAction()
     {
-        if (tempElement!._drop is null) return;
-        var i = FindIndex(tempElement._drop);
+        if (tempElement!.Drop is null) return;
+        var i = FindIndex(tempElement.Drop);
         if (!CanBuy(i)) return;
         SellItem(i);
         NewTrader.instance.OnSold();
-        SelectedCost.text = GetPlayerCoins().ToString();
+        SelectedCost!.text = GetPlayerCoins().ToString();
     }
 
+    /// <summary>
+    /// give this bool the index of your item within the traders inventory and it will return true/false based on players bank
+    /// </summary>
+    /// <param name="i"></param>
+    /// <returns>return true/false based on players bank</returns>
     private bool CanBuy(int i)
     {
-        int playerbank = GetPlayerCoins();
+        var playerbank = GetPlayerCoins();
         var cost = _storeInventory.ElementAt(i).Value.Key;
         if (playerbank >= cost)
         {
@@ -269,15 +295,23 @@ public class OdinStore : MonoBehaviour
     {
         internal GameObject? Element;
         internal Sprite? Icon;
-        internal string? Name;
+        internal string? ItemName;
         internal int? Price;
-        internal ItemDrop? _drop;
+        internal ItemDrop? Drop;
+        internal int? InventoryCount;
     }
+    
+    /// <summary>
+    /// Called to Hide the UI
+    /// </summary>
     public void Hide()
     {
         m_StorePanel!.SetActive(false);
     }
 
+    /// <summary>
+    /// Called to show the UI
+    /// </summary>
     public void Show()
     {
         m_StorePanel!.SetActive(true);
@@ -289,7 +323,12 @@ public class OdinStore : MonoBehaviour
         UpdateCoins();
     }
 
-    private int GetPlayerCoins()
+    
+    /// <summary>
+    /// Returns the players coin count as int
+    /// </summary>
+    /// <returns>Player Coin Count as int</returns>
+    private static int GetPlayerCoins()
     {
         return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }

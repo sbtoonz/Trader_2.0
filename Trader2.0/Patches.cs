@@ -68,7 +68,7 @@ namespace Trader20
                         if(drop)
                         {
                             OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
-                                variable.Value.ItemCount);
+                                variable.Value.ItemCount, variable.Value.invcount);
                         }
 
                         if (!drop)
@@ -87,7 +87,7 @@ namespace Trader20
         {
             private static void Prefix(ZoneSystem __instance)
             {
-                Location knarrLocation = new Location();
+                Location knarrLocation = new();
                 knarrLocation = ZNetScene.instance.GetPrefab("Knarr").GetComponent<Location>();
                 knarrLocation.m_clearArea = true;
                 knarrLocation.m_exteriorRadius = 10;
