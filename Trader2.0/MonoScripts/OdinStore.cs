@@ -43,15 +43,6 @@ public class OdinStore : MonoBehaviour
         m_instance = this;
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
-        try
-        {
-            Bkg1!.material = litpanel;
-            Bkg2!.material = litpanel;
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex);
-        }
     }
 
     private void Update()
