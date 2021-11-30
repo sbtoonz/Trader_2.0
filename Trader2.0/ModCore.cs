@@ -24,7 +24,6 @@ namespace Trader20
         internal static GameObject CustomTraderScreen;
         internal static Sprite coins;
         public static Dictionary<string, ItemDataEntry> entry_ { get; set; }
-        public static Dictionary<string, ItemDataEntry> entry1_ { get; set; }
         internal static AssetBundle assetBundle { get; set; }
         internal static string paths = Paths.ConfigPath;
         public static ConfigEntry<bool> serverConfigLocked;
