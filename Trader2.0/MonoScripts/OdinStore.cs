@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
@@ -171,19 +172,19 @@ public class OdinStore : MonoBehaviour
     {
         var inv = Player.m_localPlayer.GetInventory();
         var itemDrop = _storeInventory.ElementAt(i).Key;
-        if(_storeInventory.ElementAt(i).Value.InvCount >=1)
-        {
-            _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
-            if (_storeInventory.ElementAt(i).Value.InvCount == 0)
-            {
-                RemoveItemFromDict(itemDrop);
-            }
-        }
-        itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
-        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Stack;
-        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
-        if (inv.AddItem(itemDrop.m_itemData)) return;
         
+        int stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
+        itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
+        itemDrop.m_itemData.m_stack = stack;
+        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
+        
+        if (inv.CanAddItem(itemDrop.m_itemData))
+        {
+            if (inv.AddItem(itemDrop.m_itemData, stack,  inv.FindEmptySlot(false).x, inv.FindEmptySlot(false).y)) return;
+            Player.m_localPlayer.ShowPickupMessage(itemDrop.m_itemData, stack);
+            Gogan.LogEvent("Game", "BoughtItem", itemDrop.m_itemData.m_dropPrefab.name, 0L);
+        }
+
         //spawn item on ground if no inventory room
         var vector = Random.insideUnitSphere * 0.5f;
         var transform1 = Player.m_localPlayer.transform;
@@ -191,7 +192,22 @@ public class OdinStore : MonoBehaviour
             transform1.position + transform1.forward * 2f + Vector3.up + vector,
             Quaternion.identity);
         if (itemDrop == null || itemDrop.m_itemData == null) return;
+        
+        switch (_storeInventory.ElementAt(i).Value.InvCount)
+        {
+            case >= 1:
+            {
+                _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
+                if (_storeInventory.ElementAt(i).Value.InvCount == 0)
+                {
+                    RemoveItemFromDict(itemDrop);
+                    ForceClearStore();
+                    UpdateGenDescription(_elements[0]);
+                }
 
+                break;
+            }
+        }
     }
 
 
@@ -226,8 +242,7 @@ public class OdinStore : MonoBehaviour
             list.Add(pair.Key.name, dataEntry);
                         
         }
-
-        Trader20.Trader20.traderConfig.AssignLocalValue(list);
+        Trader20.Trader20.traderConfig.Value = list;
         return _storeInventory.Remove(itemDrop);
     }
 

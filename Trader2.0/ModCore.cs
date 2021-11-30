@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using ServerSync;
-using UnityEngine.Rendering;
-
 
 namespace Trader20
 {
@@ -54,7 +51,6 @@ namespace Trader20
             {
                 File.Create(Paths + "/trader_config.yaml").Close();
             }
-
             ReadYamlConfigFile(null!, null!);
             traderConfig.ValueChanged += OnValChangUpdateStore;
 
@@ -62,8 +58,11 @@ namespace Trader20
                 "This is the prefab name for the currency that Knarr uses in his trades");
             
             SetupWatcher();
+            
         }
-        
+
+       
+
         private static void OnValChangUpdateStore()
         {
             if (!ObjectDB.instance || ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
@@ -81,6 +80,7 @@ namespace Trader20
                 {
                     Debug.LogError("Failed to load trader's item: " + variable.Key);
                     Debug.LogError("Please Check your Prefab name "+ variable.Key);
+                   
                 }
             }
             OdinStore.instance.ForceClearStore();
@@ -110,7 +110,7 @@ namespace Trader20
             catch
             {
                 Debug.LogError("There was an issue loading your trader_config.yaml");
-                Debug.LogError($"Please check your config!");
+                Debug.LogError($"Please check your config entries for spelling and format!");
             }
             
         }
