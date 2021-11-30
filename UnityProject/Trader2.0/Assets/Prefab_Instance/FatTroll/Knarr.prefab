@@ -1683,9 +1683,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: Knarr
-  m_standRange: 15
-  m_greetRange: 15
-  m_byeRange: 2.5
+  m_standRange: 5
+  m_greetRange: 5
+  m_byeRange: 7.5
   m_hideDialogDelay: 5
   m_randomTalkInterval: 240
   m_randomTalk:
