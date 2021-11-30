@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -99,10 +100,19 @@ namespace Trader20
 
         private void ReadYamlConfigFile(object sender, FileSystemEventArgs e)
         {
-            var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
-            entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            traderConfig.AssignLocalValue(entry_);
+            try
+            {
+                var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
+                entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+                file.Close();
+                traderConfig.AssignLocalValue(entry_);
+            }
+            catch
+            {
+                Debug.LogError("There was an issue loading your trader_config.yaml");
+                Debug.LogError($"Please check your config!");
+            }
+            
         }
     }
 }
