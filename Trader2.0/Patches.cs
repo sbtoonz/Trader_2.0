@@ -16,7 +16,7 @@ namespace Trader20
             public static void Prefix(ZNetScene __instance)
             {
                 if (__instance.m_prefabs.Count <= 0) return;
-                 Utilities.LoadAssets(Trader20.assetBundle, __instance);
+                 Utilities.LoadAssets(Trader20.AssetBundle, __instance);
                  Trader20.Knarr = __instance.GetPrefab("Knarr");
             }
         }
@@ -30,21 +30,21 @@ namespace Trader20
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
-                    Trader20.coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData
+                    Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData
                         .GetIcon();
                     Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                         __instance.GetComponentInParent<Localize>().transform, false);
                     
                     var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
-                    OdinStore.instance.Bkg1.sprite = bkg1.sprite;
+                    OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
                     OdinStore.instance.Bkg1.material = bkg1.material;
                     
                     var Bkg2 = Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>());
-                    OdinStore.instance.Bkg2.sprite =Bkg2 .sprite;
+                    OdinStore.instance.Bkg2!.sprite =Bkg2 .sprite;
                     OdinStore.instance.Bkg2.material = Bkg2.material;
                         
-                    OdinStore.instance.Coins.sprite = Trader20.coins;
-                    OdinStore.instance.ButtonImage.sprite =
+                    OdinStore.instance.Coins!.sprite = Trader20.Coins;
+                    OdinStore.instance.ButtonImage!.sprite =
                         Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
 
                 }
@@ -54,8 +54,8 @@ namespace Trader20
                 if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
-                if (File.ReadLines(Trader20.paths + "/trader_config.yaml").Count() == 0) return;
-                var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
+                if (File.ReadLines(Trader20.Paths + "/trader_config.yaml").Count() == 0) return;
+                var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
                 var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 List<Dictionary<string, ItemDataEntry>> PopulatedList =
                     new();

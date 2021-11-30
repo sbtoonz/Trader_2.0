@@ -18,16 +18,16 @@ namespace Trader20
         private const string ModName = "Trader2.0";
         public const string ModVersion = "0.0.8";
         private const string ModGUID = "com.zarboz.Trader20";
-        public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
+        private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
-        internal static GameObject Knarr;
-        internal static GameObject CustomTraderScreen;
-        internal static Sprite coins;
-        public static Dictionary<string, ItemDataEntry> entry_ { get; set; }
-        internal static AssetBundle assetBundle { get; set; }
-        internal static string paths = Paths.ConfigPath;
-        public static ConfigEntry<bool> serverConfigLocked;
-        internal static ConfigEntry<string> CurrencyPrefabName;
+        internal static GameObject? Knarr;
+        internal static GameObject? CustomTraderScreen;
+        internal static Sprite? Coins;
+        private static Dictionary<string, ItemDataEntry> entry_ { get; set; }
+        internal static AssetBundle? AssetBundle { get; set; }
+        internal static readonly string Paths = BepInEx.Paths.ConfigPath;
+        private static ConfigEntry<bool>? _serverConfigLocked;
+        internal static ConfigEntry<string>? CurrencyPrefabName;
 
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
@@ -46,12 +46,12 @@ namespace Trader20
             Assembly assembly = Assembly.GetExecutingAssembly();
             Harmony harmony = new(ModGUID);
             harmony.PatchAll(assembly);
-            assetBundle = Utilities.LoadAssetBundle("traderbundle")!;
-            serverConfigLocked = config("General", "Lock Configuration", false, "Lock Configuration");
-            configSync.AddLockingConfigEntry(serverConfigLocked);
-            if (!File.Exists(paths + "/trader_config.yaml"))
+            AssetBundle = Utilities.LoadAssetBundle("traderbundle")!;
+            _serverConfigLocked = config("General", "Lock Configuration", false, "Lock Configuration");
+            configSync.AddLockingConfigEntry(_serverConfigLocked);
+            if (!File.Exists(Paths + "/trader_config.yaml"))
             {
-                File.Create(paths + "/trader_config.yaml").Close();
+                File.Create(Paths + "/trader_config.yaml").Close();
             }
 
             ReadYamlConfigFile(null!, null!);
@@ -88,7 +88,7 @@ namespace Trader20
 
         private void SetupWatcher()
         {
-            FileSystemWatcher watcher = new(paths, "trader_config.yaml");
+            FileSystemWatcher watcher = new(Paths, "trader_config.yaml");
             watcher.Changed += ReadYamlConfigFile;
             watcher.Created += ReadYamlConfigFile;
             watcher.Renamed += ReadYamlConfigFile;
@@ -99,7 +99,7 @@ namespace Trader20
 
         private void ReadYamlConfigFile(object sender, FileSystemEventArgs e)
         {
-            var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
+            var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
             entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
             traderConfig.AssignLocalValue(entry_);

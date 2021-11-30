@@ -149,7 +149,7 @@ public class OdinStore : MonoBehaviour
             UpdateGenDescription(newElement);
         });
         elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
-        elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.coins;
+        elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
         _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
     }
