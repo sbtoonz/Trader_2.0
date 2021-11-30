@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
-using Patches = Trader20.Patches;
 using Random = UnityEngine.Random;
 
 public class OdinStore : MonoBehaviour
@@ -33,7 +31,7 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? Coins;
     
     //StoreInventoryListing
-    internal Dictionary<ItemDrop, KeyValuePair<int, KeyValuePair<int, int>>> _storeInventory = new();
+    internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new();
     
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
@@ -130,7 +128,8 @@ public class OdinStore : MonoBehaviour
     /// <param name="drop"></param>
     /// <param name="stack"></param>
     /// <param name="cost"></param>
-    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost)
+    /// <param name="invCount"></param>
+    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount)
     {
         ElementFormat newElement = new();
         newElement.Drop = drop;
@@ -138,7 +137,8 @@ public class OdinStore : MonoBehaviour
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
-        
+
+        newElement.InventoryCount = invCount;
         
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
         var component = newElement.Element.transform.Find("name").GetComponent<Text>();
@@ -163,12 +163,12 @@ public class OdinStore : MonoBehaviour
         CurrentStoreList.Add(elementthing);
     }
 
-    internal void  ReadItems()
+    private void  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
-            AddItemToDisplayList(itemData.Key,itemData.Value.Value.Key, itemData.Value.Key);
+            AddItemToDisplayList(itemData.Key,itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
         }
     }
 
@@ -180,11 +180,19 @@ public class OdinStore : MonoBehaviour
     {
         var inv = Player.m_localPlayer.GetInventory();
         var itemDrop = _storeInventory.ElementAt(i).Key;
-        var tempcount = 0;
-        tempcount-= _storeInventory.ElementAt(i).Value.Value.Key;
-        
+        if(_storeInventory.ElementAt(i).Value.InvCount >=1)
+        {
+            _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
+            if (_storeInventory.ElementAt(i).Value.InvCount == 0)
+            {
+                RemoveItemFromDict(itemDrop);
+            }
+        }
         itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
+        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Stack;
+        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
         if (inv.AddItem(itemDrop.m_itemData)) return;
+        
         //spawn item on ground if no inventory room
         var vector = Random.insideUnitSphere * 0.5f;
         var transform1 = Player.m_localPlayer.transform;
@@ -193,8 +201,6 @@ public class OdinStore : MonoBehaviour
             Quaternion.identity);
         if (itemDrop == null || itemDrop.m_itemData == null) return;
 
-        itemDrop.m_itemData.m_stack = _storeInventory.ElementAt(i).Value.Value.Key;
-        itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
     }
 
 
@@ -204,10 +210,10 @@ public class OdinStore : MonoBehaviour
     /// <param name="itemDrop"></param>
     /// <param name="price"></param>
     /// <param name="stack"></param>
-    /// <param name="inv_count"></param>
-    public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int inv_count)
+    /// <param name="invCount"></param>
+    public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int invCount)
     {
-        _storeInventory.Add(itemDrop, new KeyValuePair<int, KeyValuePair<int, int>>(price, new KeyValuePair<int, int>(stack, inv_count)) );
+        _storeInventory.Add(itemDrop, new StoreInfo<int, int, int>(price, stack, invCount) );
 
     }
 
@@ -216,8 +222,21 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     /// <param name="itemDrop"></param>
     /// <returns>returns true if specific item is removed from trader inventory. Use this in tandem with inventory management</returns>
-    public bool RemoveItemFromDict(ItemDrop itemDrop)
+    private bool RemoveItemFromDict(ItemDrop itemDrop)
     {
+        Dictionary<string, ItemDataEntry> list = new();
+        foreach (var pair in _storeInventory)
+        {
+            ItemDataEntry dataEntry = new();
+            dataEntry.Invcount = pair.Value.InvCount;
+            dataEntry.ItemCount = pair.Value.Stack;
+            dataEntry.ItemCostInt = pair.Value.Cost;
+                        
+            list.Add(pair.Key.name, dataEntry);
+                        
+        }
+
+        Trader20.Trader20.traderConfig.AssignLocalValue(list);
         return _storeInventory.Remove(itemDrop);
     }
 
@@ -275,7 +294,7 @@ public class OdinStore : MonoBehaviour
     private bool CanBuy(int i)
     {
         var playerbank = GetPlayerCoins();
-        var cost = _storeInventory.ElementAt(i).Value.Key;
+        var cost = _storeInventory.ElementAt(i).Value.Cost;
         if (playerbank >= cost)
         {
             Player.m_localPlayer.GetInventory()
@@ -335,4 +354,20 @@ public class OdinStore : MonoBehaviour
     {
         _storeInventory.Clear();
     }
+    
+    
 }
+public class StoreInfo<T, U, V> {
+    public StoreInfo() {
+    }
+
+    public StoreInfo(T first, U second, V third) {
+        Cost = first;
+        Stack = second;
+        InvCount = third;
+    }
+
+    public T Cost { get; set; }
+    public U Stack { get; set; }
+    public V InvCount { get; set; }
+};

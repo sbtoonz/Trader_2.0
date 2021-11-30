@@ -68,7 +68,7 @@ namespace Trader20
                         if(drop)
                         {
                             OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
-                                variable.Value.ItemCount, variable.Value.invcount);
+                                variable.Value.ItemCount, variable.Value.Invcount);
                         }
 
                         if (!drop)

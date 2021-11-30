@@ -16,7 +16,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.7";
+        public const string ModVersion = "0.0.8";
         private const string ModGUID = "com.zarboz.Trader20";
         public static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -74,7 +74,7 @@ namespace Trader20
                 if(drop)
                 {
                     OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
-                        variable.Value.ItemCount, variable.Value.invcount);
+                        variable.Value.ItemCount, variable.Value.Invcount);
                 }
 
                 if (!drop)
@@ -101,9 +101,9 @@ namespace Trader20
         private void ReadYamlConfigFile(object sender, FileSystemEventArgs e)
         {
             var file = File.OpenText(Trader20.paths + "/trader_config.yaml");
-            entry1_ = YMLParser.ReadSerializedData(file.ReadToEnd());
+            entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
-            traderConfig.AssignLocalValue(entry1_);
+            traderConfig.AssignLocalValue(entry_);
         }
     }
 }

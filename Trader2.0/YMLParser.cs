@@ -16,31 +16,12 @@ namespace Trader20
             return yml;
         }
 
-        public static void WriteSerializedData(string data)
-        {
-            if (File.ReadAllText(Trader20.paths+"/trader_config.yaml", Encoding.Default).Length == data.Length)
-            {
-                return;
-            }
-            if(File.ReadAllText(Trader20.paths+"/trader_config.yaml", Encoding.Default).Length > 0)
-            {
-                File.AppendAllText(Trader20.paths+"/trader_config.yaml", data);
-            }
-            else
-            {
-                File.WriteAllText(Trader20.paths+"/trader_config.yaml", data);
-            }
-
-        }
-
         public static Dictionary<string, ItemDataEntry> ReadSerializedData(string s)
         {
             var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
             var tmp = deserializer.Deserialize<Dictionary<string, ItemDataEntry>>(s);
-
             return tmp;
-
         }
     }
 
@@ -51,8 +32,8 @@ namespace Trader20
         [YamlMember(Alias = "stack", ApplyNamingConventions = false)]
         public int ItemCount { get; set; }
         
-        [YamlMember(Alias = "inventory_count", ApplyNamingConventions = false)]
-        public int invcount { get; set; }
+        [YamlMember(Alias = "inventory count", ApplyNamingConventions = false)]
+        public int Invcount { get; set; }
     }
 
 

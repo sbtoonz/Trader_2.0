@@ -74,6 +74,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 			m_instance = null;
 		}
 	}
+
 	private void Update()
 	{
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
@@ -89,6 +90,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 				Say(m_randomGreets, "Greet");
 				GameObject FxGreet =
 					m_randomGreetFX.m_effectPrefabs[Random.Range(0, m_randomGreetFX.m_effectPrefabs.Length)].m_prefab;
+				FxGreet.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
 				Instantiate(FxGreet, transform.position, Quaternion.identity);
 			}
 			if (m_didGreet && !m_didGoodbye && num > m_byeRange)
@@ -98,6 +100,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 				Say(m_randomGoodbye, "Greet");
 				GameObject FxBye =
 					m_randomGoodbyeFX.m_effectPrefabs[Random.Range(0, m_randomGoodbyeFX.m_effectPrefabs.Length)].m_prefab;
+				FxBye.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
 				Instantiate(FxBye, transform.position, Quaternion.identity);
 			}
 		}
@@ -166,4 +169,5 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 			.m_prefab;
 		Instantiate(RandomSell, transform.position, Quaternion.identity);
 	}
+	
 }
