@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
@@ -360,7 +358,12 @@ public class OdinStore : MonoBehaviour
     {
         _storeInventory.Clear();
     }
-    
+
+    public bool IsOnSale()
+    {
+        
+        return false;
+    }
     
 }
 public class StoreInfo<T, U, V> {
