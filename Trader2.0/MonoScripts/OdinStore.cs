@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Trader20;
 using UnityEngine;
@@ -28,6 +29,8 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private NewTrader? _trader;
     [SerializeField] internal Image? ButtonImage;
     [SerializeField] internal Image? Coins;
+    [SerializeField] private float nextTime { get; set; }
+    [SerializeField] private float modifier { get; set; }
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new();
@@ -44,6 +47,11 @@ public class OdinStore : MonoBehaviour
         StoreTitle!.text = "Knarr's Shop";
     }
 
+    private void Start()
+    {
+        nextTime = 0.0f;
+    }
+
     private void Update()
     {
         if (!IsActive()) return;
@@ -51,6 +59,18 @@ public class OdinStore : MonoBehaviour
         {
             StoreGui.instance.m_hiddenFrames = 0;
         }
+
+        modifier = Random.Range(10.0f, -20.0f);
+
+        nextTime = Time.time + modifier;
+
+        if (Time.time > nextTime)
+        {
+            //Do random event
+            Debug.Log("I should be doing a random Event");
+        }
+        
+        
         if (Player.m_localPlayer is not Player player)
         {
             return;
@@ -205,7 +225,7 @@ public class OdinStore : MonoBehaviour
 
                 break;
             }
-            case < 0:
+            case <= -1:
                 break;
         }
         
