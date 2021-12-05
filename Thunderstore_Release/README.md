@@ -24,10 +24,12 @@ Example as shown:
 PrefabName:
   cost: 100
   stack: 10
+  inventory count: 1
 
 Acorns:
   cost: 1 
   stack: 1
+  inventory count: 10000
 ```
 
 where you see PrefabName you need to put the prefab the trader should sell. Yes this trader supports custom items.
@@ -70,3 +72,10 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.0.7
 * Take PR from @blaxxun-boop of CLLC that fixes filewatcher on *nix servers 
+
+
+### V0.0.8
+* Start framework for inventory of items Knarr can now hold a fixed count of things.
+
+### V0.0.9
+* Add GUI elements to indicate if there is an inventory count of the item Inventory count example YML included with mod

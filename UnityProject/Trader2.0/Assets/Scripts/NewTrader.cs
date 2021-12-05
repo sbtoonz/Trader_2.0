@@ -1,6 +1,4 @@
-﻿// Trader
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -53,12 +51,17 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public static NewTrader instance => m_instance;
 
 	[SerializeField] internal OdinStore _store;
+	
+	
+	[SerializeField] private float nextTime { get; set; }
+	[SerializeField] private float modifier { get; set; }
 
 	private void Start()
 	{
 		m_animator = GetComponentInChildren<Animator>();
 		m_lookAt = GetComponentInChildren<LookAt>();
 		InvokeRepeating("RandomTalk", m_randomTalkInterval, m_randomTalkInterval);
+		nextTime = 0.0f;
 	}
 
 	private void Awake()
@@ -72,6 +75,19 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		{
 			m_instance = null;
 		}
+	}
+
+	private void Update()
+	{
+		modifier = Random.Range(-0.08f, 40.0f);
+
+		nextTime = Time.time + modifier;
+
+		if (Time.time > nextTime)
+		{
+			//Do random event
+		}
+
 	}
 
 	private void LateUpdate()

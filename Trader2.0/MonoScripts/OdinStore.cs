@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Trader20;
 using UnityEngine;
@@ -19,6 +18,9 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private Button? BuyButton;
     [SerializeField] private Text? SelectedName;
 
+    [SerializeField] private Text InventoryCount;
+    [SerializeField] private GameObject InvCountPanel;
+    
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
     
@@ -29,8 +31,6 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private NewTrader? _trader;
     [SerializeField] internal Image? ButtonImage;
     [SerializeField] internal Image? Coins;
-    [SerializeField] private float nextTime { get; set; }
-    [SerializeField] private float modifier { get; set; }
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new();
@@ -46,11 +46,7 @@ public class OdinStore : MonoBehaviour
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
     }
-
-    private void Start()
-    {
-        nextTime = 0.0f;
-    }
+    
 
     private void Update()
     {
@@ -59,17 +55,6 @@ public class OdinStore : MonoBehaviour
         {
             StoreGui.instance.m_hiddenFrames = 0;
         }
-
-        modifier = Random.Range(10.0f, -20.0f);
-
-        nextTime = Time.time + modifier;
-
-        if (Time.time > nextTime)
-        {
-            //Do random event
-            Debug.Log("I should be doing a random Event");
-        }
-        
         
         if (Player.m_localPlayer is not Player player)
         {
@@ -93,6 +78,8 @@ public class OdinStore : MonoBehaviour
             Hide();
         }
     }
+
+    
 
     private bool IsActive()
     {
@@ -166,6 +153,16 @@ public class OdinStore : MonoBehaviour
         elementthing.GetComponent<Button>().onClick.AddListener(delegate
         {
             UpdateGenDescription(newElement);
+            switch (invCount)
+            {
+                case -1:
+                    InvCountPanel.SetActive(false);
+                    break;
+                case >= 1:
+                    InventoryCount.text =
+                        _storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString();
+                    break;
+            }
         });
         elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
         elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
@@ -191,44 +188,58 @@ public class OdinStore : MonoBehaviour
         var inv = Player.m_localPlayer.GetInventory();
         var itemDrop = _storeInventory.ElementAt(i).Key;
         
-        int stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
+        if (itemDrop == null || itemDrop.m_itemData == null) return;
+        
+        var stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
         itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
         itemDrop.m_itemData.m_stack = stack;
         itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
         
         if (inv.CanAddItem(itemDrop.m_itemData))
         {
-            if (inv.AddItem(itemDrop.m_itemData, stack,  inv.FindEmptySlot(false).x, inv.FindEmptySlot(false).y)) return;
-            Player.m_localPlayer.ShowPickupMessage(itemDrop.m_itemData, stack);
-            Gogan.LogEvent("Game", "BoughtItem", itemDrop.m_itemData.m_dropPrefab.name, 0L);
+            if (inv.AddItem(itemDrop.m_itemData, stack, inv.FindEmptySlot(false).x, inv.FindEmptySlot(false).y))
+            {
+                Player.m_localPlayer.ShowPickupMessage(itemDrop.m_itemData, stack);
+                Gogan.LogEvent("Game", "BoughtItem", itemDrop.m_itemData.m_dropPrefab.name, 0L);
+            }
         }
-
-        //spawn item on ground if no inventory room
-        var vector = Random.insideUnitSphere * 0.5f;
-        var transform1 = Player.m_localPlayer.transform;
-        Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
-            transform1.position + transform1.forward * 2f + Vector3.up + vector,
-            Quaternion.identity);
-        if (itemDrop == null || itemDrop.m_itemData == null) return;
-        
+        else
+        {
+            //spawn item on ground if no inventory room
+            var vector = Random.insideUnitSphere * 0.5f;
+            var transform1 = Player.m_localPlayer.transform;
+            Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
+                transform1.position + transform1.forward * 2f + Vector3.up + vector,
+                Quaternion.identity);
+        }
         switch (_storeInventory.ElementAt(i).Value.InvCount)
         {
             case >= 1:
             {
                 _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
-                if (_storeInventory.ElementAt(i).Value.InvCount == 0)
+                InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
+                if (_storeInventory.ElementAt(i).Value.InvCount != 0) return;
+                if (!RemoveItemFromDict(itemDrop)) return;
+                ForceClearStore();
+                UpdateGenDescription(_elements[0]);
+                switch (_elements[0].InventoryCount)
                 {
-                    RemoveItemFromDict(itemDrop);
-                    ForceClearStore();
-                    UpdateGenDescription(_elements[0]);
+                    case >= 1:
+                        InventoryCount.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
+                        break;
+                    case -1:
+                        InvCountPanel.SetActive(false);
+                        break;
                 }
-
-                break;
+                return;
             }
             case <= -1:
-                break;
+                return;
         }
         
+       
+
+
     }
 
 
@@ -322,14 +333,11 @@ public class OdinStore : MonoBehaviour
     {
         var playerbank = GetPlayerCoins();
         var cost = _storeInventory.ElementAt(i).Value.Cost;
-        if (playerbank >= cost)
-        {
-            Player.m_localPlayer.GetInventory()
-                .RemoveItem(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
-                    cost);
-            return true;
-        }
-        return false;
+        if (playerbank < cost) return false;
+        Player.m_localPlayer.GetInventory()
+            .RemoveItem(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
+                cost);
+        return true;
     }
 
     /// <summary>
@@ -363,6 +371,15 @@ public class OdinStore : MonoBehaviour
         if(_elements.Count >=1)
         {
             UpdateGenDescription(_elements[0]);
+            switch (_elements[0].InventoryCount)
+            {
+                case >= 1:
+                    InventoryCount.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
+                    break;
+                case -1:
+                    InvCountPanel.SetActive(false);
+                    break;
+            }
         }
         UpdateCoins();
     }
@@ -399,7 +416,7 @@ public class StoreInfo<T, U, V> {
         InvCount = third;
     }
 
-    public T Cost { get; set; }
-    public U Stack { get; set; }
-    public V InvCount { get; set; }
+    public T Cost { get; set; } = default!;
+    public U Stack { get; set; } = default!;
+    public V InvCount { get; set; } = default!;
 };

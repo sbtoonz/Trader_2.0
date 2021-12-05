@@ -18,6 +18,9 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private Button BuyButton;
     [SerializeField] private Text SelectedName;
 
+    [SerializeField] private Text InventoryCount;
+    [SerializeField] private GameObject InvCountPanel;
+
     [SerializeField] internal Image Bkg1;
     [SerializeField] internal Image Bkg2;
     

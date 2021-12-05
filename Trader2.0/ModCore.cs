@@ -12,8 +12,8 @@ namespace Trader20
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class Trader20 : BaseUnityPlugin
     {
-        private const string ModName = "Trader2.0";
-        public const string ModVersion = "0.0.8";
+        private const string ModName = "KnarrTheTrader";
+        public const string ModVersion = "0.0.9";
         private const string ModGUID = "com.zarboz.Trader20";
         private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());

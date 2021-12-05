@@ -1,22 +1,45 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-public class DragNDrop : MonoBehaviour
+public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    private Canvas canvas;
-    private RectTransform rectTransform;
-    void Awake()
+    public Transform target;
+    public bool shouldReturn;
+    private bool isMouseDown;
+    private Vector3 startMousePosition;
+    private Vector3 startPosition;
+
+    internal static bool donedrag;
+    private void Update()
     {
-        rectTransform = transform as RectTransform;
-        Transform testCanvasTransform = transform.parent;
-        do
+        if (isMouseDown)
         {
-            canvas = testCanvasTransform.GetComponent<Canvas>();
-            testCanvasTransform = testCanvasTransform.parent;
-        } while (canvas == null);
+            var currentPosition = Input.mousePosition;
+
+            var diff = currentPosition - startMousePosition;
+
+            var pos = startPosition + diff;
+
+            target.position = pos;
+        }
     }
 
-    public void OnDrag(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData dt)
     {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        isMouseDown = true;
+        donedrag = isMouseDown;
+        Debug.Log("Draggable Mouse Down");
+
+        startPosition = target.position;
+        startMousePosition = Input.mousePosition;
+    }
+
+    public void OnPointerUp(PointerEventData dt)
+    {
+        Debug.Log("Draggable mouse up");
+
+        isMouseDown = false;
+
+        donedrag = isMouseDown;
+        if (shouldReturn) target.position = startPosition;
     }
 }
