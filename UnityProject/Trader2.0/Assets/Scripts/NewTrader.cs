@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -85,11 +86,44 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 		if (Time.time > nextTime)
 		{
-			//Do random event
+			StartCoroutine(DoCheck());
 		}
 
 	}
+	
+	IEnumerator DoCheck() {
+		for(;;)
+		{
+			var prob = Choose(new float[] { 0.5f});
+			if(prob >= .5f)
+			{
+				Debug.LogError("Doing Random Event");
+			}
+			yield return new WaitForSeconds(nextTime);
+		}
+	}
 
+	float Choose (float[] probs) {
+
+		float total = 0;
+
+		foreach (float elem in probs) {
+			total += elem;
+		}
+
+		float randomPoint = Random.value * total;
+
+		for (int i= 0; i < probs.Length; i++) {
+			if (randomPoint < probs[i]) {
+				return i;
+			}
+			else {
+				randomPoint -= probs[i];
+			}
+		}
+		return probs.Length - 1;
+	}
+	
 	private void LateUpdate()
 	{
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
@@ -186,9 +220,31 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public void OnSold()
 	{
 		Say(m_randomSell, "Sell");
-		GameObject RandomSell = m_randomSellFX.m_effectPrefabs[Random.Range(0, m_randomSellFX.m_effectPrefabs.Length)]
+		var test = RandomSellFX(1);
+		GameObject RandomSell = test[Random.Range(0, test.Length)]
 			.m_prefab;
 		Instantiate(RandomSell, transform.position, Quaternion.identity);
 	}
-	
+
+	private EffectList.EffectData[] RandomSellFX(int numRequired)
+	{
+		EffectList.EffectData[] result = new EffectList.EffectData[numRequired];
+
+		int numToChoose = numRequired;
+
+		for (int numLeft = m_randomSellFX.m_effectPrefabs.Length; numLeft > 0; numLeft--) {
+
+			float prob = (float)numToChoose/(float)numLeft;
+
+			if (Random.value <= prob) {
+				numToChoose--;
+				result[numToChoose] = m_randomSellFX.m_effectPrefabs[numLeft - 1];
+
+				if (numToChoose == 0) {
+					break;
+				}
+			}
+		}
+		return result;
+	}
 }

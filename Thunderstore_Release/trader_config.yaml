@@ -1,15 +1,20 @@
 Wood:
     cost: 10
     stack: 10
+    inventory count: 100
 LeatherScraps:
     cost: 10
     stack: 5
+    inventory count: -1
 FineWood:
     cost: 15
     stack: 1
+    inventory count: -1
 SwordCheat:
     cost: 1000
     stack: 1
+    inventory count: -1
 LightSaber:
     cost: 1
     stack: 1
+    inventory count: 100

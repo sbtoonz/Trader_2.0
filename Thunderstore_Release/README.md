@@ -79,3 +79,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.0.9
 * Add GUI elements to indicate if there is an inventory count of the item Inventory count example YML included with mod
+
+### V0.1.0
+* Added dragNdrop to the store screen UI element. You can now move it around the screen if you please

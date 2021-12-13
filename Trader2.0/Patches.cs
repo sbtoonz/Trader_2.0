@@ -33,6 +33,8 @@ namespace Trader20
                         .GetIcon();
                     Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                         __instance.GetComponentInParent<Localize>().transform, false);
+
+                    Trader20.CustomTraderScreen.transform.localPosition = Trader20.StoreScreenPos.Value;
                     
                     var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
                     OdinStore.instance.Bkg1!.sprite = bkg1.sprite;

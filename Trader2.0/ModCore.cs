@@ -13,8 +13,8 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.0.9";
-        private const string ModGUID = "com.zarboz.Trader20";
+        public const string ModVersion = "0.1.0";
+        private const string ModGUID = "com.zarboz.KnarrTheTrader";
         private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject? Knarr;
@@ -25,7 +25,9 @@ namespace Trader20
         internal static readonly string Paths = BepInEx.Paths.ConfigPath;
         private static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
-
+        internal static ConfigEntry<Vector3>? StoreScreenPos;
+        private static Trader20 m_instance;
+        internal static Trader20 instance => m_instance;
         ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
             ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
@@ -55,9 +57,12 @@ namespace Trader20
 
             CurrencyPrefabName = config("General", "Config Prefab Name", "Coins",
                 "This is the prefab name for the currency that Knarr uses in his trades");
-            
+
+            StoreScreenPos = config("General", "Position Of Trader Prefab On Screen", Vector3.zero,
+                "This is the location on screen of the traders for sale screen");
             SetupWatcher();
-            
+
+            m_instance = this;
         }
 
        
@@ -112,6 +117,19 @@ namespace Trader20
                 Debug.LogError($"Please check your config entries for spelling and format!");
             }
             
+        }
+
+        private void OnDestroy()
+        {
+            if (m_instance == this)
+            {
+                m_instance = null!;
+            }
+        }
+
+        internal void SaveConfig()
+        {
+            Config.Save();
         }
     }
 }
