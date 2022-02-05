@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
@@ -103,8 +105,7 @@ public class OdinStore : MonoBehaviour
             }
             
             CurrentStoreList.Clear();
-            ReadItems();
-            
+           ReadAllItems();
         }
    }
 
@@ -116,7 +117,7 @@ public class OdinStore : MonoBehaviour
         }
             
         CurrentStoreList.Clear();
-        ReadItems();
+        ReadAllItems();
     }
 
     /// <summary>
@@ -170,13 +171,20 @@ public class OdinStore : MonoBehaviour
         CurrentStoreList.Add(elementthing);
     }
 
-    private void  ReadItems()
+    private async Task  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
             //need to add some type of second level logic here to think about if items exist do not repopulate.....
             AddItemToDisplayList(itemData.Key,itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
         }
+
+        await Task.Yield();
+    }
+
+    private async Task ReadAllItems()
+    {
+        await ReadItems();
     }
 
     /// <summary>
@@ -218,10 +226,20 @@ public class OdinStore : MonoBehaviour
             {
                 _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
                 InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
-                if (_storeInventory.ElementAt(i).Value.InvCount != 0) return;
-                if (!RemoveItemFromDict(itemDrop)) return;
-                ForceClearStore();
-                UpdateGenDescription(_elements[0]);
+                switch (_storeInventory.ElementAt(i).Value.InvCount)
+                {
+                    case >= 1:
+                        InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
+                        return;
+                    case < -1 when !RemoveItemFromDict(itemDrop):
+                        return;
+                    case < -1:
+                        ForceClearStore();
+                        UpdateGenDescription(_elements[0]);
+                        break;
+                }
+
+
                 switch (_elements[0].InventoryCount)
                 {
                     case >= 1:
@@ -274,7 +292,7 @@ public class OdinStore : MonoBehaviour
             list.Add(pair.Key.name, dataEntry);
                         
         }
-        Trader20.Trader20.traderConfig.Value = list;
+        Trader20.Trader20.TraderConfig.Value = list;
         return _storeInventory.Remove(itemDrop);
     }
 
@@ -391,9 +409,12 @@ public class OdinStore : MonoBehaviour
     /// <returns>Player Coin Count as int</returns>
     private static int GetPlayerCoins()
     {
-        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }
 
+    /// <summary>
+    /// Removes all items from traders for sale dictionary
+    /// </summary>
     public void DumpDict()
     {
         _storeInventory.Clear();

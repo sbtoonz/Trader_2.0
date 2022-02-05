@@ -13,24 +13,26 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.1.0";
+        public const string ModVersion = "0.1.3";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
-        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> traderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
+        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject? Knarr;
         internal static GameObject? CustomTraderScreen;
         internal static Sprite? Coins;
-        private static Dictionary<string, ItemDataEntry> entry_ { get; set; }
-        internal static AssetBundle? AssetBundle { get; set; }
+        private static Dictionary<string, ItemDataEntry> entry_ { get; set; } = null!;
+        internal static AssetBundle? AssetBundle { get; private set; }
         internal static readonly string Paths = BepInEx.Paths.ConfigPath;
         private static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
         internal static ConfigEntry<Vector3>? StoreScreenPos;
-        private static Trader20 m_instance;
+        internal static ConfigEntry<bool>? randomlySpawnKnarr;
+        
+        private static Trader20 m_instance = null!;
         internal static Trader20 instance => m_instance;
-        ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
+        ConfigEntry<T> config<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
-            ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
+            ConfigEntry<T> configEntry = Config.Bind(group, configName, value, description);
 
             SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
             syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
@@ -38,7 +40,7 @@ namespace Trader20
             return configEntry;
         }
 
-        ConfigEntry<T> config<T>(string group, string name, T value, string description, bool synchronizedSetting = true) => config(group, name, value, new ConfigDescription(description), synchronizedSetting);
+        ConfigEntry<T> config<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => config(group, configName, value, new ConfigDescription(description), synchronizedSetting);
 
         public void Awake()
         {
@@ -53,13 +55,16 @@ namespace Trader20
                 File.Create(Paths + "/trader_config.yaml").Close();
             }
             ReadYamlConfigFile(null!, null!);
-            traderConfig.ValueChanged += OnValChangUpdateStore;
+            TraderConfig.ValueChanged += OnValChangUpdateStore;
 
             CurrencyPrefabName = config("General", "Config Prefab Name", "Coins",
                 "This is the prefab name for the currency that Knarr uses in his trades");
 
             StoreScreenPos = config("General", "Position Of Trader Prefab On Screen", Vector3.zero,
                 "This is the location on screen of the traders for sale screen");
+
+            randomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your world?", false,
+                "Whether or not knarr should spawn using locationsystem");
             SetupWatcher();
 
             m_instance = this;
@@ -71,7 +76,7 @@ namespace Trader20
         {
             if (!ObjectDB.instance || ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
             OdinStore.instance.DumpDict();
-            foreach (var variable in traderConfig.Value)
+            foreach (var variable in TraderConfig.Value)
             {
                 var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
                 if(drop)
@@ -109,7 +114,7 @@ namespace Trader20
                 var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
                 entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
-                traderConfig.AssignLocalValue(entry_);
+                TraderConfig.AssignLocalValue(entry_);
             }
             catch
             {

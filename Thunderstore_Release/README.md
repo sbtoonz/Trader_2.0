@@ -82,3 +82,12 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.1.0
 * Added dragNdrop to the store screen UI element. You can now move it around the screen if you please
+
+### V0.1.1
+* Fixed issue where if item stack sale made inventory go negative it was not removed from store
+
+###V0.1.2 
+* Added config option to remove randomly spawning Knarr from your world
+
+###V0.1.3
+* Changed the stores loading tactic to an async/await method. This makes stores with huge item counts loud instantly and no longer take up FPS when loading in items

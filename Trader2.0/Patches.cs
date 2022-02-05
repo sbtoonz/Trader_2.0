@@ -29,12 +29,12 @@ namespace Trader20
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
-                    Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData
+                    Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
                         .GetIcon();
                     Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                         __instance.GetComponentInParent<Localize>().transform, false);
 
-                    Trader20.CustomTraderScreen.transform.localPosition = Trader20.StoreScreenPos.Value;
+                    Trader20.CustomTraderScreen.transform.position = Trader20.StoreScreenPos!.Value;
                     
                     var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
                     OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
@@ -55,7 +55,7 @@ namespace Trader20
                 if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
-                if (File.ReadLines(Trader20.Paths + "/trader_config.yaml").Count() == 0) return;
+                if (!File.ReadLines(Trader20.Paths + "/trader_config.yaml").Any()) return;
                 var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
                 var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 List<Dictionary<string, ItemDataEntry>> PopulatedList =
@@ -88,19 +88,20 @@ namespace Trader20
         {
             private static void Prefix(ZoneSystem __instance)
             {
+                if(Trader20.randomlySpawnKnarr.Value) return;
                 Location knarrLocation = new();
                 knarrLocation = ZNetScene.instance.GetPrefab("Knarr").GetComponent<Location>();
                 knarrLocation.m_clearArea = true;
                 knarrLocation.m_exteriorRadius = 10;
                 knarrLocation.m_hasInterior = false;
                 knarrLocation.m_noBuild = true;
-                
+
                 foreach (GameObject gameObject in Resources.FindObjectsOfTypeAll<GameObject>())
                 {
                     if (gameObject.name == "_Locations" && gameObject.transform.Find("Misc") is Transform locationMisc)
                     {
-                        GameObject altarCopy = Object.Instantiate(ZNetScene.instance.GetPrefab("Knarr"), locationMisc, true);
-                        altarCopy.name = ZNetScene.instance.GetPrefab("Knarr").name;
+                        GameObject KnarrCopy = Object.Instantiate(ZNetScene.instance.GetPrefab("Knarr"), locationMisc, true);
+                        KnarrCopy.name = ZNetScene.instance.GetPrefab("Knarr").name;
                         __instance.m_locations.Add(new ZoneSystem.ZoneLocation
                         {
                             m_randomRotation = true,
@@ -118,7 +119,11 @@ namespace Trader20
                             m_iconPlaced = true,
                             m_chanceToSpawn = 100,
                             m_inForest = true,
-                            m_iconAlways = true
+                            m_iconAlways = true,
+                            m_netViews = new List<ZNetView>
+                            {
+                                KnarrCopy.GetComponent<ZNetView>() 
+                            }
                         });
                     }
                 }
