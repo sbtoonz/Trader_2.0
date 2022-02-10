@@ -13,7 +13,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.1.3";
+        public const string ModVersion = "0.1.4";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -22,12 +22,14 @@ namespace Trader20
         internal static Sprite? Coins;
         private static Dictionary<string, ItemDataEntry> entry_ { get; set; } = null!;
         internal static AssetBundle? AssetBundle { get; private set; }
+        
         internal static readonly string Paths = BepInEx.Paths.ConfigPath;
         private static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
         internal static ConfigEntry<Vector3>? StoreScreenPos;
-        internal static ConfigEntry<bool>? randomlySpawnKnarr;
-        
+        internal static ConfigEntry<bool>? RandomlySpawnKnarr;
+        internal static ConfigEntry<bool>? LOGStoreSales;
+
         private static Trader20 m_instance = null!;
         internal static Trader20 instance => m_instance;
         ConfigEntry<T> config<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
@@ -63,10 +65,22 @@ namespace Trader20
             StoreScreenPos = config("General", "Position Of Trader Prefab On Screen", Vector3.zero,
                 "This is the location on screen of the traders for sale screen");
 
-            randomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your world?", false,
+            RandomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your world?", false,
                 "Whether or not knarr should spawn using locationsystem");
+
+            LOGStoreSales = config("General", "Log what/when/to whom knarr sells things", false,
+                "This is to log when a player buys an item from Knarr and in what volume");
+            
             SetupWatcher();
 
+            if (LOGStoreSales.Value)
+            {
+                if (!File.Exists(Paths + "/TraderSales.log"))
+                {
+                    File.Create(Paths + "/TraderSales.log");
+                }
+            }
+            
             m_instance = this;
         }
 

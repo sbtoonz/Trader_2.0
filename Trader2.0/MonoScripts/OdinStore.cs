@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Trader20;
 using UnityEngine;
@@ -95,7 +97,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    private void  ClearStore()
+    private async void  ClearStore()
    {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
@@ -105,11 +107,11 @@ public class OdinStore : MonoBehaviour
             }
             
             CurrentStoreList.Clear();
-           ReadAllItems();
+          await ReadAllItems();
         }
    }
 
-    internal void ForceClearStore()
+    internal async void ForceClearStore()
     {
         foreach (var go in CurrentStoreList)
         {
@@ -117,7 +119,7 @@ public class OdinStore : MonoBehaviour
         }
             
         CurrentStoreList.Clear();
-        ReadAllItems();
+       await ReadAllItems();
     }
 
     /// <summary>
@@ -199,7 +201,7 @@ public class OdinStore : MonoBehaviour
         if (itemDrop == null || itemDrop.m_itemData == null) return;
         
         var stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
-        itemDrop.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(itemDrop.gameObject.name);
+        itemDrop.m_itemData.m_dropPrefab = ObjectDB.instance.GetItemPrefab(itemDrop.gameObject.name);
         itemDrop.m_itemData.m_stack = stack;
         itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
         
@@ -230,9 +232,9 @@ public class OdinStore : MonoBehaviour
                 {
                     case >= 1:
                         InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
-                        return;
+                        break;
                     case < -1 when !RemoveItemFromDict(itemDrop):
-                        return;
+                        break;
                     case < -1:
                         ForceClearStore();
                         UpdateGenDescription(_elements[0]);
@@ -249,15 +251,52 @@ public class OdinStore : MonoBehaviour
                         InvCountPanel.SetActive(false);
                         break;
                 }
-                return;
+                break;
             }
             case <= -1:
-                return;
+                break;
         }
-        
-       
 
+        if (!Trader20.Trader20.LOGStoreSales.Value) return;
+        var PlayerID = Player.m_localPlayer.GetPlayerID().ToString();
+        var PlayerName = Player.m_localPlayer.GetPlayerName();
+        var cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
+        var envman = EnvMan.instance;
+        var theTime = DateTime.Now;
+        if(envman)
+        {
+            float fraction = envman.m_smoothDayFraction;
+            int hour = (int)(fraction * 24);
+            int minute = (int)((fraction * 24 - hour) * 60);
+            int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+            DateTime now = DateTime.Now;
+            theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+            int days = EnvMan.instance.GetCurrentDay();
+            
+            
+        }
+        var concatinated = "[" + theTime + "] "+ PlayerID + " - " + PlayerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+        Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+        ZLog.Log("Knarr Sold Item " + concatinated);
+        LogSales(concatinated).ConfigureAwait(false);
+    }
 
+    private async Task LogSales(string Saleinfo)
+    {
+        await WriteSales(Saleinfo).ConfigureAwait(false);
+    }
+
+    private static async Task WriteSales(string SaleInfo)
+    {
+        UnicodeEncoding uniencoding = new UnicodeEncoding();
+        var filename = Trader20.Trader20.Paths + "/TraderSales.log";
+
+        var result = uniencoding.GetBytes(SaleInfo);
+
+        using FileStream SourceStream = File.Open(filename, FileMode.OpenOrCreate);
+        SourceStream.Seek(0, SeekOrigin.End);
+        await SourceStream.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
+        await SourceStream.WriteAsync(uniencoding.GetBytes(Environment.NewLine),0, Environment.NewLine.Length).ConfigureAwait(false);
     }
 
 
@@ -353,7 +392,7 @@ public class OdinStore : MonoBehaviour
         var cost = _storeInventory.ElementAt(i).Value.Cost;
         if (playerbank < cost) return false;
         Player.m_localPlayer.GetInventory()
-            .RemoveItem(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
+            .RemoveItem(ObjectDB.instance.GetItemPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
                 cost);
         return true;
     }
@@ -427,17 +466,14 @@ public class OdinStore : MonoBehaviour
     }
     
 }
-public class StoreInfo<T, U, V> {
-    public StoreInfo() {
+public class StoreInfo<ItemCost, ItemStack, ItemInventoryCount> {
+    public StoreInfo(ItemCost cost, ItemStack stack, ItemInventoryCount count) {
+        Cost = cost;
+        Stack = stack;
+        InvCount = count;
     }
 
-    public StoreInfo(T first, U second, V third) {
-        Cost = first;
-        Stack = second;
-        InvCount = third;
-    }
-
-    public T Cost { get; set; } = default!;
-    public U Stack { get; set; } = default!;
-    public V InvCount { get; set; } = default!;
+    public ItemCost Cost { get; set; } = default!;
+    public ItemStack Stack { get; set; } = default!;
+    public ItemInventoryCount InvCount { get; set; } = default!;
 };

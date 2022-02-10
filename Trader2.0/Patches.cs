@@ -81,27 +81,37 @@ namespace Trader20
                 }
             }
         }
-        
+
+        [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.PrepareNetViews))]
+        public static class AvoidKnarr
+        {
+            public static bool Prefix(ZoneSystem __instance,GameObject root, List<ZNetView> views)
+            {
+                return !root.gameObject.name.StartsWith("Knarr");
+            }
+        }
 
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
         public static class SpawnKnarr
         {
             private static void Prefix(ZoneSystem __instance)
             {
-                if(Trader20.randomlySpawnKnarr.Value) return;
+                if(Trader20.RandomlySpawnKnarr.Value == false) return;
                 Location knarrLocation = new();
                 knarrLocation = ZNetScene.instance.GetPrefab("Knarr").GetComponent<Location>();
                 knarrLocation.m_clearArea = true;
                 knarrLocation.m_exteriorRadius = 10;
                 knarrLocation.m_hasInterior = false;
                 knarrLocation.m_noBuild = true;
-
+                List<ZNetView> m_nviews = new List<ZNetView>();
                 foreach (GameObject gameObject in Resources.FindObjectsOfTypeAll<GameObject>())
                 {
                     if (gameObject.name == "_Locations" && gameObject.transform.Find("Misc") is Transform locationMisc)
                     {
                         GameObject KnarrCopy = Object.Instantiate(ZNetScene.instance.GetPrefab("Knarr"), locationMisc, true);
                         KnarrCopy.name = ZNetScene.instance.GetPrefab("Knarr").name;
+                        m_nviews.AddRange(KnarrCopy.gameObject.GetComponents<ZNetView>());
+                        m_nviews.AddRange(KnarrCopy.gameObject.GetComponentsInChildren<ZNetView>());
                         __instance.m_locations.Add(new ZoneSystem.ZoneLocation
                         {
                             m_randomRotation = true,
@@ -116,14 +126,9 @@ namespace Trader20
                             m_prioritized = true,
                             m_forestTresholdMax = 5,
                             m_unique = true,
-                            m_iconPlaced = true,
                             m_chanceToSpawn = 100,
                             m_inForest = true,
-                            m_iconAlways = true,
-                            m_netViews = new List<ZNetView>
-                            {
-                                KnarrCopy.GetComponent<ZNetView>() 
-                            }
+                            m_netViews = m_nviews
                         });
                     }
                 }

@@ -86,8 +86,13 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.1.1
 * Fixed issue where if item stack sale made inventory go negative it was not removed from store
 
-###V0.1.2 
+### V0.1.2 
 * Added config option to remove randomly spawning Knarr from your world
 
-###V0.1.3
+### V0.1.3
 * Changed the stores loading tactic to an async/await method. This makes stores with huge item counts loud instantly and no longer take up FPS when loading in items
+
+### V0.1.4
+* Added config option to log sales Knarr makes, this includes who purchased the item, what item was sold, and the currency volume spent on the item
+* Added fix for randomly spawning Knarr (hopefully)
+* Updated serversync binary

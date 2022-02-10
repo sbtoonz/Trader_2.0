@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -78,7 +78,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		}
 	}
 
-	private void Update()
+	private async void Update()
 	{
 		modifier = Random.Range(-0.08f, 40.0f);
 
@@ -86,22 +86,46 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 		if (Time.time > nextTime)
 		{
-			StartCoroutine(DoCheck());
+			await RandomEventCheck();
 		}
 
 	}
-	
-	IEnumerator DoCheck() {
-		for(;;)
-		{
-			var prob = Choose(new float[] { 0.5f});
-			if(prob >= .5f)
-			{
-				Debug.LogError("Doing Random Event");
-			}
-			yield return new WaitForSeconds(nextTime);
-		}
+
+	async Task RandomEventCheck()
+	{
+		var prob = Choose(new[] { 0.5f });
+		await RandomTimer(prob);
 	}
+
+	async Task RandomTimer(float time)
+	{
+		if (time >= 0.5f)
+		{
+			await FindSaleItem();
+		}
+		await Task.Yield();
+	}
+
+	async Task FindSaleItem()
+	{
+		await Task.Yield();
+	}
+/*
+	async Task ItemOnSale()
+	{
+		
+	}
+
+	async Task EndItemSale()
+	{
+		
+	}
+
+	async Task ApplyTax()
+	{
+		
+	}
+	*/
 
 	float Choose (float[] probs) {
 
