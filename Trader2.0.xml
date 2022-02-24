@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Trader20</name>
+    </assembly>
+    <members>
+        <member name="M:OdinStore.AddItemToDisplayList(ItemDrop,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
+            </summary>
+            <param name="drop"></param>
+            <param name="stack"></param>
+            <param name="cost"></param>
+            <param name="invCount"></param>
+        </member>
+        <member name="M:OdinStore.SellItem(System.Int32)">
+            <summary>
+            Invoke this method to instantiate an item from the storeInventory dictionary. This method expects an integer argument this integer should identify the index in the dictionary that the item lives at you wish to vend
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:OdinStore.AddItemToDict(ItemDrop,System.Int32,System.Int32,System.Int32)">
+            <summary>
+             Adds item to stores dictionary pass ItemDrop.ItemData and an integer for price
+            </summary>
+            <param name="itemDrop"></param>
+            <param name="price"></param>
+            <param name="stack"></param>
+            <param name="invCount"></param>
+        </member>
+        <member name="M:OdinStore.RemoveItemFromDict(ItemDrop)">
+            <summary>
+            Pass this method an ItemDrop as an argument to drop it from the storeInventory dictionary.
+            </summary>
+            <param name="itemDrop"></param>
+            <returns>returns true if specific item is removed from trader inventory. Use this in tandem with inventory management</returns>
+        </member>
+        <member name="M:OdinStore.FindIndex(ItemDrop)">
+            <summary>
+            This methods invocation should return the index offset of the ItemDrop passed as an argument, this is for use with other functions that expect an index to be passed as an integer argument
+            </summary>
+            <param name="itemDrop"></param>
+            <returns>returns index of item within trader inventory</returns>
+        </member>
+        <member name="M:OdinStore.UpdateGenDescription(OdinStore.ElementFormat)">
+            <summary>
+            This method will update the general description of the store page pass it an ElementFormat as argument
+            </summary>
+            <param name="element"></param>
+        </member>
+        <member name="M:OdinStore.UpdateCoins">
+            <summary>
+            Call this method to update the coins shown in UI with coins in player inventory
+            </summary>
+        </member>
+        <member name="M:OdinStore.BuyButtonAction">
+            <summary>
+            Call this method upon attempting to buy something (this is tied to an onclick event)
+            </summary>
+        </member>
+        <member name="M:OdinStore.CanBuy(System.Int32)">
+            <summary>
+            give this bool the index of your item within the traders inventory and it will return true/false based on players bank
+            </summary>
+            <param name="i"></param>
+            <returns>return true/false based on players bank</returns>
+        </member>
+        <member name="T:OdinStore.ElementFormat">
+            <summary>
+            Format of the Element GameObject that populates the for sale list.
+            </summary>
+        </member>
+        <member name="M:OdinStore.Hide">
+            <summary>
+            Called to Hide the UI
+            </summary>
+        </member>
+        <member name="M:OdinStore.Show">
+            <summary>
+            Called to show the UI
+            </summary>
+        </member>
+        <member name="M:OdinStore.GetPlayerCoins">
+            <summary>
+            Returns the players coin count as int
+            </summary>
+            <returns>Player Coin Count as int</returns>
+        </member>
+        <member name="M:OdinStore.DumpDict">
+            <summary>
+            Removes all items from traders for sale dictionary
+            </summary>
+        </member>
+    </members>
+</doc>
