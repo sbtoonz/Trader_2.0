@@ -132,7 +132,7 @@ public class OdinStore : MonoBehaviour
     public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount)
     {
         ElementFormat newElement = new();
-        newElement.Drop = drop;
+        newElement.Drop.m_itemData = drop.m_itemData.Clone();
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
