@@ -83,9 +83,6 @@ namespace Trader20
             
             m_instance = this;
         }
-
-       
-
         private static void OnValChangUpdateStore()
         {
             if (!ObjectDB.instance || ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
@@ -108,8 +105,6 @@ namespace Trader20
             }
             OdinStore.instance.ForceClearStore();
         }
-        
-
         private void SetupWatcher()
         {
             FileSystemWatcher watcher = new(Paths, "trader_config.yaml");
