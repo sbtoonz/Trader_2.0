@@ -8,6 +8,7 @@ public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private bool isMouseDown;
     private Vector3 startMousePosition;
     private Vector3 startPosition;
+    Vector3 distance;
 
     private static bool _donedrag;
 
@@ -30,11 +31,12 @@ public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
+
     public void OnPointerDown(PointerEventData dt)
     {
         isMouseDown = true;
         var position = target.position;
-        Trader20.Trader20.StoreScreenPos!.Value = position;
+        //Trader20.Trader20.StoreScreenPos!.Value = position;
         _donedrag = isMouseDown;
         startPosition = position;
         startMousePosition = Input.mousePosition;
@@ -43,7 +45,7 @@ public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerUp(PointerEventData dt)
     {
         isMouseDown = false;
-        Trader20.Trader20.instance.SaveConfig();
+        //Trader20.Trader20.instance.SaveConfig();
         _donedrag = isMouseDown;
         if (shouldReturn) target.position = startPosition;
     }

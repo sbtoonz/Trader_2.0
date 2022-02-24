@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Trader20
 {
@@ -15,12 +18,62 @@ namespace Trader20
             public static void Prefix(ZNetScene __instance)
             {
                 if (__instance.m_prefabs.Count <= 0) return;
-                 Utilities.LoadAssets(Trader20.AssetBundle, __instance);
-                 Trader20.Knarr = __instance.GetPrefab("Knarr");
+                Utilities.LoadAssets(Trader20.AssetBundle, __instance);
+                Trader20.Knarr = __instance.GetPrefab("Knarr");
+
             }
         }
 
-        [HarmonyPriority(Priority.Last)]
+        [HarmonyPatch(typeof(Game), nameof(Game.Start))]
+        public static class RegisterRPCPatch
+        {
+
+            [HarmonyPostfix]
+            public static void Postfix()
+            {
+                    
+                ZRoutedRpc.instance.Register<bool>("RemoveKnarrDone", RPC_RemoveKnarrRespons);
+                ZRoutedRpc.instance.Register<bool>("RequestRemoveKnarr", RPC_RemoveKnarrReq);
+
+            }
+
+
+        }
+        internal static void RPC_RemoveKnarrReq(long UID, bool s)
+        {
+            if (!Trader20._serverConfigLocked!.Value)
+            {
+                ZRoutedRpc.instance.InvokeRoutedRPC("RemoveKnarrDone", true);
+            }
+            else
+            {
+                ZRoutedRpc.instance.InvokeRoutedRPC("RemoveKnarrDone", false);
+            }
+        }
+        internal static List<ZDO> zdolist = new List<ZDO>();
+        internal static void RPC_RemoveKnarrRespons(long UID, bool s)
+        {
+            if (!ZNet.instance.IsServer()) return;
+            if (s)
+            {
+                ZDOMan.instance.GetAllZDOsWithPrefab("Knarr", zdolist);
+                if (zdolist.Count <= 0)
+                {
+                    ZLog.LogError("No instances of Knarr found");
+                }
+
+                foreach (var zdo in zdolist)
+                {
+                    ZDOMan.instance.DestroyZDO(zdo);
+                }
+            }
+            else
+            {
+                ZLog.LogError("Non Admin invoking removal command");
+            }
+
+        }
+    [HarmonyPriority(Priority.Last)]
         [HarmonyPatch(typeof(StoreGui), nameof(StoreGui.Awake))]
         public static class ItemListPatch
         {
@@ -33,8 +86,9 @@ namespace Trader20
                         .GetIcon();
                     Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                         __instance.GetComponentInParent<Localize>().transform, false);
-
-                    Trader20.CustomTraderScreen.transform.position = Trader20.StoreScreenPos!.Value;
+                    
+                    var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
+                    anchor.anchoredPosition= Trader20.StoreScreenPos!.Value;
                     
                     var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
                     OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
@@ -96,7 +150,7 @@ namespace Trader20
         {
             private static void Prefix(ZoneSystem __instance)
             {
-                if(Trader20.RandomlySpawnKnarr.Value == false) return;
+                if(Trader20.RandomlySpawnKnarr!.Value == false) return;
                 Location knarrLocation = new();
                 knarrLocation = ZNetScene.instance.GetPrefab("Knarr").GetComponent<Location>();
                 knarrLocation.m_clearArea = true;
@@ -133,6 +187,26 @@ namespace Trader20
                     }
                 }
             }
+        }
+
+
+        [HarmonyPatch(typeof(Terminal), nameof(Terminal.InputText))]
+        public static class RemoveKnarrCommand
+        {
+            internal static List<ZDO> zdolist = new List<ZDO>();
+            [UsedImplicitly]
+            public static bool Prefix(Terminal __instance)
+            {
+                string lower = __instance.m_input.text.ToLower();
+                if (lower.Equals("remove knarr"))
+                {
+                        ZRoutedRpc.instance.InvokeRoutedRPC("RequestRemoveKnarr", true);
+                        return false;
+                }
+
+                return !lower.Equals("remove knarr");
+            }
+
         }
         
     }

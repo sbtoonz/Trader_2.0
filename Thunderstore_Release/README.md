@@ -96,3 +96,11 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Added config option to log sales Knarr makes, this includes who purchased the item, what item was sold, and the currency volume spent on the item
 * Added fix for randomly spawning Knarr (hopefully)
 * Updated serversync binary
+
+### V0.1.5
+* Finally fixed randomly spawning Knarr from throwing obscene volume of errors What Happened? When using the method I wanted the game attempted to add 2x network components to Knarr and it caused issues this is now fixed
+
+### V0.1.6
+* Fixed UI Window being able to be dragged out of the game screen
+* Added terminal command to clean up Knarr from the world if you have previous bad spawns of him. To enter this command bring up your terminal by hitting f5 and type `remove knarr` if you are an admin the command will wipe knarr from that map
+

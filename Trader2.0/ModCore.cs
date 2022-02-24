@@ -13,7 +13,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.1.5";
+        public const string ModVersion = "0.1.6";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -24,7 +24,7 @@ namespace Trader20
         internal static AssetBundle? AssetBundle { get; private set; }
         
         internal static readonly string Paths = BepInEx.Paths.ConfigPath;
-        private static ConfigEntry<bool>? _serverConfigLocked;
+        internal static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
         internal static ConfigEntry<Vector3>? StoreScreenPos;
         internal static ConfigEntry<bool>? RandomlySpawnKnarr;
