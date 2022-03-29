@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,13 +18,13 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private RectTransform? ListRoot;
     [SerializeField] private Text? SelectedItemDescription;
     [SerializeField] private Image? ItemDropIcon;
-    [SerializeField] private Text? SelectedCost;
+    [SerializeField] internal Text? SelectedCost;
     [SerializeField] private Text? StoreTitle;
     [SerializeField] private Button? BuyButton;
     [SerializeField] private Text? SelectedName;
 
     [SerializeField] private Text InventoryCount;
-    [SerializeField] private GameObject InvCountPanel;
+    [SerializeField] internal GameObject InvCountPanel;
     
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
@@ -35,6 +36,12 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private NewTrader? _trader;
     [SerializeField] internal Image? ButtonImage;
     [SerializeField] internal Image? Coins;
+
+    [SerializeField] internal RectTransform RepairRect;
+    [SerializeField] internal Image repairImage;
+    [SerializeField] internal Text repairText;
+    [SerializeField] internal Button repairButton;
+    [SerializeField] internal Image repairHammerImage;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new();
@@ -47,6 +54,8 @@ public class OdinStore : MonoBehaviour
     private void Awake() 
     {
         m_instance = this;
+        var rect = m_StorePanel.transform as RectTransform;
+        rect.anchoredPosition = Trader20.Trader20.StoreScreenPos.Value;
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
     }
@@ -174,12 +183,25 @@ public class OdinStore : MonoBehaviour
         CurrentStoreList.Add(elementthing);
     }
 
+    /// <summary>
+    /// Async task that reads all items in store inventory and then adds them to display list
+    /// </summary>
     private async Task  ReadItems()
     {
         foreach (var itemData in _storeInventory)
         {
-            //need to add some type of second level logic here to think about if items exist do not repopulate.....
-            AddItemToDisplayList(itemData.Key,itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+            if (Trader20.Trader20.OnlySellKnownItems.Value)
+            {
+                if(Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+                {
+                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+                } 
+            }
+            else
+            {
+                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+            }
+           
         }
 
         await Task.Yield();
@@ -374,8 +396,8 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void BuyButtonAction()
     {
-        if (tempElement!.Drop is null) return;
-        var i = FindIndex(tempElement.Drop);
+        if (tempElement?.Drop == null) return;
+        var i = FindIndex(tempElement.Drop!);
         if (!CanBuy(i)) return;
         SellItem(i);
         NewTrader.instance.OnSold();
@@ -424,6 +446,11 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void Show()
     {
+        if (_storeInventory.Count <= 0)
+        {
+            Trader20.Trader20.knarrlogger.LogWarning("Store is empty not showing UI");
+            return;
+        }
         m_StorePanel!.SetActive(true);
         ClearStore();
         if(_elements.Count >=1)
@@ -458,6 +485,24 @@ public class OdinStore : MonoBehaviour
     public void DumpDict()
     {
         _storeInventory.Clear();
+    }
+    
+    internal int RollTheDice()
+    {
+        
+        int randomDiceSide = 0;
+
+        int finalSide = 0;
+
+        for (int i = 0; i <= 20; i++)
+        {
+            randomDiceSide = Random.Range(0, 6);
+        }
+
+        finalSide = randomDiceSide + 1;
+
+        
+        return finalSide;
     }
 
     public bool IsOnSale()

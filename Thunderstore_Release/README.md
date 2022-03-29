@@ -104,3 +104,23 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Fixed UI Window being able to be dragged out of the game screen
 * Added terminal command to clean up Knarr from the world if you have previous bad spawns of him. To enter this command bring up your terminal by hitting f5 and type `remove knarr` if you are an admin the command will wipe knarr from that map
 
+### V0.1.7
+* Fixed random stacking bug 
+* Added terminal command to find knarr spawns in your world `find knarr` in your console to locate random spawn and player spawned versions of knarr
+
+### V0.1.8
+* Fixed bug in random spawning Knarr
+* Fixed terminal command for locating knarr to lock to admin
+
+### V0.1.9
+* Fixed Auga incompatibility with newest release
+
+### V0.2.0
+* Added more graceful failure message if you have bad prefab in config for currency
+* Altered prefab resolution tactic to work with ZnetScene.instance instead of ObjectDB. All things must have an ItemDrop that Knarr vends
+* Added configuration option to only allow knarr to vend the items a player knows recipes for
+
+### V0.2.1
+* Gave some more graceful failures for when issues present themselves 
+* UI Will no longer open if your store is empty
+* Fixed location not being used from config for store screen 

@@ -1633,6 +1633,7 @@ GameObject:
   - component: {fileID: 3367674191020224475}
   - component: {fileID: 8248588759842237965}
   - component: {fileID: 5212895232100809140}
+  - component: {fileID: 6535820988851220605}
   m_Layer: 0
   m_Name: Knarr
   m_TagString: Untagged
@@ -1860,6 +1861,7 @@ MonoBehaviour:
       m_randomRotation: 0
       m_scale: 0
       m_childTransform: 
+  _snapper: {fileID: 6535820988851220605}
   _store: {fileID: 5494880942761007943, guid: 3bf1ea413417e5e45a3773756a1d6d93, type: 3}
 --- !u!114 &8248588759842237965
 MonoBehaviour:
@@ -1893,10 +1895,27 @@ MonoBehaviour:
   m_noBuild: 1
   m_clearArea: 1
   m_applyRandomDamage: 0
-  m_hasInterior: 0
+  m_hasInterior: 1
   m_interiorRadius: 20
   m_interiorEnvironment: 
-  m_interiorPrefab: {fileID: 0}
+  m_interiorTransform: {fileID: 1799084277105643369}
+  m_useCustomInteriorTransform: 0
+  m_generator: {fileID: 0}
+  m_interiorPrefab: {fileID: 1794989611260239, guid: 20647529ed16c5043a8f78bc594f7c47,
+    type: 3}
+--- !u!114 &6535820988851220605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6458935346658124851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1214644819, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_offset: 0
 --- !u!1 &6672571811596794341
 GameObject:
   m_ObjectHideFlags: 0

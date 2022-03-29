@@ -62,7 +62,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 clampedPosition.y = (-canvasRectTransform.rect.height * 0.5f) + (panelRectTransform.rect.height * panelRectTransform.pivot.y);
             }
             panelRectTransform.localPosition = clampedPosition;
-            Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
+           // Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
         }
     }
  
@@ -72,7 +72,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
  
     public void OnEndDrag (PointerEventData eventData)
     {
-        Trader20.Trader20.instance.SaveConfig();
+        //Trader20.Trader20.instance.SaveConfig();
     }
  
     #endregion

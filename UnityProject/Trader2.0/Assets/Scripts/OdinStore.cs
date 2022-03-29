@@ -13,24 +13,29 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private RectTransform ListRoot;
     [SerializeField] private Text SelectedItemDescription;
     [SerializeField] private Image ItemDropIcon;
-    [SerializeField] private Text SelectedCost;
+    [SerializeField] internal Text SelectedCost;
     [SerializeField] private Text StoreTitle;
     [SerializeField] private Button BuyButton;
     [SerializeField] private Text SelectedName;
-
     [SerializeField] private Text InventoryCount;
-    [SerializeField] private GameObject InvCountPanel;
+    [SerializeField] internal GameObject InvCountPanel;
 
     [SerializeField] internal Image Bkg1;
     [SerializeField] internal Image Bkg2;
-    
-    
-    //ElementData
+        
+        
+        //ElementData
     [SerializeField] private GameObject ElementGO;
-
-    [SerializeField] private NewTrader _trader;
+    
+    [SerializeField] private NewTrader _trader; 
     [SerializeField] internal Image ButtonImage;
     [SerializeField] internal Image Coins;
+    
+    [SerializeField] internal RectTransform RepairRect;
+    [SerializeField] internal Image repairImage;
+    [SerializeField] internal Text repairText;
+    [SerializeField] internal Button repairButton;
+    [SerializeField] internal Image repairHammerImage;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();

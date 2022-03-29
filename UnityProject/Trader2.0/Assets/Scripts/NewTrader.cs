@@ -41,6 +41,8 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 	public EffectList m_randomSellFX = new EffectList();
 
+	public SnapToGround _snapper;
+
 	private bool m_didGreet = false;
 
 	private bool m_didGoodbye = false;
@@ -48,7 +50,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	private Animator m_animator;
 
 	private LookAt m_lookAt;
-
 	public static NewTrader instance => m_instance;
 
 	[SerializeField] internal OdinStore _store;
@@ -63,6 +64,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		m_lookAt = GetComponentInChildren<LookAt>();
 		InvokeRepeating("RandomTalk", m_randomTalkInterval, m_randomTalkInterval);
 		nextTime = 0.0f;
+		SnapToGround.SnappAll();
 	}
 
 	private void Awake()

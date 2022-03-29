@@ -3,20 +3,23 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using ServerSync;
 
 namespace Trader20
 {
+    /// <inheritdoc />
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.1.6";
+        public const string ModVersion = "0.2.1";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
-        private static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
-        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
+        internal static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
+        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
+            = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject? Knarr;
         internal static GameObject? CustomTraderScreen;
         internal static Sprite? Coins;
@@ -29,6 +32,11 @@ namespace Trader20
         internal static ConfigEntry<Vector3>? StoreScreenPos;
         internal static ConfigEntry<bool>? RandomlySpawnKnarr;
         internal static ConfigEntry<bool>? LOGStoreSales;
+        internal static ConfigEntry<bool>? OnlySellKnownItems;
+        internal static ConfigEntry<int>? LuckyNumber;
+
+        internal static ManualLogSource knarrlogger = new ManualLogSource(ModName);
+        
 
         private static Trader20 m_instance = null!;
         internal static Trader20 instance => m_instance;
@@ -42,10 +50,14 @@ namespace Trader20
             return configEntry;
         }
 
-        ConfigEntry<T> config<T>(string group, string configName, T value, string description, bool synchronizedSetting = true) => config(group, configName, value, new ConfigDescription(description), synchronizedSetting);
+        ConfigEntry<T> config<T>(string group,
+            string configName,
+            T value,
+            string description, bool synchronizedSetting = true) => config(group, configName, value, new ConfigDescription(description), synchronizedSetting);
 
         public void Awake()
         {
+            knarrlogger = base.Logger;
             Assembly assembly = Assembly.GetExecutingAssembly();
             Harmony harmony = new(ModGUID);
             harmony.PatchAll(assembly);
@@ -63,14 +75,21 @@ namespace Trader20
                 "This is the prefab name for the currency that Knarr uses in his trades");
 
             StoreScreenPos = config("General", "Position Of Trader Prefab On Screen", Vector3.zero,
-                "This is the location on screen of the traders for sale screen");
+                "This is the location on screen of the traders for sale screen", false);
 
             RandomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your world?", false,
                 "Whether or not knarr should spawn using locationsystem");
 
             LOGStoreSales = config("General", "Log what/when/to whom knarr sells things", false,
                 "This is to log when a player buys an item from Knarr and in what volume");
-            
+
+            OnlySellKnownItems = config("General", "Only sell known recipes", false,
+                "If set true Knarr will only vend a player recipes the player has discovered already");
+
+            LuckyNumber = config("General", "Lucky Number for repairs", 6,
+                new ConfigDescription(
+                    "This is the lucky number for your repair button if you roll this number your repairs will go through",
+                    new AcceptableValueRange<int>(0, 6)));
             SetupWatcher();
 
             if (LOGStoreSales.Value)
@@ -89,17 +108,23 @@ namespace Trader20
             OdinStore.instance.DumpDict();
             foreach (var variable in TraderConfig.Value)
             {
-                var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
+                var drop = ZNetScene.instance.GetPrefab(variable.Key);
                 if(drop)
                 {
-                    OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
+                    var id = drop.GetComponent<ItemDrop>();
+                    if(id == null)
+                    {
+                        Trader20.knarrlogger.LogError("Failed to load ItemDrop for trader's item: " + variable.Key);
+                        continue;
+                    }
+                    OdinStore.instance.AddItemToDict(id, variable.Value.ItemCostInt,
                         variable.Value.ItemCount, variable.Value.Invcount);
                 }
 
                 if (!drop)
                 {
-                    Debug.LogError("Failed to load trader's item: " + variable.Key);
-                    Debug.LogError("Please Check your Prefab name "+ variable.Key);
+                    knarrlogger.LogError("Failed to load trader's item: " + variable.Key);
+                    knarrlogger.LogError("Please Check your Prefab name "+ variable.Key);
                    
                 }
             }
@@ -127,18 +152,10 @@ namespace Trader20
             }
             catch
             {
-                Debug.LogError("There was an issue loading your trader_config.yaml");
-                Debug.LogError($"Please check your config entries for spelling and format!");
+                knarrlogger.LogError("There was an issue loading your trader_config.yaml");
+                knarrlogger.LogError($"Please check your config entries for spelling and format!");
             }
             
-        }
-
-        private void OnDestroy()
-        {
-            if (m_instance == this)
-            {
-                m_instance = null!;
-            }
         }
 
         internal void SaveConfig()

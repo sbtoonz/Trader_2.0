@@ -4,8 +4,16 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Trader20
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class YMLParser
     {
+        /// <summary>
+        /// Serialize data for YML
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static string Serializers(Dictionary<string, ItemDataEntry> data)
         {
             var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
@@ -13,6 +21,11 @@ namespace Trader20
             return yml;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static Dictionary<string, ItemDataEntry> ReadSerializedData(string s)
         {
             var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -22,6 +35,9 @@ namespace Trader20
         }
     }
 
+    /// <summary>
+    /// Structure for YML
+    /// </summary>
     public struct ItemDataEntry 
     {
         [YamlMember(Alias = "cost", ApplyNamingConventions = false)]

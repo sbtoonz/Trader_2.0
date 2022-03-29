@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AugaUnity;
 using HarmonyLib;
 using JetBrains.Annotations;
+using JoshH.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -34,12 +36,15 @@ namespace Trader20
                     
                 ZRoutedRpc.instance.Register<bool>("RemoveKnarrDone", RPC_RemoveKnarrRespons);
                 ZRoutedRpc.instance.Register<bool>("RequestRemoveKnarr", RPC_RemoveKnarrReq);
+                ZRoutedRpc.instance.Register<bool>("FindKnarrDone", RPC_FindKnarrResponse);
+                ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
 
             }
 
 
         }
-        internal static void RPC_RemoveKnarrReq(long UID, bool s)
+
+        private static void RPC_RemoveKnarrReq(long UID, bool s)
         {
             if (!Trader20._serverConfigLocked!.Value)
             {
@@ -50,8 +55,8 @@ namespace Trader20
                 ZRoutedRpc.instance.InvokeRoutedRPC("RemoveKnarrDone", false);
             }
         }
-        internal static List<ZDO> zdolist = new List<ZDO>();
-        internal static void RPC_RemoveKnarrRespons(long UID, bool s)
+        private static List<ZDO> zdolist = new List<ZDO>();
+        private static void RPC_RemoveKnarrRespons(long UID, bool s)
         {
             if (!ZNet.instance.IsServer()) return;
             if (s)
@@ -73,40 +78,190 @@ namespace Trader20
             }
 
         }
-    [HarmonyPriority(Priority.Last)]
+        
+        private static void RPC_FindKnarrResponse(long uid, bool s)
+        {
+            if (!ZNet.instance.IsServer()) return;
+            if (s)
+            {
+                ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
+                foreach (var KP in ZoneSystem.instance.m_locationInstances)
+                {
+                    
+                        if(KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name)
+                        {
+                            ZLog.Log("Knarr Random Spawn location = " + KP.Value.m_position);
+                            ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
+                            Minimap.instance.AddPin(KP.Value.m_position, Minimap.PinType.Boss, "Knarr", true, false,
+                                Game.instance.GetPlayerProfile().GetPlayerID());
+                        }
+                    
+                }
+
+                ;
+                if (zdolist.Count <= 0)
+                {
+                    ZLog.LogError("No instances of Knarr found");
+                }
+                foreach (var zdo in zdolist)
+                {
+                    ZLog.Log("/Spawned Knarr instances at: " + zdo.m_position);
+                }
+            }
+            else
+            {
+                ZLog.LogError("Non Admin invoking locator command");
+            }
+        }
+
+
+        private static void RPC_SetKnarrMapIcon(long uid, Vector3 position)
+        {
+            Minimap.instance.AddPin(position, Minimap.PinType.Boss, "Knarr", true, false,
+                Game.instance.GetPlayerProfile().GetPlayerID());
+        }
+        
+        
+    
         [HarmonyPatch(typeof(StoreGui), nameof(StoreGui.Awake))]
+        [HarmonyAfter("randyknapp.mods.auga")]
         public static class ItemListPatch
         {
-            public static void Prefix(StoreGui __instance)
+            internal static bool AuguaSetupRan = false;
+            internal static List<ItemDrop.ItemData> m_wornItems = new List<ItemDrop.ItemData>();
+            public static void Postfix(StoreGui __instance)
             {
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
-                    Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
-                        .GetIcon();
-                    Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
-                        __instance.GetComponentInParent<Localize>().transform, false);
-                    
-                    var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
-                    anchor.anchoredPosition= Trader20.StoreScreenPos!.Value;
-                    
-                    var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
-                    OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
-                    OdinStore.instance.Bkg1.material = bkg1.material;
-                    
-                    var Bkg2 = Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>());
-                    OdinStore.instance.Bkg2!.sprite =Bkg2 .sprite;
-                    OdinStore.instance.Bkg2.material = Bkg2.material;
+                    if (Auga.API.IsLoaded())
+                    {
+                        if(AuguaSetupRan) return;
                         
-                    OdinStore.instance.Coins!.sprite = Trader20.Coins;
-                    OdinStore.instance.ButtonImage!.sprite =
-                        Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
+                        GameObject augapanel = null;
+                        var typeAll = Resources.FindObjectsOfTypeAll<GameObject>();
+                        foreach (var o in typeAll)
+                        {
+                            if (o.name == "AugaStoreScreen")
+                            {
+                                augapanel = o;
+                            }
+                        }
+                        Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
+                            __instance.GetComponent<Localize>().transform, false);
+                        Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
+                            .GetIcon();
+                        Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
+                            .GetIcon();
+                        var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
+                        anchor.anchoredPosition= Trader20.StoreScreenPos!.Value;
+                        
+                        
+                        OdinStore.instance.ButtonImage!.sprite =
+                            __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
+                        
+                        var bkg1 = __instance.transform.Find("Store/AugaPanelBase/Background").gameObject;
+                        var test = bkg1.GetComponent<Image>();
+                        OdinStore.instance.Bkg2!.sprite = test.sprite;
+                        OdinStore.instance.Bkg2.material = test.material;
+                        OdinStore.instance.Bkg2.type = Image.Type.Sliced;
+                        OdinStore.instance.Bkg2.gameObject.AddComponent<UIGradient>();
+                        var temp =OdinStore.instance.Bkg2.gameObject.GetComponent<UIGradient>();
+                        temp.GradientType = UIGradient.UIGradientType.Corner;
+                        Color topleft = new Color(0.1254902f, 0.1019608f, 0.08235294f,1);
+                        Color topRight = new Color(0.282353f, 0.2352941f, 0.1882353f, 1);
+                        Color lowerLeft = new Color(0.1803922f, 0.1529412f, 0.1254902f, 1);
+                        Color lowerRight = new Color(0.3215686f, 0.2666667f, 0.2156863f, 1);
+                        temp.CornerColorUpperLeft = topleft;
+                        temp.CornerColorLowerLeft = lowerLeft;
+                        temp.CornerColorLowerRight = lowerRight;
+                        temp.CornerColorUpperRight = topRight;
 
+
+
+                        var Bkg2 = __instance.transform.Find("Store/AugaPanelBase/Darken").GetComponent<Image>();
+                        OdinStore.instance.Bkg1!.sprite =Bkg2 .sprite;
+                        OdinStore.instance.Bkg1.material = Bkg2.material;
+                        
+                        OdinStore.instance.Coins!.sprite = Trader20.Coins;
+                        OdinStore.instance.Coins.transform.localPosition = new Vector3(-174.054f, 308.3599f, 0);
+                        OdinStore.instance.SelectedCost.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
+                        OdinStore.instance.InvCountPanel.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
+                        OdinStore.instance.ButtonImage!.sprite =
+                            Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
+                        AuguaSetupRan = true;
+                    }
+                    else
+                    {
+                        var icon = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
+                            .GetIcon();
+                        if (icon == null)
+                        {
+                            Debug.LogError("I cant locate your coin prefab please check the mod loading it or the spelling ");
+                            return;
+                        }
+
+                        Trader20.Coins = icon;
+                        Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
+                            __instance.GetComponentInParent<Localize>().transform, false);
+                    
+                        var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
+                        anchor.anchoredPosition= __instance.m_listRoot.anchoredPosition;
+                    
+                        OdinStore.instance.Coins!.sprite = Trader20.Coins;
+                        OdinStore.instance.ButtonImage!.sprite =
+                            Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
+                        var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
+                        OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
+                        OdinStore.instance.Bkg1.material = bkg1.material;
+                    
+                        var Bkg2 = Object.Instantiate(__instance.transform.Find("Store/border (1)").GetComponent<Image>());
+                        OdinStore.instance.Bkg2!.sprite =Bkg2 .sprite;
+                        OdinStore.instance.Bkg2.material = Bkg2.material;
+
+                        var RepairButton = Object.Instantiate(InventoryGui.instance.transform.Find("root/Crafting/RepairButton").gameObject);
+                        var repairButtonButton = RepairButton.GetComponent<Button>();
+                        var repairImage = RepairButton.transform.Find("Image").gameObject.GetComponent<Image>();
+                        var RepairBKGpanel =
+                            Object.Instantiate(InventoryGui.instance.transform.Find("root/Crafting/RepairSimple"))
+                                .gameObject.GetComponent<Image>();
+
+                        OdinStore.instance.RepairRect.gameObject.GetComponent<Image>().sprite = RepairBKGpanel.sprite;
+                        OdinStore.instance.RepairRect.gameObject.GetComponent<Image>().material = RepairBKGpanel.material;
+                        OdinStore.instance.repairHammerImage.sprite = repairImage.sprite;
+                        OdinStore.instance.repairButton.image.sprite = repairButtonButton.image.sprite;
+                        OdinStore.instance.repairButton.onClick.AddListener(delegate
+                        {
+                            
+                            if (Player.m_localPlayer == null)
+                            {
+                                return;
+                            }
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Rolling dice");
+                            var temp = OdinStore.instance.RollTheDice();
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Result is "+ temp);
+                            Debug.Log("Dice result: " + temp.ToString());
+                            if (temp != Trader20.LuckyNumber!.Value) return;
+                            Player.m_localPlayer.GetInventory().GetWornItems(m_wornItems);
+                            foreach (var itemData in m_wornItems.Where(itemData => itemData.m_durability < itemData.GetMaxDurability()))
+                            {
+                                itemData.m_durability = itemData.GetMaxDurability();
+                                Player.m_localPlayer.Message(MessageHud.MessageType.Center,
+                                    Localization.instance.Localize("$msg_repaired", itemData.m_shared.m_name));
+                                break;
+                            }
+                        });
+                        OdinStore.instance.repairButton.transition = Selectable.Transition.SpriteSwap;
+                        OdinStore.instance.repairButton.spriteState = repairButtonButton.spriteState;
+                        OdinStore.instance.repairText.gameObject.SetActive(false);
+
+                    }
+                    
                 }
 
 
                 //Fill CustomTrader store
-                if (ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
+                if (ZNetScene.instance.m_prefabs.Count <= 0 )return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
                 if (!File.ReadLines(Trader20.Paths + "/trader_config.yaml").Any()) return;
@@ -119,35 +274,35 @@ namespace Trader20
                 {
                     foreach (KeyValuePair<string, ItemDataEntry> variable in store)
                     {
-                        var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
+                        var drop = ZNetScene.instance.GetPrefab(variable.Key);
                         if(drop)
                         {
-                            OdinStore.instance.AddItemToDict(drop.GetComponent<ItemDrop>(), variable.Value.ItemCostInt,
+                            var id = drop.GetComponent<ItemDrop>();
+                            if(id == null)
+                            {
+                                Trader20.knarrlogger.LogError("Failed to load ItemDrop for trader's item: " + variable.Key);
+                                continue;
+                            }
+                            OdinStore.instance.AddItemToDict(id, variable.Value.ItemCostInt,
                                 variable.Value.ItemCount, variable.Value.Invcount);
                         }
 
                         if (!drop)
                         {
-                            Debug.LogError("Failed to load trader's item: " + variable.Key);
-                            Debug.LogError("Please Check your Prefab name "+ variable.Key);
+                            Trader20.knarrlogger.LogError("Failed to load trader's item: " + variable.Key);
+                            Trader20.knarrlogger.LogError("Please Check your Prefab name "+ variable.Key);
                         }
                     }
                 }
             }
         }
 
-        [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.PrepareNetViews))]
-        public static class AvoidKnarr
-        {
-            public static bool Prefix(ZoneSystem __instance,GameObject root, List<ZNetView> views)
-            {
-                return !root.gameObject.name.StartsWith("Knarr");
-            }
-        }
-
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
         public static class SpawnKnarr
         {
+            private static GameObject tempKnarr;
+
+            [UsedImplicitly]
             private static void Prefix(ZoneSystem __instance)
             {
                 if(Trader20.RandomlySpawnKnarr!.Value == false) return;
@@ -157,15 +312,16 @@ namespace Trader20
                 knarrLocation.m_exteriorRadius = 10;
                 knarrLocation.m_hasInterior = false;
                 knarrLocation.m_noBuild = true;
-                List<ZNetView> m_nviews = new List<ZNetView>();
                 foreach (GameObject gameObject in Resources.FindObjectsOfTypeAll<GameObject>())
                 {
                     if (gameObject.name == "_Locations" && gameObject.transform.Find("Misc") is Transform locationMisc)
                     {
                         GameObject KnarrCopy = Object.Instantiate(ZNetScene.instance.GetPrefab("Knarr"), locationMisc, true);
                         KnarrCopy.name = ZNetScene.instance.GetPrefab("Knarr").name;
-                        m_nviews.AddRange(KnarrCopy.gameObject.GetComponents<ZNetView>());
-                        m_nviews.AddRange(KnarrCopy.gameObject.GetComponentsInChildren<ZNetView>());
+                        foreach (var VARIABLE in KnarrCopy.GetComponents<ZNetView>())
+                        {
+                            Object.DestroyImmediate(VARIABLE);
+                        }
                         __instance.m_locations.Add(new ZoneSystem.ZoneLocation
                         {
                             m_randomRotation = true,
@@ -174,6 +330,7 @@ namespace Trader20
                             m_maxDistance = 1500,
                             m_quantity = 5,
                             m_biome = Heightmap.Biome.BlackForest,
+                            m_prefab = ZNetScene.instance.GetPrefab("Knarr"),
                             m_prefabName = ZNetScene.instance.GetPrefab("Knarr").name,
                             m_enable = true,
                             m_minDistanceFromSimilar = 100,
@@ -182,7 +339,6 @@ namespace Trader20
                             m_unique = true,
                             m_chanceToSpawn = 100,
                             m_inForest = true,
-                            m_netViews = m_nviews
                         });
                     }
                 }
@@ -190,6 +346,9 @@ namespace Trader20
         }
 
 
+        /// <summary>
+        /// RPC to remove Knarr
+        /// </summary>
         [HarmonyPatch(typeof(Terminal), nameof(Terminal.InputText))]
         public static class RemoveKnarrCommand
         {
@@ -204,7 +363,13 @@ namespace Trader20
                         return false;
                 }
 
-                return !lower.Equals("remove knarr");
+                if (lower.Equals("find knarr"))
+                {
+                    ZRoutedRpc.instance.InvokeRoutedRPC("FindKnarrDone", Trader20.configSync.IsAdmin);
+                    return false;
+                }
+
+                return true;
             }
 
         }
