@@ -15,7 +15,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.2.1";
+        public const string ModVersion = "0.2.2";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
@@ -108,7 +108,7 @@ namespace Trader20
             OdinStore.instance.DumpDict();
             foreach (var variable in TraderConfig.Value)
             {
-                var drop = ZNetScene.instance.GetPrefab(variable.Key);
+                var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
                 if(drop)
                 {
                     var id = drop.GetComponent<ItemDrop>();

@@ -124,3 +124,7 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Gave some more graceful failures for when issues present themselves 
 * UI Will no longer open if your store is empty
 * Fixed location not being used from config for store screen 
+
+### V0.2.2
+* Fixed up RPC for Find Knarr to work on servers.
+* Added a repair icon to the store window You can set a lucky number in the config. When pressing the repair button a virtual dice will roll. If this dice hits your lucky number repairs will go through

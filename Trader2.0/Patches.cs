@@ -14,9 +14,13 @@ namespace Trader20
 {
     public class Patches
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
         public static class ZNetPatch
         {
+            [UsedImplicitly]
             public static void Prefix(ZNetScene __instance)
             {
                 if (__instance.m_prefabs.Count <= 0) return;
@@ -26,11 +30,15 @@ namespace Trader20
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [HarmonyPatch(typeof(Game), nameof(Game.Start))]
         public static class RegisterRPCPatch
         {
 
             [HarmonyPostfix]
+            [UsedImplicitly]
             public static void Postfix()
             {
                     
@@ -274,7 +282,7 @@ namespace Trader20
                 {
                     foreach (KeyValuePair<string, ItemDataEntry> variable in store)
                     {
-                        var drop = ZNetScene.instance.GetPrefab(variable.Key);
+                        var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
                         if(drop)
                         {
                             var id = drop.GetComponent<ItemDrop>();
