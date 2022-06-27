@@ -46,23 +46,6 @@ public class OdinStore : MonoBehaviour
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
-    private Dictionary<ItemDrop, GameObject> _currentInventoryObjects = new Dictionary<ItemDrop, GameObject>();
-    private static GameObject _newInvObject
-    {
-        get
-        {
-            tempObj = new GameObject();
-            var znet = tempObj.AddComponent<ZNetView>();
-            znet.m_persistent = true;
-            znet.m_type = ZDO.ObjectType.Default;
-            var zsync =tempObj.AddComponent<ZSyncTransform>();
-            zsync.m_syncPosition = true;
-            zsync.m_syncRotation = true;
-            return tempObj;
-        }
-        set => tempObj = value;
-    }
-    internal static GameObject tempObj;
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
@@ -359,12 +342,7 @@ public class OdinStore : MonoBehaviour
     /// <param name="invCount"></param>
     public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int invCount)
     {
-        GameObject test = _newInvObject;
-        Utilities.CopyComponent(itemDrop, test);
-        var component = test.GetComponent<ItemDrop>();
-        component = itemDrop;
-        _storeInventory.Add(component, new StoreInfo<int, int, int>(price, stack, invCount) );
-
+        _storeInventory.Add(itemDrop, new StoreInfo<int, int, int>(price, stack, invCount) );
     }
 
     /// <summary>
