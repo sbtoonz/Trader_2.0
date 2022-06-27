@@ -75,6 +75,9 @@
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="ShaderReplacer">
+      <HintPath>Libs\ShaderReplacer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -378,10 +381,10 @@
       <Link>Thunderstore_Release\README.md</Link>
     </Content>
     <Content Include="ILRepack.targets" />
+    <ClInclude Include="Libs\ShaderReplacer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ClInclude>
     <Content Include="trader_config.yml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Libs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServerSync\ServerSync.csproj">

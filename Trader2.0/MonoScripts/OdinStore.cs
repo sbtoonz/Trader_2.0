@@ -51,18 +51,18 @@ public class OdinStore : MonoBehaviour
     {
         get
         {
-            var obj = new GameObject();
-            var znet = obj.AddComponent<ZNetView>();
+            tempObj = new GameObject();
+            var znet = tempObj.AddComponent<ZNetView>();
             znet.m_persistent = true;
             znet.m_type = ZDO.ObjectType.Default;
-            
-            var zsync =obj.AddComponent<ZSyncTransform>();
+            var zsync =tempObj.AddComponent<ZSyncTransform>();
             zsync.m_syncPosition = true;
             zsync.m_syncRotation = true;
-            obj.AddComponent<ItemDrop>();
-            return obj;
+            return tempObj;
         }
+        set => tempObj = value;
     }
+    internal static GameObject tempObj;
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
@@ -250,21 +250,18 @@ public class OdinStore : MonoBehaviour
     {
         var inv = Player.m_localPlayer.GetInventory();
         var itemDrop = _storeInventory.ElementAt(i).Key;
-        
+
         if (itemDrop == null || itemDrop.m_itemData == null) return;
         
-        var stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
+        int stack = Mathf.Min(_storeInventory.ElementAt(i).Value.Stack, itemDrop.m_itemData.m_shared.m_maxStackSize);
+        int quality = itemDrop.m_itemData.m_quality;
+        int variant = itemDrop.m_itemData.m_variant;
         itemDrop.m_itemData.m_dropPrefab = ObjectDB.instance.GetItemPrefab(itemDrop.gameObject.name);
-        itemDrop.m_itemData.m_stack = stack;
         itemDrop.m_itemData.m_durability = itemDrop.m_itemData.GetMaxDurability();
-        
-        if (inv.CanAddItem(itemDrop.m_itemData))
+        if (inv.AddItem(itemDrop.name, stack, quality, variant, 0L, "") != null)
         {
-            if (inv.AddItem(itemDrop.m_itemData, stack, inv.FindEmptySlot(false).x, inv.FindEmptySlot(false).y))
-            {
-                Player.m_localPlayer.ShowPickupMessage(itemDrop.m_itemData, stack);
-                Gogan.LogEvent("Game", "BoughtItem", itemDrop.m_itemData.m_dropPrefab.name, 0L);
-            }
+            Player.m_localPlayer.ShowPickupMessage(itemDrop.m_itemData, stack);
+            Gogan.LogEvent("Game", "BoughtItem", itemDrop.m_itemData.m_dropPrefab.name, 0L);
         }
         else
         {
@@ -363,8 +360,9 @@ public class OdinStore : MonoBehaviour
     public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int invCount)
     {
         GameObject test = _newInvObject;
+        Utilities.CopyComponent(itemDrop, test);
         var component = test.GetComponent<ItemDrop>();
-        component.CopyChildrenComponents<ItemDrop, ItemDrop>(itemDrop);
+        component = itemDrop;
         _storeInventory.Add(component, new StoreInfo<int, int, int>(price, stack, invCount) );
 
     }

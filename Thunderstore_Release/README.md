@@ -128,3 +128,9 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.2.2
 * Fixed up RPC for Find Knarr to work on servers.
 * Added a repair icon to the store window You can set a lucky number in the config. When pressing the repair button a virtual dice will roll. If this dice hits your lucky number repairs will go through
+
+
+### V0.2.3
+* Fixed some annoying stack bug that was introduced in recent update 
+* updated ServerSync to newest master 
+* Knarr is now using the in game 'creature' shader which should give him a better feeling look in game

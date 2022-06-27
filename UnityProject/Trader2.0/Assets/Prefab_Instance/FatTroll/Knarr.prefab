@@ -92,36 +92,6 @@ Transform:
   m_Father: {fileID: 619594991707606903}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &367286806270097473
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 529284805447153640}
-  m_Layer: 0
-  m_Name: PhysCamera001.Target
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &529284805447153640
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 367286806270097473}
-  m_LocalRotation: {x: -0.03954733, y: 0.10202238, z: 0.0040591187, w: 0.99398744}
-  m_LocalPosition: {x: -0.32198557, y: 1.633833, z: -0.15684004}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2814539896897709010}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &633035007678133079
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,7 +769,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2814539896897709010}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &9143689905146564525
 SkinnedMeshRenderer:
@@ -816,6 +786,7 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1059,7 +1030,7 @@ Transform:
   m_Children:
   - {fileID: 6853688845249708509}
   m_Father: {fileID: 2814539896897709010}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3863760452599394033
 GameObject:
@@ -1120,36 +1091,6 @@ Transform:
   m_Children:
   - {fileID: 7152440908374276685}
   m_Father: {fileID: 7357010138079243206}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4837654352018614405
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 982069285315100842}
-  m_Layer: 0
-  m_Name: PhysCamera001
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &982069285315100842
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4837654352018614405}
-  m_LocalRotation: {x: -0.039547347, y: 0.10202238, z: 0.00405912, w: 0.99398744}
-  m_LocalPosition: {x: 2.380906, y: 2.6942818, z: 12.8713665}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2814539896897709010}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5036272641793572569
@@ -1366,8 +1307,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 982069285315100842}
-  - {fileID: 529284805447153640}
   - {fileID: 4453680523120708016}
   - {fileID: 4763236016330767714}
   m_Father: {fileID: 1799084277105643369}
@@ -1634,6 +1573,7 @@ GameObject:
   - component: {fileID: 8248588759842237965}
   - component: {fileID: 5212895232100809140}
   - component: {fileID: 6535820988851220605}
+  - component: {fileID: 537103611309112549}
   m_Layer: 0
   m_Name: Knarr
   m_TagString: Untagged
@@ -1916,6 +1856,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_offset: 0
+--- !u!114 &537103611309112549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6458935346658124851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc4b029062ba12e4cb6e29523043deee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _renderers:
+  - {fileID: 9143689905146564525}
 --- !u!1 &6672571811596794341
 GameObject:
   m_ObjectHideFlags: 0

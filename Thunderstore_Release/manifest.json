@@ -2,9 +2,9 @@
  "name": "KnarrTheTrader",
   "author": "OdinPlus",
   "description": "Knarr, you know Haldors cousin!",
-  "version_number": "0.2.2",
+  "version_number": "0.2.3",
   "website_url": "https://github.com/sbtoonz/Trader_2.0",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.1900"
+    "denikson-BepInExPack_Valheim-5.4.1901"
   ]
 }
