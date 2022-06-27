@@ -373,7 +373,7 @@ namespace Trader20
 
                 if (lower.Equals("find knarr"))
                 {
-                    ZRoutedRpc.instance.InvokeRoutedRPC("FindKnarrDone", Trader20.configSync.IsAdmin);
+                    ZRoutedRpc.instance.InvokeRoutedRPC("FindKnarrDone", true);
                     return false;
                 }
 

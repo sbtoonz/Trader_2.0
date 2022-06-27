@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Trader20;
+using Unity.Burst;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -44,8 +45,24 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image repairHammerImage;
     
     //StoreInventoryListing
-    internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new();
-    
+    internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
+    private Dictionary<ItemDrop, GameObject> _currentInventoryObjects = new Dictionary<ItemDrop, GameObject>();
+    private static GameObject _newInvObject
+    {
+        get
+        {
+            var obj = new GameObject();
+            var znet = obj.AddComponent<ZNetView>();
+            znet.m_persistent = true;
+            znet.m_type = ZDO.ObjectType.Default;
+            
+            var zsync =obj.AddComponent<ZSyncTransform>();
+            zsync.m_syncPosition = true;
+            zsync.m_syncRotation = true;
+            obj.AddComponent<ItemDrop>();
+            return obj;
+        }
+    }
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
@@ -186,25 +203,38 @@ public class OdinStore : MonoBehaviour
     /// <summary>
     /// Async task that reads all items in store inventory and then adds them to display list
     /// </summary>
+    ///
     private async Task  ReadItems()
     {
-        foreach (var itemData in _storeInventory)
+        try
         {
-            if (Trader20.Trader20.OnlySellKnownItems.Value)
+            foreach (var itemData in _storeInventory)
             {
-                if(Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+                if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
+                {
+                    if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+                    {
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+                    }
+                }
+                else
                 {
                     AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
-                } 
-            }
-            else
-            {
-                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
-            }
-           
-        }
+                }
 
-        await Task.Yield();
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+        finally
+        {
+            await Task.Yield(); 
+        }
+        
+
+        
     }
 
     private async Task ReadAllItems()
@@ -332,7 +362,10 @@ public class OdinStore : MonoBehaviour
     /// <param name="invCount"></param>
     public void AddItemToDict(ItemDrop itemDrop, int price, int stack, int invCount)
     {
-        _storeInventory.Add(itemDrop, new StoreInfo<int, int, int>(price, stack, invCount) );
+        GameObject test = _newInvObject;
+        var component = test.GetComponent<ItemDrop>();
+        component.CopyChildrenComponents<ItemDrop, ItemDrop>(itemDrop);
+        _storeInventory.Add(component, new StoreInfo<int, int, int>(price, stack, invCount) );
 
     }
 

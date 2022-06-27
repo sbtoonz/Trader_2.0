@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace Trader20
 {
-    public class Utilities
+    public static class Utilities
     {
         internal static AssetBundle? LoadAssetBundle(string bundleName)
         {
@@ -26,55 +29,94 @@ namespace Trader20
                 zNetScene.m_namedPrefabs.Add(hashcode, obj);
             }
         }
+        public static int seed = 0;
+        internal static T? CopyChildrenComponents<T, TU>(this Component comp, TU other) where T : Component
+		{
+			IEnumerable<FieldInfo> finfos = comp.GetType().GetFields(BindingFlags);
+			foreach (var finfo in finfos)
+			{
+				finfo.SetValue(comp, finfo.GetValue(other));
+			}
+			return comp as T;
+		}
+		private const BindingFlags BindingFlags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.GetField;
+		private static T? GetCopyOf<T>(this Component comp, T other) where T : Component
+		{
+			Type type = comp.GetType();
+			if (type != other.GetType()) return null; // type mis-match
 
-        internal static Recipe RecipeMaker(int ammount, ItemDrop item, CraftingStation craftingStation, 
-            CraftingStation repair, int level, Piece.Requirement[] resources)
-        {
-            Recipe temp = ScriptableObject.CreateInstance<Recipe>();
-            //temp = Recipe.CreateInstance<Recipe>();
-            temp.m_amount = ammount;
-            temp.m_enabled = true;
-            temp.m_item = item;
-            temp.m_craftingStation = craftingStation;
-            temp.m_repairStation = repair;
-            temp.m_minStationLevel = level;
-            temp.m_resources = resources;
+			List<Type> derivedTypes = new List<Type>();
+			Type derived = type.BaseType;
+			while (derived != null)
+			{
+				if (derived == typeof(MonoBehaviour))
+				{
+					break;
+				}
+				derivedTypes.Add(derived);
+				derived = derived.BaseType;
+			}
 
+			IEnumerable<PropertyInfo> pinfos = type.GetProperties(BindingFlags);
 
-            return temp;
-        }
+			foreach (Type derivedType in derivedTypes)
+			{
+				pinfos = pinfos.Concat(derivedType.GetProperties(BindingFlags));
+			}
 
-        internal static CraftingStation Station(string name)
-        {
-            var tmp = ZNetScene.instance.GetPrefab(name);
-            return tmp.GetComponent<CraftingStation>();
-        }
+			pinfos = from property in pinfos
+					 where !(type == typeof(Rigidbody) && property.Name == "inertiaTensor") // Special case for Rigidbodies inertiaTensor which isn't catched for some reason.
+					 where !property.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(ObsoleteAttribute))
+					 select property;
+			foreach (var pinfo in pinfos)
+			{
+				if (pinfo.CanWrite)
+				{
+					if (pinfos.Any(e => e.Name == $"shared{char.ToUpper(pinfo.Name[0])}{pinfo.Name.Substring(1)}"))
+					{
+						continue;
+					}
+					try
+					{
+						pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
+					}
+					catch { } // In case of NotImplementedException being thrown. For some reason specifying that exception didn't seem to catch it, so I didn't catch anything specific.
+				}
+			}
 
-        internal static void AddtoZnet(GameObject GO, ZNetScene scene)
-        {
-            var hash = GO.GetHashCode();
-            scene.m_prefabs.Add(GO);
-            scene.m_namedPrefabs.Add(hash, GO);
-        }
-        
-        internal static ItemDrop ReturnItemDrop(GameObject gameObject)
-        {
-            var drop = gameObject.GetComponent<ItemDrop>();
+			IEnumerable<FieldInfo> finfos = type.GetFields(BindingFlags);
 
-            return drop;
-        }
-        
-        internal static GameObject RetrieveGO(string name)
-        {
-            var fab = ObjectDB.instance.GetItemPrefab(name);
-            return fab;
-        }
+			foreach (var finfo in finfos)
+			{
 
-        internal static void AddToConsume(MonsterAI monsterAI, string Name, ObjectDB objectDB)
-        {
-            var tmp=objectDB.GetItemPrefab(Name);
-            var drop = tmp.GetComponent<ItemDrop>();
-            monsterAI.m_consumeItems.Add(drop);
-        }
+				foreach (Type derivedType in derivedTypes)
+				{
+					if (finfos.Any(e => e.Name == $"shared{char.ToUpper(finfo.Name[0])}{finfo.Name.Substring(1)}"))
+					{
+						continue;
+					}
+					finfos = finfos.Concat(derivedType.GetFields(BindingFlags));
+				}
+			}
+
+			foreach (var finfo in finfos)
+			{
+				finfo.SetValue(comp, finfo.GetValue(other));
+			}
+
+			finfos = from field in finfos
+					 where field.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(ObsoleteAttribute))
+					 select field;
+			foreach (var finfo in finfos)
+			{
+				finfo.SetValue(comp, finfo.GetValue(other));
+			}
+
+			return comp as T;
+		}
+		public static T? AddComponentcc<T>(this GameObject go, T toAdd) where T : Component
+		{
+			return go.AddComponent(toAdd.GetType()).GetCopyOf(toAdd) as T;
+		}
     }
 }

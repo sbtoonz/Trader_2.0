@@ -378,13 +378,13 @@
       <Link>Thunderstore_Release\README.md</Link>
     </Content>
     <Content Include="ILRepack.targets" />
-    <Content Include="Libs\ServerSync.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="trader_config.yml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ServerSync\ServerSync.csproj">
+    <Folder Include="Libs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ServerSync\ServerSync.csproj">
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>
