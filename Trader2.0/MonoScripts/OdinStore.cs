@@ -123,7 +123,7 @@ public class OdinStore : MonoBehaviour
           await ReadAllStoreItems();
         }
    }
-
+    
     internal async void ForceClearStore()
     {
         foreach (var go in CurrentStoreList)
@@ -484,6 +484,7 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         }
+        FillPlayerSaleList();
         UpdateCoins();
     }
 
@@ -549,6 +550,7 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
+            //Todo: Write a method that can scan a user populated YML file to give the cost of this item and write some other method to also addt his to the "for sale" list if a config flag is set = true
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  0, SellListRoot);            
         }
     }
