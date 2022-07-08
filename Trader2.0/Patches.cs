@@ -165,9 +165,9 @@ namespace Trader20
                         anchor.anchoredPosition= Trader20.StoreScreenPos!.Value;
                         
                         
-                        OdinStore.instance.ButtonImage!.sprite =
+                        OdinStore.instance.BuyButtonImage!.sprite =
                             __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
-                        
+                        OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         var bkg1 = __instance.transform.Find("Store/AugaPanelBase/Background").gameObject;
                         var test = bkg1.GetComponent<Image>();
                         OdinStore.instance.Bkg2!.sprite = test.sprite;
@@ -195,8 +195,9 @@ namespace Trader20
                         OdinStore.instance.Coins.transform.localPosition = new Vector3(-174.054f, 308.3599f, 0);
                         OdinStore.instance.SelectedCost.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
                         OdinStore.instance.InvCountPanel.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
-                        OdinStore.instance.ButtonImage!.sprite =
+                        OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
+                        OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         AuguaSetupRan = true;
                     }
                     else
@@ -217,8 +218,9 @@ namespace Trader20
                         anchor.anchoredPosition= __instance.m_listRoot.anchoredPosition;
                     
                         OdinStore.instance.Coins!.sprite = Trader20.Coins;
-                        OdinStore.instance.ButtonImage!.sprite =
+                        OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
+                        OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         var bkg1 = Object.Instantiate(__instance.transform.Find("Store/bkg").GetComponent<Image>());
                         OdinStore.instance.Bkg1!.sprite = bkg1.sprite;
                         OdinStore.instance.Bkg1.material = bkg1.material;
@@ -248,7 +250,6 @@ namespace Trader20
                             Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Rolling dice");
                             var temp = OdinStore.instance.RollTheDice();
                             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Result is "+ temp);
-                            Debug.Log("Dice result: " + temp.ToString());
                             if (temp != Trader20.LuckyNumber!.Value) return;
                             Player.m_localPlayer.GetInventory().GetWornItems(m_wornItems);
                             foreach (var itemData in m_wornItems.Where(itemData => itemData.m_durability < itemData.GetMaxDurability()))

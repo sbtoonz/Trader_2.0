@@ -134,3 +134,7 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Fixed some annoying stack bug that was introduced in recent update 
 * updated ServerSync to newest master 
 * Knarr is now using the in game 'creature' shader which should give him a better feeling look in game
+
+### V0.2.4
+* Fix bug caught by Horem (interferes with Jewelcrafting and OdinsQOL)
+* Changed the way the PlayerBase effectArea was made so you cant interact with knarr from super far now 

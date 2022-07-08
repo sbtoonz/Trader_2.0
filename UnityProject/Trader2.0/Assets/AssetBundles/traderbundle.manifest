@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4235937529
+CRC: 2415125021
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2201a763aa81365de17f74569b937051
+    Hash: 1e396d2d1a799345bdc1b2736b061716
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 80f0214fda13c05ecf2e2475f261c669
+    Hash: 9dd74bb4935ddf705fc6279f0e7d888f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -76,17 +76,21 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 5aed9a4da95cb5d4bb29063f343ffb2f, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 66aa8387d0a846e44831bc805bd3446d, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 7eced40c5f892d4479c84ff0e4865094, type: 3}
 - Class: 114
+  Script: {fileID: -1593939647, guid: 9f9f52833cc29a54c93d686c6439c791, type: 3}
+- Class: 114
   Script: {fileID: 182242463, guid: 9f9f52833cc29a54c93d686c6439c791, type: 3}
+- Class: 114
+  Script: {fileID: -259742986, guid: 9f9f52833cc29a54c93d686c6439c791, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c9b0d0e4b560e794882856b79505d3da, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 5aed9a4da95cb5d4bb29063f343ffb2f, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -109,6 +113,8 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentListenerMode
 - AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent
+- AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.RectOffset
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.AnimationTriggers
@@ -128,6 +134,8 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.UI.Scrollbar/ScrollEvent
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.SpriteState
+- AssemblyName: assembly_guiutils
+  ClassName: TabHandler/Tab
 - AssemblyName: assembly_valheim
   ClassName: EffectList
 - AssemblyName: assembly_valheim

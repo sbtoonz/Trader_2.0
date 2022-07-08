@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerBaseMaker : MonoBehaviour
@@ -15,5 +16,6 @@ public class PlayerBaseMaker : MonoBehaviour
         var sphere = temp.AddComponent<SphereCollider>();
         sphere.radius = 5;
         sphere.isTrigger = true;
+        _playerBase.m_statusEffect = "SE_Cozy";
     }
 }

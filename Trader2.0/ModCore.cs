@@ -15,7 +15,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.2.3";
+        public const string ModVersion = "0.2.4";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
@@ -37,12 +37,10 @@ namespace Trader20
         internal static ConfigEntry<bool>? LOGStoreSales;
         internal static ConfigEntry<bool>? OnlySellKnownItems;
         internal static ConfigEntry<int>? LuckyNumber;
+        internal static ConfigEntry<bool>? ShowMatsWhenHidingRecipes;
 
         internal static ManualLogSource knarrlogger = new ManualLogSource(ModName);
         
-
-        private static Trader20 m_instance = null!;
-        internal static Trader20 instance => m_instance;
         ConfigEntry<T> config<T>(string group, string configName, T value, ConfigDescription description, bool synchronizedSetting = true)
         {
             ConfigEntry<T> configEntry = Config.Bind(group, configName, value, description);
@@ -89,6 +87,9 @@ namespace Trader20
             OnlySellKnownItems = config("General", "Only sell known recipes", false,
                 "If set true Knarr will only vend a player recipes the player has discovered already");
 
+            ShowMatsWhenHidingRecipes = config("General", "Sell Mats when hiding unknown recipes", false,
+                "If set true ");
+
             LuckyNumber = config("General", "Lucky Number for repairs", 6,
                 new ConfigDescription(
                     "This is the lucky number for your repair button if you roll this number your repairs will go through",
@@ -102,8 +103,7 @@ namespace Trader20
                     File.Create(Paths + "/TraderSales.log");
                 }
             }
-            
-            m_instance = this;
+            Game.isModded = true;
         }
         private static void OnValChangUpdateStore()
         {

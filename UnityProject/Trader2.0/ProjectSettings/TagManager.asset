@@ -3,7 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - snappoint
+  - StationUseArea
+  - roof
+  - spawned
+  - leaky
+  - minerock
+  - icon
+  - name
+  - price
+  - stack
   layers:
   - Default
   - TransparentFX

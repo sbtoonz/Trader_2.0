@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Trader20;
-using Unity.Burst;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -17,11 +16,13 @@ public class OdinStore : MonoBehaviour
     
     [SerializeField] private GameObject? m_StorePanel;
     [SerializeField] private RectTransform? ListRoot;
+    [SerializeField] private RectTransform? SellListRoot;
     [SerializeField] private Text? SelectedItemDescription;
     [SerializeField] private Image? ItemDropIcon;
     [SerializeField] internal Text? SelectedCost;
     [SerializeField] private Text? StoreTitle;
     [SerializeField] private Button? BuyButton;
+    [SerializeField] private Button? SellButton;
     [SerializeField] private Text? SelectedName;
 
     [SerializeField] private Text InventoryCount;
@@ -34,8 +35,9 @@ public class OdinStore : MonoBehaviour
     //ElementData
     [SerializeField] private GameObject? ElementGO;
 
-    [SerializeField] private NewTrader? _trader;
-    [SerializeField] internal Image? ButtonImage;
+    [SerializeField] private NewTrader? _trader; 
+    [SerializeField] internal Image? BuyButtonImage;
+    [SerializeField] internal Image? SellButtonImage;
     [SerializeField] internal Image? Coins;
 
     [SerializeField] internal RectTransform RepairRect;
@@ -46,16 +48,18 @@ public class OdinStore : MonoBehaviour
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
+
     public static OdinStore instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
     internal List<GameObject> CurrentStoreList = new();
     internal List<ElementFormat> _elements = new();
+    private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
     private void Awake() 
     {
         m_instance = this;
-        var rect = m_StorePanel.transform as RectTransform;
-        rect.anchoredPosition = Trader20.Trader20.StoreScreenPos.Value;
+        var rect = m_StorePanel?.transform as RectTransform;
+        rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos.Value;
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
     }
@@ -116,7 +120,7 @@ public class OdinStore : MonoBehaviour
             }
             
             CurrentStoreList.Clear();
-          await ReadAllItems();
+          await ReadAllStoreItems();
         }
    }
 
@@ -128,7 +132,7 @@ public class OdinStore : MonoBehaviour
         }
             
         CurrentStoreList.Clear();
-       await ReadAllItems();
+       await ReadAllStoreItems();
     }
 
     /// <summary>
@@ -138,7 +142,7 @@ public class OdinStore : MonoBehaviour
     /// <param name="stack"></param>
     /// <param name="cost"></param>
     /// <param name="invCount"></param>
-    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount)
+    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements)
     {
         ElementFormat newElement = new();
         newElement.Drop = drop;
@@ -162,7 +166,7 @@ public class OdinStore : MonoBehaviour
             1 => "",
             _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
         };
-        var elementthing = Instantiate(newElement.Element, ListRoot!.transform, false);
+        var elementthing = Instantiate(newElement.Element, rectForElements!.transform, false);
         elementthing.GetComponent<Button>().onClick.AddListener(delegate
         {
             UpdateGenDescription(newElement);
@@ -177,7 +181,7 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         });
-        elementthing.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
+        elementthing.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
         elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
         _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
@@ -187,7 +191,7 @@ public class OdinStore : MonoBehaviour
     /// Async task that reads all items in store inventory and then adds them to display list
     /// </summary>
     ///
-    private async Task  ReadItems()
+    private async Task  ReadStoreItems()
     {
         try
         {
@@ -197,12 +201,16 @@ public class OdinStore : MonoBehaviour
                 {
                     if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
                     {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
+                    }
+                    else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material)
+                    {
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
                     }
                 }
                 else
                 {
-                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount);
+                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
                 }
 
             }
@@ -220,9 +228,9 @@ public class OdinStore : MonoBehaviour
         
     }
 
-    private async Task ReadAllItems()
+    private async Task ReadAllStoreItems()
     {
-        await ReadItems();
+        await Task.WhenAny(ReadStoreItems());
     }
 
     /// <summary>
@@ -251,9 +259,10 @@ public class OdinStore : MonoBehaviour
             //spawn item on ground if no inventory room
             var vector = Random.insideUnitSphere * 0.5f;
             var transform1 = Player.m_localPlayer.transform;
-            Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
+            var go =Instantiate(_storeInventory.ElementAt(i).Key.gameObject,
                 transform1.position + transform1.forward * 2f + Vector3.up + vector,
                 Quaternion.identity);
+            go.GetComponent<ItemDrop>().m_itemData.m_stack = stack;
         }
         switch (_storeInventory.ElementAt(i).Value.InvCount)
         {
@@ -478,14 +487,17 @@ public class OdinStore : MonoBehaviour
         UpdateCoins();
     }
 
-    
+    private static GameObject CurrentCurrency()
+    {
+        return ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName!.Value);
+    }
     /// <summary>
     /// Returns the players coin count as int
     /// </summary>
     /// <returns>Player Coin Count as int</returns>
     private static int GetPlayerCoins()
     {
-        return Player.m_localPlayer.GetInventory().CountItems(ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+        return Player.m_localPlayer.GetInventory().CountItems(CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
     }
 
     /// <summary>
@@ -495,6 +507,11 @@ public class OdinStore : MonoBehaviour
     {
         _storeInventory.Clear();
     }
+    
+    /// <summary>
+    /// Returns a random integer between 1 and 6
+    /// </summary>
+    /// <returns></returns>
     
     internal int RollTheDice()
     {
@@ -519,8 +536,56 @@ public class OdinStore : MonoBehaviour
         
         return false;
     }
+
+    public void FillPlayerSaleList()
+    {
+        StartCoroutine(SetupPlayerItemList());
+        if (SellListRoot.transform.childCount >= 1)
+        {
+            foreach (Transform transform in SellListRoot.transform)
+            {
+                Destroy(transform.gameObject);
+            }
+        }
+        foreach (var itemData in m_tempItems)
+        {
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  0, SellListRoot);            
+        }
+    }
+
+    private IEnumerator SetupPlayerItemList()
+    {
+        var playerInv = Player.m_localPlayer.GetInventory();
+        var playerItems = playerInv.GetAllItems();
+        m_tempItems = playerItems;
+        yield break;
+    }
+
+    public void OnBuyItem()
+    {
+        ItemDrop.ItemData sellableItem = GetSellableItem();
+        if (sellableItem != null)
+        {
+            int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
+            Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
+            Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
+            string text = "";
+            text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
+            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
+            //FillList(); ... all of the list? or should we only repop the player list on this func?
+            Gogan.LogEvent("Game", "SoldItem", text, 0L);
+        }
+    }
+    private ItemDrop.ItemData? GetSellableItem()
+    {
+        m_tempItems.Clear();
+        Player.m_localPlayer.GetInventory().GetValuableItems(m_tempItems);
+        return m_tempItems.FirstOrDefault(tempItem => tempItem?.m_shared.m_name != CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
+    }
     
 }
+
+[Serializable]
 public class StoreInfo<ItemCost, ItemStack, ItemInventoryCount> {
     public StoreInfo(ItemCost cost, ItemStack stack, ItemInventoryCount count) {
         Cost = cost;
@@ -528,7 +593,7 @@ public class StoreInfo<ItemCost, ItemStack, ItemInventoryCount> {
         InvCount = count;
     }
 
-    public ItemCost Cost { get; set; } = default!;
-    public ItemStack Stack { get; set; } = default!;
-    public ItemInventoryCount InvCount { get; set; } = default!;
+    public ItemCost Cost { get; set; }
+    public ItemStack Stack { get; set; }
+    public ItemInventoryCount InvCount { get; set; }
 };

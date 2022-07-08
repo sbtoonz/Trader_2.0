@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -11,24 +12,26 @@ public class OdinStore : MonoBehaviour
     
     [SerializeField] private GameObject m_StorePanel;
     [SerializeField] private RectTransform ListRoot;
+    [SerializeField] private RectTransform SellListRoot;
     [SerializeField] private Text SelectedItemDescription;
     [SerializeField] private Image ItemDropIcon;
     [SerializeField] internal Text SelectedCost;
     [SerializeField] private Text StoreTitle;
     [SerializeField] private Button BuyButton;
+    [SerializeField] private Button SellButton;
     [SerializeField] private Text SelectedName;
     [SerializeField] private Text InventoryCount;
     [SerializeField] internal GameObject InvCountPanel;
 
     [SerializeField] internal Image Bkg1;
     [SerializeField] internal Image Bkg2;
-        
-        
-        //ElementData
+
+    //ElementData
     [SerializeField] private GameObject ElementGO;
     
     [SerializeField] private NewTrader _trader; 
-    [SerializeField] internal Image ButtonImage;
+    [SerializeField] internal Image BuyButtonImage;
+    [SerializeField] internal Image SellButtonImage;
     [SerializeField] internal Image Coins;
     
     [SerializeField] internal RectTransform RepairRect;
@@ -39,6 +42,7 @@ public class OdinStore : MonoBehaviour
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
+    private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
     public static OdinStore instance => m_instance;
     internal static ElementFormat tempElement;
     internal static Material litpanel;
@@ -58,6 +62,11 @@ public class OdinStore : MonoBehaviour
         {
             Debug.Log(ex);
         }
+    }
+
+    private void OnBuyItem()
+    {
+        
     }
 
     private void OnGUI()
@@ -218,6 +227,10 @@ public class OdinStore : MonoBehaviour
            NewTrader.instance.OnSold();
        }
     }
+    
+    public void FillPlayerSaleList()
+    {
+    }
 
     private bool CanBuy(int i)
     {
@@ -254,7 +267,8 @@ public class OdinStore : MonoBehaviour
         internal int Price;
         internal ItemDrop _drop;
     }
-    public void Hide()
+
+    private void Hide()
     {
         m_StorePanel.SetActive(false);
     }
