@@ -18,8 +18,6 @@ public class GUIShaderSwapper : MonoBehaviour
                 litgui = VARIABLE;
             }
         }
-        CanvasRenderers = GetComponentsInChildren<CanvasRenderer>();
-
         foreach (var VARIABLE in Images)
         {
             VARIABLE.material = litgui;

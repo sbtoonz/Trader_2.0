@@ -64,7 +64,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    private void OnBuyItem()
+    public void OnBuyItem()
     {
         
     }
@@ -231,6 +231,7 @@ public class OdinStore : MonoBehaviour
     public void FillPlayerSaleList()
     {
     }
+    
 
     private bool CanBuy(int i)
     {

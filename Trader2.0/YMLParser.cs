@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -33,7 +34,33 @@ namespace Trader20
             var tmp = deserializer.Deserialize<Dictionary<string, ItemDataEntry>>(s);
             return tmp;
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataEntries"></param>
+        /// <param name="keyName"></param>
+        /// <returns></returns>
+        internal static bool CheckForEntry(Dictionary<string, ItemDataEntry> dataEntries, string keyName)
+        {
+            return dataEntries.ContainsKey(keyName);
+        }
+        
+        /// <summary>
+        /// Appends the YML file with items you have sold Knarr
+        /// </summary>
+        /// <param name="s"></param>
+        internal static void AppendYmLfile(string s)
+        {
+            //Todo:Write method that checks the dictionary for existing entry and just updates the inventory count if player sells to knarr
+            string file = Trader20.Paths + "/trader_config.yaml";
+            using var sw = File.AppendText(file);
+            sw.WriteLineAsync(s);
+        }
     }
+    
+    
 
     /// <summary>
     /// Structure for YML

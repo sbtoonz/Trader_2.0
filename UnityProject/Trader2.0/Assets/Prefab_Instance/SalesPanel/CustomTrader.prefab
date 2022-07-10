@@ -962,9 +962,6 @@ MonoBehaviour:
   - {fileID: 222437334104906310}
   - {fileID: 222065484128400268}
   - {fileID: 222756290423891110}
-  - {fileID: 222962568328664869}
-  - {fileID: 222420826198506751}
-  - {fileID: 222817926390585498}
   - {fileID: 4316956781077911982}
   - {fileID: 2605929720869000921}
   - {fileID: 295637082901222410}
@@ -993,7 +990,6 @@ MonoBehaviour:
   - {fileID: 4295840153576082979}
   - {fileID: 114625718117257270}
   - {fileID: 114364093007178536}
-  - {fileID: 114984282836671415}
   - {fileID: 7781527176837735417}
   - {fileID: 1822552813612997784}
   - {fileID: 114960693980261177}
@@ -2711,8 +2707,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5494880942761007943}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: BuyButtonAction
+        m_TargetAssemblyTypeName: OdinStore, Trader20
+        m_MethodName: OnBuyItem
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
