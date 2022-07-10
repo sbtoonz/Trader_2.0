@@ -142,6 +142,7 @@ public class OdinStore : MonoBehaviour
     /// <param name="stack"></param>
     /// <param name="cost"></param>
     /// <param name="invCount"></param>
+    /// <param name="rectForElements"></param>
     public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements)
     {
         ElementFormat newElement = new();
@@ -484,7 +485,7 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         }
-        FillPlayerSaleList();
+        FillPlayerItemListVoid();
         UpdateCoins();
     }
 
@@ -538,9 +539,30 @@ public class OdinStore : MonoBehaviour
         return false;
     }
 
-    public void FillPlayerSaleList()
+    /// <summary>
+    /// 
+    /// </summary>
+    public async void FillPlayerItemListVoid()
     {
-        StartCoroutine(SetupPlayerItemList());
+        await FillPlayerSaleList();
+    }
+    private async Task FillPlayerSaleList()
+    {
+        await Task.WhenAny(SetupPlayerItemListTask());
+    }
+
+    private async Task SetupPlayerItemListTask()
+    {
+       //m_tempItems.Clear();
+        var playerInv = Player.m_localPlayer.GetInventory();
+        var playerItems = playerInv.GetAllItems();
+        /*foreach (var item in playerItems)
+        {
+            m_tempItems.Add(item);
+        }*/
+        
+        m_tempItems = playerItems;
+        
         if (SellListRoot.transform.childCount >= 1)
         {
             foreach (Transform transform in SellListRoot.transform)
@@ -550,20 +572,9 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
-              AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  0, SellListRoot);            
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot);            
         }
-    }
-
-    private IEnumerator SetupPlayerItemList()
-    {
-        m_tempItems.Clear();
-        var playerInv = Player.m_localPlayer.GetInventory();
-        var playerItems = playerInv.GetAllItems();
-        foreach (var item in playerItems)
-        {
-            m_tempItems.Add(item);
-        }
-        yield break;
+        await Task.Yield();
     }
 
     /// <summary>
@@ -571,58 +582,56 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void OnBuyItem()
     {
-        ItemDrop.ItemData sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name); 
-        if (sellableItem != null)
-        {
-            int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
-            Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
-            Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
-            string text = "";
-            text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
-            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
-            Gogan.LogEvent("Game", "SoldItem", text, 0L);
+        // ReSharper disable once Unity.NoNullPropagation
+        var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name);
+        if (sellableItem == null) return;
+        int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
+        Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
+        Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
+        string text = "";
+        text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
+        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
+        Gogan.LogEvent("Game", "SoldItem", text, 0L);
             
-            //Check for existing entry
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+        //Check for existing entry
+        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+        file.Close();
+        if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+        {
+            if (currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test))
             {
-                //var itemDataEntry = currentList[sellableItem.m_dropPrefab.name];
-                //itemDataEntry.Invcount += sellableItem.m_stack;
-                if (currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test))
-                {
                     
-                    test.Invcount += sellableItem.m_stack;
-                    currentList[sellableItem.m_dropPrefab.name] = test;
-                    var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                test.Invcount += sellableItem.m_stack;
+                currentList[sellableItem.m_dropPrefab.name] = test;
+                var tempdict = YMLParser.Serializers(currentList);
+                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
                     
-                }
-            }else
-            {
-                //Setup the data entry for the YML file 
-                var entry = new ItemDataEntry();
-                entry.Invcount += sellableItem.m_stack;
-                entry.ItemCount += sellableItem.m_stack;
-                //if none found make an entry
-                Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-                var serializeddata = YMLParser.Serializers(itemDataEntries);
-                YMLParser.AppendYmLfile(serializeddata);
             }
-            m_tempItems.Clear();
-            var playerInv = Player.m_localPlayer.GetInventory();
-            var playerItems = playerInv.GetAllItems();
-            foreach (var item in playerItems)
+        }else
+        {
+            //Setup the data entry for the YML file 
+            var entry = new ItemDataEntry();
+            entry.Invcount += sellableItem.m_stack;
+            entry.ItemCount += sellableItem.m_stack;
+            //if none found make an entry
+            Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+            itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+            var serializeddata = YMLParser.Serializers(itemDataEntries);
+            YMLParser.AppendYmLfile(serializeddata);
+        }
+        if (SellListRoot.transform.childCount >= 1)
+        {
+            foreach (Transform transform in SellListRoot.transform)
             {
-                m_tempItems.Add(item);
-            }
-            foreach (var itemData in m_tempItems)
-            {
-                AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  0, SellListRoot);            
+                Destroy(transform.gameObject);
             }
         }
+        foreach (var itemData in m_tempItems)
+        {
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot);            
+        }
+        UpdateGenDescription(_elements[0]);
     }
 }
 

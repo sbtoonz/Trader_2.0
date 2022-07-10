@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -228,7 +229,10 @@ public class OdinStore : MonoBehaviour
        }
     }
     
-    public void FillPlayerSaleList()
+    public async void FillPlayerItemListVoid()
+    {
+    }
+    public async Task FillPlayerSaleList()
     {
     }
     

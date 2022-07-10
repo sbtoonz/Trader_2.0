@@ -132,6 +132,7 @@ namespace Trader20
                 }
             }
             OdinStore.instance.ForceClearStore();
+            OdinStore.instance.FillPlayerItemListVoid();
         }
         private void SetupWatcher()
         {
