@@ -53,7 +53,6 @@ namespace Trader20
         /// <param name="s"></param>
         internal static void AppendYmLfile(string s)
         {
-            //Todo:Write method that checks the dictionary for existing entry and just updates the inventory count if player sells to knarr
             string file = Trader20.Paths + "/trader_config.yaml";
             using var sw = File.AppendText(file);
             sw.WriteLineAsync(s);

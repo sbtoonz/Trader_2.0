@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 public class OdinStore : MonoBehaviour
 {
-    private static OdinStore m_instance;
+    private static OdinStore? m_instance;
     
     [SerializeField] private GameObject? m_StorePanel;
     [SerializeField] private RectTransform? ListRoot;
@@ -25,8 +25,8 @@ public class OdinStore : MonoBehaviour
     [SerializeField] private Button? SellButton;
     [SerializeField] private Text? SelectedName;
 
-    [SerializeField] private Text InventoryCount;
-    [SerializeField] internal GameObject InvCountPanel;
+    [SerializeField] private Text? InventoryCount;
+    [SerializeField] internal GameObject? InvCountPanel;
     
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
@@ -40,16 +40,16 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? SellButtonImage;
     [SerializeField] internal Image? Coins;
 
-    [SerializeField] internal RectTransform RepairRect;
-    [SerializeField] internal Image repairImage;
-    [SerializeField] internal Text repairText;
-    [SerializeField] internal Button repairButton;
-    [SerializeField] internal Image repairHammerImage;
+    [SerializeField] internal RectTransform? RepairRect;
+    [SerializeField] internal Image? repairImage;
+    [SerializeField] internal Text? repairText;
+    [SerializeField] internal Button? repairButton;
+    [SerializeField] internal Image? repairHammerImage;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
 
-    public static OdinStore instance => m_instance;
+    public static OdinStore? instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
     internal List<GameObject> CurrentStoreList = new();
@@ -59,7 +59,7 @@ public class OdinStore : MonoBehaviour
     {
         m_instance = this;
         var rect = m_StorePanel?.transform as RectTransform;
-        rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos.Value;
+        rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
     }
@@ -173,10 +173,10 @@ public class OdinStore : MonoBehaviour
             switch (invCount)
             {
                 case -1:
-                    InvCountPanel.SetActive(false);
+                    InvCountPanel?.SetActive(false);
                     break;
                 case >= 1:
-                    InventoryCount.text =
+                    InventoryCount!.text =
                         _storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString();
                     break;
             }
@@ -571,7 +571,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void OnBuyItem()
     {
-        ItemDrop.ItemData sellableItem = GetSellableItem();
+        ItemDrop.ItemData sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name); 
         if (sellableItem != null)
         {
             int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
@@ -582,48 +582,48 @@ public class OdinStore : MonoBehaviour
             Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
             Gogan.LogEvent("Game", "SoldItem", text, 0L);
             
-            //Setup the data entry for the YML file 
-            var entry = new ItemDataEntry();
-            entry.Invcount += sellableItem.m_stack;
-            entry.ItemCount += sellableItem.m_stack;
-            
             //Check for existing entry
-            var file = File.OpenText(Trader20.Trader20.Paths + "trader_config.yaml");
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
             var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
-            if(!YMLParser.CheckForEntry(currentList, Localization.instance.Localize(sellableItem.m_shared.m_name)))
+            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
             {
-                if (currentList.TryGetValue(Localization.instance.Localize(sellableItem.m_shared.m_name), out ItemDataEntry test))
+                //var itemDataEntry = currentList[sellableItem.m_dropPrefab.name];
+                //itemDataEntry.Invcount += sellableItem.m_stack;
+                if (currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test))
                 {
-                    test.ItemCount += sellableItem.m_stack;
+                    
+                    test.Invcount += sellableItem.m_stack;
+                    currentList[sellableItem.m_dropPrefab.name] = test;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + "trader_config.yaml", tempdict);
+                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                    
                 }
-
             }else
             {
+                //Setup the data entry for the YML file 
+                var entry = new ItemDataEntry();
+                entry.Invcount += sellableItem.m_stack;
+                entry.ItemCount += sellableItem.m_stack;
                 //if none found make an entry
                 Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-                itemDataEntries.Add(Localization.instance.Localize(sellableItem.m_shared.m_name), entry);
+                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
                 var serializeddata = YMLParser.Serializers(itemDataEntries);
                 YMLParser.AppendYmLfile(serializeddata);
             }
-           
-            
+            m_tempItems.Clear();
+            var playerInv = Player.m_localPlayer.GetInventory();
+            var playerItems = playerInv.GetAllItems();
+            foreach (var item in playerItems)
+            {
+                m_tempItems.Add(item);
+            }
+            foreach (var itemData in m_tempItems)
+            {
+                AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  0, SellListRoot);            
+            }
         }
     }
-
-   
-    private ItemDrop.ItemData? GetSellableItem()
-    {
-        if (m_tempItems.Count <= 0)
-        {
-            StartCoroutine(SetupPlayerItemList());
-        }
-        StartCoroutine(SetupPlayerItemList());
-        return m_tempItems.FirstOrDefault(tempItem => tempItem?.m_shared.m_name != CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_shared.m_name);
-    }
-    
 }
 
 [Serializable]
