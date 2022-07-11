@@ -89,7 +89,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-   private void  ClearStore()
+    private void  ClearStore()
     {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
@@ -126,7 +126,7 @@ public class OdinStore : MonoBehaviour
         newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
         
         var elementthing = Instantiate(newElement.Element, ListRoot.transform, false);
-            elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
+        elementthing.GetComponent<Button>().onClick.AddListener(delegate { UpdateGenDescription(newElement); });;
         newElement.Element.transform.SetSiblingIndex(ListRoot.transform.GetSiblingIndex() - 1);
         _elements.Add(newElement);
         CurrentStoreList.Add(elementthing);
@@ -221,12 +221,12 @@ public class OdinStore : MonoBehaviour
     }
     public void BuyButtonAction()
     {
-       var i = FindIndex(tempElement._drop);
-       if(CanBuy(i))
-       {
-           SellItem(i);
-           NewTrader.instance.OnSold();
-       }
+        var i = FindIndex(tempElement._drop);
+        if(CanBuy(i))
+        {
+            SellItem(i);
+            NewTrader.instance.OnSold();
+        }
     }
     
     public async void FillPlayerItemListVoid()
@@ -236,7 +236,30 @@ public class OdinStore : MonoBehaviour
     {
     }
     
+    
+    public void SelectKnarrFirstItemForDisplay()
+    {
+    }
+    
+    
+    public void SelectPlayerFirstItemForDisplay()
+    {
 
+    }
+
+    public void DisableGenDescription()
+    {
+        
+    }
+    public void ShowInvCount()
+    {
+        InvCountPanel.SetActive(true);
+    }
+
+    public void HideInvCount()
+    {
+        InvCountPanel.SetActive(false);
+    }
     private bool CanBuy(int i)
     {
         // var inv = Player.m_localPlayer.m_inventory;
@@ -250,15 +273,15 @@ public class OdinStore : MonoBehaviour
         // }
         var cost = _storeInventory.ElementAt(i).Value.Key;
 
-       if (playerbank >= cost)
-       {
-           playerbank -= cost;
-           //Todo: Fix the trader taking coins for your stuff 
+        if (playerbank >= cost)
+        {
+            playerbank -= cost;
+            //Todo: Fix the trader taking coins for your stuff 
            
-           return true;
-       }
+            return true;
+        }
 
-       return playerbank <= cost && false;
+        return playerbank <= cost && false;
     }
 
     /// <summary>

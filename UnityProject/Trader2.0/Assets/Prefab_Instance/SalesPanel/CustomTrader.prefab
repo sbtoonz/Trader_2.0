@@ -955,18 +955,11 @@ MonoBehaviour:
   - {fileID: 2124245878526296363}
   - {fileID: 5438409401281079308}
   - {fileID: 2599801731363363101}
-  - {fileID: 4977781249396193758}
-  - {fileID: 5153812668244682933}
-  - {fileID: 4542436270881398750}
   - {fileID: 1075577628881263131}
   - {fileID: 222437334104906310}
   - {fileID: 222065484128400268}
   - {fileID: 222756290423891110}
-  - {fileID: 4316956781077911982}
-  - {fileID: 2605929720869000921}
-  - {fileID: 295637082901222410}
   - {fileID: 3166832609172982632}
-  - {fileID: 2025344620987430633}
   - {fileID: 4275201006571878270}
   - {fileID: 1710294544107494030}
   - {fileID: 222910127688105385}
@@ -985,15 +978,13 @@ MonoBehaviour:
   Images:
   - {fileID: 8452921750373952451}
   - {fileID: 2131596441881890443}
-  - {fileID: 2368166045006147923}
-  - {fileID: 2998737962169696557}
-  - {fileID: 4295840153576082979}
   - {fileID: 114625718117257270}
   - {fileID: 114364093007178536}
   - {fileID: 7781527176837735417}
-  - {fileID: 1822552813612997784}
   - {fileID: 114960693980261177}
   - {fileID: 7605333457370936373}
+  - {fileID: 2998737962169696557}
+  - {fileID: 2368166045006147923}
   litgui: {fileID: 2100000, guid: 72154bd6a5728b74498a7458d439b4db, type: 2}
 --- !u!1 &1400458117677133
 GameObject:
@@ -2547,7 +2538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.7176471, b: 0.3602941, a: 1}
+  m_Color: {r: 1, g: 0.7176471, b: 0.3602941, a: 0.5019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3152,7 +3143,31 @@ MonoBehaviour:
     m_default: 1
     m_onClick:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 5494880942761007943}
+          m_TargetAssemblyTypeName: OdinStore, Trader20
+          m_MethodName: SelectKnarrFirstItemForDisplay
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 5494880942761007943}
+          m_TargetAssemblyTypeName: OdinStore, Trader20
+          m_MethodName: ShowInvCount
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - m_button: {fileID: 1244564758541684641}
     m_page: {fileID: 4541599878325272083}
     m_default: 0
@@ -3162,6 +3177,30 @@ MonoBehaviour:
         - m_Target: {fileID: 5494880942761007943}
           m_TargetAssemblyTypeName: OdinStore, Trader20
           m_MethodName: FillPlayerItemListVoid
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 5494880942761007943}
+          m_TargetAssemblyTypeName: OdinStore, Trader20
+          m_MethodName: SelectPlayerFirstItemForDisplay
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 5494880942761007943}
+          m_TargetAssemblyTypeName: OdinStore, Trader20
+          m_MethodName: HideInvCount
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -4505,7 +4544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.7176471, b: 0.3602941, a: 1}
+  m_Color: {r: 1, g: 0.7176471, b: 0.3602941, a: 0.5019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -54,6 +54,7 @@ public class OdinStore : MonoBehaviour
     internal static Material? litpanel;
     internal List<GameObject> CurrentStoreList = new();
     internal List<ElementFormat> _elements = new();
+    internal List<ElementFormat> _playerSellElements = new();
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
     private void Awake() 
     {
@@ -143,7 +144,7 @@ public class OdinStore : MonoBehaviour
     /// <param name="cost"></param>
     /// <param name="invCount"></param>
     /// <param name="rectForElements"></param>
-    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements)
+    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
         ElementFormat newElement = new();
         newElement.Drop = drop;
@@ -184,8 +185,16 @@ public class OdinStore : MonoBehaviour
         });
         elementthing.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
         elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
-        _elements.Add(newElement);
-        CurrentStoreList.Add(elementthing);
+        if (isPlayerItem)
+        {
+            _playerSellElements.Add(newElement);
+        }
+        else
+        {
+            _elements.Add(newElement);
+            CurrentStoreList.Add(elementthing);
+        }
+        
     }
 
     /// <summary>
@@ -202,16 +211,16 @@ public class OdinStore : MonoBehaviour
                 {
                     if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
                     {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
                     else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material)
                     {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
                 }
                 else
                 {
-                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!);
+                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                 }
 
             }
@@ -268,35 +277,19 @@ public class OdinStore : MonoBehaviour
         switch (_storeInventory.ElementAt(i).Value.InvCount)
         {
             case >= 1:
-            {
                 _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
-                InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
-                switch (_storeInventory.ElementAt(i).Value.InvCount)
-                {
-                    case >= 1:
-                        InventoryCount.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
-                        break;
-                    case < -1 when !RemoveItemFromDict(itemDrop):
-                        break;
-                    case < -1:
-                        ForceClearStore();
-                        UpdateGenDescription(_elements[0]);
-                        break;
-                }
-
-
-                switch (_elements[0].InventoryCount)
-                {
-                    case >= 1:
-                        InventoryCount.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
-                        break;
-                    case -1:
-                        InvCountPanel.SetActive(false);
-                        break;
-                }
+                Trader20.Trader20.knarrlogger.LogWarning("Element " + _storeInventory.ElementAt(i).Key.m_itemData.m_shared.m_name);
+                InventoryCount!.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
+                Trader20.Trader20.knarrlogger.LogWarning("Set Inventory Count to "+ _storeInventory.ElementAt(i).Value.InvCount);
                 break;
-            }
+            case 0:
+                RemoveItemFromDict(itemDrop);
+                ForceClearStore();
+                UpdateGenDescription(_elements[0]);
+                break;
             case <= -1:
+                ForceClearStore();
+                UpdateGenDescription(_elements[0]);
                 break;
         }
 
@@ -396,10 +389,22 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
+        SelectedItemDescription!.gameObject.SetActive(true);
+        ItemDropIcon!.gameObject.SetActive(true);
         SelectedItemDescription!.text = element.Drop!.m_itemData.m_shared.m_description;
         SelectedItemDescription.gameObject.AddComponent<Localize>();
         ItemDropIcon!.sprite = element.Icon;
         tempElement = element;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void DisableGenDescription()
+    {
+        SelectedItemDescription!.gameObject.SetActive(false);
+        ItemDropIcon!.gameObject.SetActive(false);
+        tempElement = null;
     }
 
     /// <summary>
@@ -489,6 +494,44 @@ public class OdinStore : MonoBehaviour
         UpdateCoins();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public void SelectKnarrFirstItemForDisplay()
+    {
+        if(_elements.Count>0) UpdateGenDescription(_elements[0]);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void SelectPlayerFirstItemForDisplay()
+    {
+        var inv = Player.m_localPlayer.GetInventory();
+        var items = inv.GetAllItems();
+        switch (items.Count)
+        {
+            case 0:
+                DisableGenDescription();
+                break;
+            case >= 1:
+                UpdateGenDescription(_playerSellElements[0]);
+                break;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public void ShowInvCount()
+    {
+        InvCountPanel.SetActive(true);
+    }
+
+    public void HideInvCount()
+    {
+        InvCountPanel.SetActive(false);
+    }
+
     private static GameObject CurrentCurrency()
     {
         return ZNetScene.instance.GetPrefab(Trader20.Trader20.CurrencyPrefabName!.Value);
@@ -553,13 +596,9 @@ public class OdinStore : MonoBehaviour
 
     private async Task SetupPlayerItemListTask()
     {
-       //m_tempItems.Clear();
+       _playerSellElements.Clear();
         var playerInv = Player.m_localPlayer.GetInventory();
         var playerItems = playerInv.GetAllItems();
-        /*foreach (var item in playerItems)
-        {
-            m_tempItems.Add(item);
-        }*/
         
         m_tempItems = playerItems;
         
@@ -572,7 +611,7 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot);            
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot, true);            
         }
         await Task.Yield();
     }
@@ -592,7 +631,6 @@ public class OdinStore : MonoBehaviour
         text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
         Gogan.LogEvent("Game", "SoldItem", text, 0L);
-            
         //Check for existing entry
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
@@ -629,9 +667,17 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot);            
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot, true);            
         }
-        UpdateGenDescription(_elements[0]);
+        if (_playerSellElements.Count > 0)
+        {
+            UpdateGenDescription(_playerSellElements[0]);  
+        }
+        else
+        {
+            DisableGenDescription();
+        }
+        
     }
 }
 
