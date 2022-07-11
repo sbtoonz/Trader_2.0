@@ -55,7 +55,7 @@ namespace Trader20
         {
             string file = Trader20.Paths + "/trader_config.yaml";
             using var sw = File.AppendText(file);
-            sw.WriteLineAsync(s);
+            sw.WriteLine(s);
         }
     }
     

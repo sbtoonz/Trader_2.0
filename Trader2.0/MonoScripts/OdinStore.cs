@@ -112,7 +112,7 @@ public class OdinStore : MonoBehaviour
     }
 
     private async void  ClearStore()
-   {
+    {
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
             foreach (var go in CurrentStoreList)
@@ -121,9 +121,9 @@ public class OdinStore : MonoBehaviour
             }
             
             CurrentStoreList.Clear();
-          await ReadAllStoreItems();
+            await ReadAllStoreItems();
         }
-   }
+    }
     
     internal async void ForceClearStore()
     {
@@ -133,7 +133,7 @@ public class OdinStore : MonoBehaviour
         }
             
         CurrentStoreList.Clear();
-       await ReadAllStoreItems();
+        await ReadAllStoreItems();
     }
 
     /// <summary>
@@ -175,9 +175,10 @@ public class OdinStore : MonoBehaviour
             switch (invCount)
             {
                 case -1:
-                    InvCountPanel?.SetActive(false);
+                    InvCountPanel!.SetActive(false);
                     break;
                 case >= 1:
+                    InvCountPanel!.SetActive(true);
                     InventoryCount!.text =
                         _storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString();
                     break;
@@ -209,6 +210,7 @@ public class OdinStore : MonoBehaviour
             {
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
                 {
+                    if(itemData.Value.InvCount == 0) continue;
                     if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
                     {
                         AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
@@ -220,14 +222,15 @@ public class OdinStore : MonoBehaviour
                 }
                 else
                 {
+                    if(itemData.Value.InvCount == 0) continue;
                     AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                 }
 
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            Trader20.Trader20.knarrlogger.LogDebug(ex);
         }
         finally
         {
@@ -278,25 +281,32 @@ public class OdinStore : MonoBehaviour
         {
             case >= 1:
                 _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
-                Trader20.Trader20.knarrlogger.LogWarning("Element " + _storeInventory.ElementAt(i).Key.m_itemData.m_shared.m_name);
                 InventoryCount!.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
-                Trader20.Trader20.knarrlogger.LogWarning("Set Inventory Count to "+ _storeInventory.ElementAt(i).Value.InvCount);
-                break;
-            case 0:
-                RemoveItemFromDict(itemDrop);
-                ForceClearStore();
-                UpdateGenDescription(_elements[0]);
+                int? temp = _storeInventory.ElementAt(i).Value.InvCount;
+                UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData,(int)temp, false);
+                if (temp <= 0)
+                {
+                    try
+                    {
+                        tempElement = null;
+                        UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
+                        RemoveItemFromDict(itemDrop);
+                        ClearStore();
+                    }
+                    catch (Exception e)
+                    {
+                        Trader20.Trader20.knarrlogger.LogDebug(e);
+                    }
+                }
                 break;
             case <= -1:
-                ForceClearStore();
-                UpdateGenDescription(_elements[0]);
                 break;
         }
 
-        if (!Trader20.Trader20.LOGStoreSales.Value) return;
-        var PlayerID = Player.m_localPlayer.GetPlayerID().ToString();
-        var PlayerName = Player.m_localPlayer.GetPlayerName();
-        var cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
+        if (!Trader20.Trader20.LOGStoreSales!.Value) return;
+        string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+        string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+        string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
         var envman = EnvMan.instance;
         var theTime = DateTime.Now;
         if(envman)
@@ -311,28 +321,60 @@ public class OdinStore : MonoBehaviour
             
             
         }
-        var concatinated = "[" + theTime + "] "+ PlayerID + " - " + PlayerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+        var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
         Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
         ZLog.Log("Knarr Sold Item " + concatinated);
         LogSales(concatinated).ConfigureAwait(false);
+        
+        //if UpdateYML ? Idfk what to call that config but the YML would get written every buy/sell
+        
     }
 
-    private async Task LogSales(string Saleinfo)
+    private static void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
-        await WriteSales(Saleinfo).ConfigureAwait(false);
+        
+        //if(Trader20.Trader20.ConfigWriteSalesBuysToYml.Value != true) return;
+        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+        file.Close();
+        if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+        {
+            if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+            if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+            else test.Invcount = newInvCount;
+            currentList[sellableItem.m_dropPrefab.name] = test;
+            var tempdict = YMLParser.Serializers(currentList);
+            File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+        }else
+        {
+            //Setup the data entry for the YML file 
+            var entry = new ItemDataEntry();
+            entry.Invcount += sellableItem.m_stack;
+            entry.ItemCount += sellableItem.m_stack;
+            //if none found make an entry
+            Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+            itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+            var serializeddata = YMLParser.Serializers(itemDataEntries);
+            YMLParser.AppendYmLfile(serializeddata);
+        }
     }
 
-    private static async Task WriteSales(string SaleInfo)
+    private async Task LogSales(string saleinfo)
     {
-        UnicodeEncoding uniencoding = new UnicodeEncoding();
-        var filename = Trader20.Trader20.Paths + "/TraderSales.log";
+        await WriteSales(saleinfo).ConfigureAwait(false);
+    }
 
-        var result = uniencoding.GetBytes(SaleInfo);
+    private static async Task WriteSales(string saleInfo)
+    {
+        var encoding = new UnicodeEncoding();
+        string filename = Trader20.Trader20.Paths + "/TraderSales.log";
 
-        using FileStream SourceStream = File.Open(filename, FileMode.OpenOrCreate);
-        SourceStream.Seek(0, SeekOrigin.End);
-        await SourceStream.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
-        await SourceStream.WriteAsync(uniencoding.GetBytes(Environment.NewLine),0, Environment.NewLine.Length).ConfigureAwait(false);
+        byte[] result = encoding.GetBytes(saleInfo);
+
+        using var sourceStream = File.Open(filename, FileMode.OpenOrCreate);
+        sourceStream.Seek(0, SeekOrigin.End);
+        await sourceStream.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
+        await sourceStream.WriteAsync(encoding.GetBytes(Environment.NewLine),0, Environment.NewLine.Length).ConfigureAwait(false);
     }
 
 
@@ -596,7 +638,7 @@ public class OdinStore : MonoBehaviour
 
     private async Task SetupPlayerItemListTask()
     {
-       _playerSellElements.Clear();
+        _playerSellElements.Clear();
         var playerInv = Player.m_localPlayer.GetInventory();
         var playerItems = playerInv.GetAllItems();
         
@@ -632,32 +674,8 @@ public class OdinStore : MonoBehaviour
         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
         Gogan.LogEvent("Game", "SoldItem", text, 0L);
         //Check for existing entry
-        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-        file.Close();
-        if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
-        {
-            if (currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test))
-            {
-                    
-                test.Invcount += sellableItem.m_stack;
-                currentList[sellableItem.m_dropPrefab.name] = test;
-                var tempdict = YMLParser.Serializers(currentList);
-                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
-                    
-            }
-        }else
-        {
-            //Setup the data entry for the YML file 
-            var entry = new ItemDataEntry();
-            entry.Invcount += sellableItem.m_stack;
-            entry.ItemCount += sellableItem.m_stack;
-            //if none found make an entry
-            Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-            itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-            var serializeddata = YMLParser.Serializers(itemDataEntries);
-            YMLParser.AppendYmLfile(serializeddata);
-        }
+        UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
+        
         if (SellListRoot.transform.childCount >= 1)
         {
             foreach (Transform transform in SellListRoot.transform)
