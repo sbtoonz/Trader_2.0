@@ -138,3 +138,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.2.4
 * Fix bug caught by Horem (interferes with Jewelcrafting and OdinsQOL)
 * Changed the way the PlayerBase effectArea was made so you cant interact with knarr from super far now 
+
+### V0.2.5
+* Knarr can now buy things from the player!, This has a new line entry your your trader_config.yaml file that is called 'purchase price' if this value is set to 0 the item will not show in the list of things knarr can buy from the player
