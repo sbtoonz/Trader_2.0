@@ -38,6 +38,10 @@ namespace Trader20
         internal static ConfigEntry<bool>? OnlySellKnownItems;
         internal static ConfigEntry<int>? LuckyNumber;
         internal static ConfigEntry<bool>? ShowMatsWhenHidingRecipes;
+        internal static ConfigEntry<bool>? ConfigWriteSalesBuysToYml;
+        internal static ConfigEntry<string>? BuyPageLocalization;
+        internal static ConfigEntry<string>? SellPageLocalization;
+        
 
         internal static ManualLogSource knarrlogger = new ManualLogSource(ModName);
         
@@ -88,12 +92,22 @@ namespace Trader20
                 "If set true Knarr will only vend a player recipes the player has discovered already");
 
             ShowMatsWhenHidingRecipes = config("General", "Sell Mats when hiding unknown recipes", false,
-                "If set true ");
+                "If set true Knarr will still vend materials");
+            
+            ConfigWriteSalesBuysToYml = config("General", "Change the YML file on sells/buys", true,
+                "If set true Knarr will edit the values in the YML file when a player buys or sells items to him");
 
             LuckyNumber = config("General", "Lucky Number for repairs", 6,
                 new ConfigDescription(
                     "This is the lucky number for your repair button if you roll this number your repairs will go through",
                     new AcceptableValueRange<int>(0, 6)));
+
+            BuyPageLocalization = config("Localization", "Buy Page Tab", "Buy", "The Translation for the Buy Page Tab");
+            SellPageLocalization = config("Localization", "Sell Page Tab", "Sell", "The Translation for the Sell Page Tab");
+            
+            
+            
+            
             SetupWatcher();
 
             if (LOGStoreSales.Value)
@@ -161,7 +175,6 @@ namespace Trader20
             }
             
         }
-
         internal void SaveConfig()
         {
             Config.Save();

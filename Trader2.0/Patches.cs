@@ -46,20 +46,33 @@ namespace Trader20
                 ZRoutedRpc.instance.Register<bool>("RequestRemoveKnarr", RPC_RemoveKnarrReq);
                 ZRoutedRpc.instance.Register<bool>("FindKnarrDone", RPC_FindKnarrResponse);
                 ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
-
             }
 
 
+        }
+
+        [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
+        public static class TestPatch
+        {
+            [HarmonyPostfix]
+            [UsedImplicitly]
+            public static void Postfix()
+            {
+                Localization.instance.AddWord("BuyPage", Trader20.BuyPageLocalization.Value);
+                Localization.instance.AddWord("SellPage", Trader20.SellPageLocalization.Value);
+            }
         }
 
         private static void RPC_RemoveKnarrReq(long UID, bool s)
         {
             if (!Trader20._serverConfigLocked!.Value)
             {
+                // ReSharper disable once HeapView.BoxingAllocation
                 ZRoutedRpc.instance.InvokeRoutedRPC("RemoveKnarrDone", true);
             }
             else
             {
+                // ReSharper disable once HeapView.BoxingAllocation
                 ZRoutedRpc.instance.InvokeRoutedRPC("RemoveKnarrDone", false);
             }
         }

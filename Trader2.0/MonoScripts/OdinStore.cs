@@ -288,6 +288,7 @@ public class OdinStore : MonoBehaviour
                 {
                     try
                     {
+                        UpdateGenDescription(_elements[0]);
                         tempElement = null;
                         UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
                         RemoveItemFromDict(itemDrop);
@@ -333,7 +334,7 @@ public class OdinStore : MonoBehaviour
     private static void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
         
-        //if(Trader20.Trader20.ConfigWriteSalesBuysToYml.Value != true) return;
+        if(Trader20.Trader20.ConfigWriteSalesBuysToYml.Value != true) return;
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
@@ -440,7 +441,7 @@ public class OdinStore : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Call this method to hide the description icon and text
     /// </summary>
     public void DisableGenDescription()
     {
@@ -512,9 +513,9 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void Show()
     {
-        if (_storeInventory.Count <= 0)
+        if (_storeInventory.Count <= 0 && Player.m_localPlayer.GetInventory().m_inventory.Count <=0)
         {
-            Trader20.Trader20.knarrlogger.LogWarning("Store is empty not showing UI");
+            Trader20.Trader20.knarrlogger.LogWarning("Store and player inventory are empty not showing UI");
             return;
         }
         m_StorePanel!.SetActive(true);
@@ -537,7 +538,7 @@ public class OdinStore : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// This is called OnTabSelect() for the Buy tab so that the Description and icon for the item in the description panel updates
     /// </summary>
     public void SelectKnarrFirstItemForDisplay()
     {
@@ -545,7 +546,7 @@ public class OdinStore : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// This is called OnTabSelect() for the Sell tab so that the Description and icon for the item in the description panel updates
     /// </summary>
     public void SelectPlayerFirstItemForDisplay()
     {
@@ -562,13 +563,16 @@ public class OdinStore : MonoBehaviour
         }
     }
     /// <summary>
-    /// 
+    /// This is called to show the panel holding the inventory text
     /// </summary>
     public void ShowInvCount()
     {
         InvCountPanel.SetActive(true);
     }
 
+    /// <summary>
+    /// This is called to hide the panel holding the inventory text
+    /// </summary>
     public void HideInvCount()
     {
         InvCountPanel.SetActive(false);
@@ -625,7 +629,7 @@ public class OdinStore : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    ///  This calls the async task which populates what knarr can buy from the player
     /// </summary>
     public async void FillPlayerItemListVoid()
     {
@@ -659,7 +663,7 @@ public class OdinStore : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// This is called when Knarr buys an item from the player
     /// </summary>
     public void OnBuyItem()
     {
