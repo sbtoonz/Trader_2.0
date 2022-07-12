@@ -558,9 +558,8 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void SelectPlayerFirstItemForDisplay()
     {
-        var inv = Player.m_localPlayer.GetInventory();
-        var items = inv.GetAllItems();
-        switch (items.Count)
+        if(_playerSellElements.Count <= 0) return;
+        switch (_playerSellElements.Count)
         {
             case 0:
                 DisableGenDescription();
@@ -670,6 +669,7 @@ public class OdinStore : MonoBehaviour
         foreach (var itemData in m_tempItems)
         {
             if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
+            if(ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) ==0)continue;
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
         }
         await Task.Yield();
@@ -678,7 +678,7 @@ public class OdinStore : MonoBehaviour
     /// <summary>
     /// This is called when Knarr buys an item from the player
     /// </summary>
-    public void OnBuyItem()
+    public void OnBuyItem() 
     {
         // ReSharper disable once Unity.NoNullPropagation
         var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name);
@@ -711,6 +711,7 @@ public class OdinStore : MonoBehaviour
         foreach (var itemData in m_tempItems)
         {
             if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
+            if(ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) ==0)continue;
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
         }
         switch (m_tempItems.Count)
@@ -725,7 +726,7 @@ public class OdinStore : MonoBehaviour
         
     }
 
-    protected int ReturnYMLPlayerPurchaseValue(string s)
+    private protected int ReturnYMLPlayerPurchaseValue(string s)
     {
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
@@ -733,15 +734,11 @@ public class OdinStore : MonoBehaviour
         return currentList[s].PurchaseFromPlayerCost;
     }
 
-    protected bool YMLContainsKey(string s)
+    private protected bool YMLContainsKey(string s)
     {
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
-        if (currentList[s].PurchaseFromPlayerCost == 0)
-        {
-            return false;
-        }
         return currentList.ContainsKey(s);
     }
     
