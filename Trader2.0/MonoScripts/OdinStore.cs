@@ -683,12 +683,20 @@ public class OdinStore : MonoBehaviour
         // ReSharper disable once Unity.NoNullPropagation
         var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name);
         if (sellableItem == null) return;
-        int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
+        int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
         Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
-        Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
+        
+        Player.m_localPlayer.GetInventory().AddItem(
+        CurrentCurrency().name, 
+        stack, 
+        CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+        CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+        0L, 
+        "");
+        
         string text = "";
         text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
-        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
+        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, sellableItem.m_shared.m_icons[0]);
         Gogan.LogEvent("Game", "SoldItem", text, 0L);
         //Check for existing entry
         UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
@@ -730,6 +738,10 @@ public class OdinStore : MonoBehaviour
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
+        if (currentList[s].PurchaseFromPlayerCost == 0)
+        {
+            return false;
+        }
         return currentList.ContainsKey(s);
     }
     
