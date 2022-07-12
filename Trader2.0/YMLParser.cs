@@ -73,6 +73,9 @@ namespace Trader20
         
         [YamlMember(Alias = "inventory count", ApplyNamingConventions = false)]
         public int Invcount { get; set; }
+
+        [YamlMember(Alias = "purchase price", ApplyNamingConventions = false)]
+        public int PurchaseFromPlayerCost { get; set; }
     }
 
 

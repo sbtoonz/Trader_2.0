@@ -289,6 +289,7 @@ public class OdinStore : MonoBehaviour
                     try
                     {
                         UpdateGenDescription(_elements[0]);
+                        InventoryCount!.text = _elements[0].InventoryCount.ToString();
                         tempElement = null;
                         UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
                         RemoveItemFromDict(itemDrop);
@@ -463,12 +464,19 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void BuyButtonAction()
     {
-        if (tempElement?.Drop == null) return;
-        var i = FindIndex(tempElement.Drop!);
-        if (!CanBuy(i)) return;
-        SellItem(i);
-        NewTrader.instance.OnSold();
-        UpdateCoins();
+        try {
+            if (tempElement?.Drop == null) return;
+            int i = FindIndex(tempElement.Drop!);
+            if (!CanBuy(i)) return;
+            SellItem(i);
+            NewTrader.instance.OnSold();
+            UpdateCoins(); 
+        }
+        catch (Exception e)
+        {
+            Trader20.Trader20.knarrlogger.LogDebug(e);
+        }
+        
     }
 
     /// <summary>
@@ -642,6 +650,10 @@ public class OdinStore : MonoBehaviour
 
     private async Task SetupPlayerItemListTask()
     {
+        if (!SellListRoot.gameObject.activeSelf)
+        {
+            await Task.Yield();
+        }
         _playerSellElements.Clear();
         var playerInv = Player.m_localPlayer.GetInventory();
         var playerItems = playerInv.GetAllItems();
@@ -657,7 +669,8 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot, true);            
+            if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
         }
         await Task.Yield();
     }
@@ -672,7 +685,7 @@ public class OdinStore : MonoBehaviour
         if (sellableItem == null) return;
         int stack = sellableItem.m_shared.m_value * sellableItem.m_stack;
         Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
-        Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
+        Player.m_localPlayer.GetInventory().AddItem(CurrentCurrency().name, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * stack, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 0L, "");
         string text = "";
         text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), 0, sellableItem.m_shared.m_icons[0]);
@@ -689,18 +702,37 @@ public class OdinStore : MonoBehaviour
         }
         foreach (var itemData in m_tempItems)
         {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, 0,  itemData.m_stack, SellListRoot, true);            
+            if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
         }
-        if (_playerSellElements.Count > 0)
+        switch (m_tempItems.Count)
         {
-            UpdateGenDescription(_playerSellElements[0]);  
-        }
-        else
-        {
-            DisableGenDescription();
+            case > 0:
+                UpdateGenDescription(_playerSellElements[0]);
+                break;
+            case 0:
+                DisableGenDescription();
+                break;
         }
         
     }
+
+    protected int ReturnYMLPlayerPurchaseValue(string s)
+    {
+        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+        file.Close();
+        return currentList[s].PurchaseFromPlayerCost;
+    }
+
+    protected bool YMLContainsKey(string s)
+    {
+        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+        file.Close();
+        return currentList.ContainsKey(s);
+    }
+    
 }
 
 [Serializable]
