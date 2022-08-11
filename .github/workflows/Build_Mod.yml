@@ -101,7 +101,7 @@ jobs:
 
       - name: Grab Version
         run: |
-          cat ColorMePortal/ModCore.cs | grep 'ModVersion =' > tmp.txt
+          cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
           sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
           cat VERSION
           echo "::set-output name=version::$(cat VERSION)"
