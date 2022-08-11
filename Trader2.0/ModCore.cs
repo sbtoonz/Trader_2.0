@@ -15,7 +15,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.2.6";
+        public const string ModVersion = "0.2.7";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
