@@ -35,26 +35,26 @@ jobs:
           nuget restore
           dotnet tool restore 
 
-      - name: Remove old Valheim directory
+      - name: Remove old crap
         run: |
           rm -rdf /home/runner/.steam/steam/steamapps/common/Valheim
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
-      - name: Download BepInEX
+      - name: Prepare Valheim dependencies
         run: |
           wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1901/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +force_install_dir /home/runner/.steam/steam/steamapps/common/Valheim +login anonymous +app_update 896660 validate +exit
 
-      - name: Copy BepInEx -> Valheim folder
+      - name: Do the Shuffle
         run: |
           mv /home/runner/.steam/steam/steamapps/common/Valheim/valheim_server_Data/ /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* /home/runner/.steam/steam/steamapps/common/Valheim/
           mkdir -p ~/.steam/steam/steamapps/common/
 
-      - name: Publicize Valheim Assemblies
+      - name: Do Publicize things
         run: |
           wget https://github.com/iRebbok/APublicizer/releases/download/1.0.3/native-linux-x64-release.tar.gz
           mkdir ~/assembpublicizer
@@ -72,8 +72,7 @@ jobs:
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/assembly_valheim.dll
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/Assembly-CSharp.dll
 
-      - name: Move publicized DLL's into place
-        run: |
+      - run: |
           cp --verbose /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/*Publicized.dll  ~/publicAssemblies/
           cd ~/publicAssemblies
           rename -v 'y/A-Z/a-z/' * .dll
@@ -82,7 +81,7 @@ jobs:
           sudo cp --verbose ~/publicAssemblies/* /usr/lib/mono/4.6.2-api/
           cd ~
 
-      - name: Build Mod
+      - name: Build
         run: |
           mkdir -p /home/runner/work/Trader2.0/Trader2.0/ServerSync/bin/Release
           wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
@@ -90,7 +89,7 @@ jobs:
           mv -v ServerSync.dll /home/runner/work/Trader2.0/Trader2.0/Trader2.0/Libs/
           msbuild Trader2.0.sln /p:Configuration=Github
 
-      - name: Upload a artifact of mod build
+      - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           # Artifact name
@@ -107,7 +106,7 @@ jobs:
           echo "::set-output name=version::$(cat VERSION)"
         id: version
 
-      - name: Create Release of Mod
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         id: create_release
         with:
