@@ -432,10 +432,10 @@
 	   </PropertyGroup>
 	   <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
 	 </Target>
-	 <Target Name="Copy" AfterTargets="Build">
+	 <Target Name="Copy" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
-	 <Target Name="Copy_Thunderstore" AfterTargets="Build">
+	 <Target Name="Copy_Thunderstore" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;..\Thunderstore_Release\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 </Project>
