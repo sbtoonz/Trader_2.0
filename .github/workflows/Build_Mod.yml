@@ -29,32 +29,32 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-6.0 dotnet-runtime-6.0 rename
 
-      - name: Restore dependencies
+      - name: Restore solution dependencies
         run: |
           dotnet restore
           nuget restore
           dotnet tool restore 
 
-      - name: Remove old crap
+      - name: Delete old Valheim directory
         run: |
           rm -rdf /home/runner/.steam/steam/steamapps/common/Valheim
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
-      - name: Prepare Valheim dependencies
+      - name: Download BepInEX
         run: |
           wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1901/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +force_install_dir /home/runner/.steam/steam/steamapps/common/Valheim +login anonymous +app_update 896660 validate +exit
 
-      - name: Do the Shuffle
+      - name: Install BepInEX
         run: |
           mv /home/runner/.steam/steam/steamapps/common/Valheim/valheim_server_Data/ /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* /home/runner/.steam/steam/steamapps/common/Valheim/
           mkdir -p ~/.steam/steam/steamapps/common/
 
-      - name: Do Publicize things
+      - name: Publicize Valheim Assemblies
         run: |
           wget https://github.com/iRebbok/APublicizer/releases/download/1.0.3/native-linux-x64-release.tar.gz
           mkdir ~/assembpublicizer
@@ -72,7 +72,8 @@ jobs:
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/assembly_valheim.dll
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/Assembly-CSharp.dll
 
-      - run: |
+      - name: Copy Publicized Assemblies -> Valheim
+        run: |
           cp --verbose /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/*Publicized.dll  ~/publicAssemblies/
           cd ~/publicAssemblies
           rename -v 'y/A-Z/a-z/' * .dll
@@ -97,8 +98,6 @@ jobs:
           # A file, directory or wildcard pattern that describes what to upload
           path: '/home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll'
 
-
-
       - name: Set Output Version
         id: vars
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
@@ -109,15 +108,6 @@ jobs:
         run: |
           echo $RELEASE_VERSION
           echo ${{ steps.vars.outputs.tag }}
-          
-          
-      #- name: Grab Version
-        #run: |
-          #cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
-          #sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
-          #cat VERSION
-          #echo "::set-output name=version::$(cat VERSION)"
-        #id: version
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -125,8 +115,8 @@ jobs:
         with:
           draft: false
           prerelease: false
-          name: ${{steps.version.outputs.version}}
-          tag_name: ${{steps.version.outputs.version}}
+          name: ${{ steps.vars.outputs.tag }}
+          tag_name: ${{ steps.vars.outputs.tag }}
           body_path: CHANGELOG.MD
           files: /home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll
         env:
