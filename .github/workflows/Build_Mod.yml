@@ -35,26 +35,26 @@ jobs:
           nuget restore
           dotnet tool restore 
 
-      - name: Remove old crap
+      - name: Remove old Valheim Directory
         run: |
           rm -rdf /home/runner/.steam/steam/steamapps/common/Valheim
 
       - name: Install SteamCMD
         uses: CyberAndrii/setup-steamcmd@v1
 
-      - name: Prepare Valheim dependencies
+      - name: Download BepInEX
         run: |
           wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1901/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +force_install_dir /home/runner/.steam/steam/steamapps/common/Valheim +login anonymous +app_update 896660 validate +exit
 
-      - name: Do the Shuffle
+      - name: Move BepInEX into valheim
         run: |
           mv /home/runner/.steam/steam/steamapps/common/Valheim/valheim_server_Data/ /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* /home/runner/.steam/steam/steamapps/common/Valheim/
           mkdir -p ~/.steam/steam/steamapps/common/
 
-      - name: Do Publicize things
+      - name: Publicize the Valheim Assemblies
         run: |
           wget https://github.com/iRebbok/APublicizer/releases/download/1.0.3/native-linux-x64-release.tar.gz
           mkdir ~/assembpublicizer
@@ -72,6 +72,7 @@ jobs:
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/assembly_valheim.dll
           ~/assembpublicizer/APublicizer /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/Assembly-CSharp.dll
 
+      - name: Clean up After Publicizing
       - run: |
           cp --verbose /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/*Publicized.dll  ~/publicAssemblies/
           cd ~/publicAssemblies
@@ -98,22 +99,32 @@ jobs:
           path: '/home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll'
 
 
-      - name: Grab Version
-        run: |
-          cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
-          sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
-          cat VERSION
-          echo "::set-output name=version::$(cat VERSION)"
-        id: version
+      #- name: Grab Version
+        #run: |
+          #cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
+          #sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
+          #cat VERSION
+          #echo "::set-output name=version::$(cat VERSION)"
+        #id: version
 
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Check output
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ steps.vars.outputs.tag }}
+             
       - name: Create Release
         uses: softprops/action-gh-release@v1
         id: create_release
         with:
           draft: false
           prerelease: false
-          name: ${{steps.version.outputs.version}}
-          tag_name: ${{steps.version.outputs.version}}
+          name: ${{ steps.vars.outputs.tag }}
+          tag_name: ${{ steps.vars.outputs.tag }}
           body_path: CHANGELOG.MD
           files: /home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll
         env:
