@@ -41,6 +41,8 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Button repairButton;
     [SerializeField] internal Image repairHammerImage;
     
+    [SerializeField] internal RectTransform TabRect;
+    
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
@@ -64,7 +66,6 @@ public class OdinStore : MonoBehaviour
             Debug.Log(ex);
         }
     }
-
     public void OnBuyItem()
     {
         

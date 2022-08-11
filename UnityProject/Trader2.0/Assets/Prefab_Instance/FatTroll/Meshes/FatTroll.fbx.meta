@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 144517c9c2cc68940844445e252402d1
 ModelImporter:
-  serializedVersion: 19301
+  serializedVersion: 20200
   internalIDToNameTable:
   - first:
       1: 100000
@@ -510,6 +510,9 @@ ModelImporter:
   - first:
       137: 13700000
     second: Troll_Mesh
+  - first:
+      74: -3179522984307920509
+    second: Idle01 (1)
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -526,14 +529,14 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    motionNodeName: 
+    motionNodeName: <Root Transform>
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 0
+    importAnimatedCustomProperties: 1
     importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
@@ -544,11 +547,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: walk
-      takeName: walk
+      name: Idle01 (1)
+      takeName: Idle01
       internalID: 0
-      firstFrame: 50
-      lastFrame: 82
+      firstFrame: 2193
+      lastFrame: 2434
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1663,6 +1666,7 @@ ModelImporter:
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
@@ -1672,6 +1676,9 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
@@ -1705,6 +1712,7 @@ ModelImporter:
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

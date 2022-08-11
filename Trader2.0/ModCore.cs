@@ -15,7 +15,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.2.5";
+        public const string ModVersion = "0.2.6";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
@@ -41,7 +41,9 @@ namespace Trader20
         internal static ConfigEntry<bool>? ConfigWriteSalesBuysToYml;
         internal static ConfigEntry<string>? BuyPageLocalization;
         internal static ConfigEntry<string>? SellPageLocalization;
-        
+        internal static ConfigEntry<bool>? ConfigShowTabs;
+        internal static ConfigEntry<bool>? ConfigShowRepair;
+
 
         internal static ManualLogSource knarrlogger = new ManualLogSource(ModName);
         
@@ -104,8 +106,9 @@ namespace Trader20
 
             BuyPageLocalization = config("Localization", "Buy Page Tab", "Buy", "The Translation for the Buy Page Tab");
             SellPageLocalization = config("Localization", "Sell Page Tab", "Sell", "The Translation for the Sell Page Tab");
-            
-            
+
+            ConfigShowTabs = config("General", "Show the Buy/Sell tabs", true, "This is the setting to enable/disable the selling interface");
+            ConfigShowRepair = config("General", "Show the Repair Icon", true, "This is the setting to enable/disable showing of the repair icon");
             
             
             SetupWatcher();

@@ -46,6 +46,9 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Button? repairButton;
     [SerializeField] internal Image? repairHammerImage;
     
+    
+    [SerializeField] internal RectTransform TabRect;
+    
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
 
@@ -64,7 +67,19 @@ public class OdinStore : MonoBehaviour
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
     }
-    
+
+    private void Start()
+    {
+        if (Trader20.Trader20.ConfigShowRepair.Value == false)
+        {
+            RepairRect.gameObject.SetActive(false);
+        }
+        if (Trader20.Trader20.ConfigShowTabs.Value == false)
+        {
+            TabRect.gameObject.SetActive(false);
+        }
+    }
+
 
     private void Update()
     {

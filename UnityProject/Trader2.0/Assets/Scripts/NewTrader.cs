@@ -53,8 +53,11 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 	public static NewTrader instance => m_instance;
 
 	[SerializeField] internal OdinStore _store;
-	
-	
+
+
+	[SerializeField] internal float rotateAtPlayerSpeed;
+	private static readonly int Stand = Animator.StringToHash("Stand");
+
 	[SerializeField] private float nextTime { get; set; }
 	[SerializeField] private float modifier { get; set; }
 
@@ -155,9 +158,14 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
 		if ((bool)closestPlayer)
 		{
-			m_animator.SetBool("Stand", value: true);
+			m_animator.SetBool(Stand, value: true);
 			m_lookAt.SetLoockAtTarget(closestPlayer.GetHeadPoint());
-			float num = Vector3.Distance(closestPlayer.transform.position, instance.transform.position);
+			var position = closestPlayer.transform.position;
+			Vector3 targetDir = position - transform.position;
+			float singleStep = rotateAtPlayerSpeed * Time.deltaTime;
+			Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, singleStep, 0.0f);
+			transform.rotation = Quaternion.LookRotation(newDir);
+			float num = Vector3.Distance(position, instance.transform.position);
 			
 			
 			if (!m_didGreet && num <= m_greetRange)
@@ -187,37 +195,52 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		}
 		else
 		{
-			m_animator.SetBool("Stand", value: false);
+			m_animator.SetBool(Stand, value: false);
 			m_lookAt.ResetTarget();
 		}
 	}
 
 	private void RandomTalk()
 	{
-		if (m_animator.GetBool("Stand") && !StoreGui.IsVisible() && Player.IsPlayerInRange(base.transform.position, m_greetRange))
+		if (m_animator.GetBool(Stand) && !StoreGui.IsVisible() && Player.IsPlayerInRange(base.transform.position, m_greetRange))
 		{
 			Say(m_randomTalk, "Talk");
 			m_randomTalkFX.Create(base.transform.position, Quaternion.identity);
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	public string GetHoverText()
 	{
 		return Localization.instance.Localize(m_name + "\n[<color=yellow><b>$KEY_Use</b></color>] $raven_interact");
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	public string GetHoverName()
 	{
 		return Localization.instance.Localize(m_name);
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="character"></param>
+	/// <param name="hold"></param>
+	/// <param name="alt"></param>
+	/// <returns></returns>
 	public bool Interact(Humanoid character, bool hold, bool alt)
 	{
 		if (hold)
 		{
 			return false;
 		}
-		OdinStore.instance.Show();
+		if (OdinStore.instance != null) OdinStore.instance.Show();
 		Say(m_randomStartTrade, "Talk");
 		m_randomStartTradeFX.Create(base.transform.position, Quaternion.identity);
 		return false;
@@ -238,11 +261,20 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="user"></param>
+	/// <param name="item"></param>
+	/// <returns></returns>
 	public bool UseItem(Humanoid user, ItemDrop.ItemData item)
 	{
 		return false;
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public void OnSold()
 	{
 		Say(m_randomSell, "Sell");
@@ -262,13 +294,12 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 			float prob = (float)numToChoose/(float)numLeft;
 
-			if (Random.value <= prob) {
-				numToChoose--;
-				result[numToChoose] = m_randomSellFX.m_effectPrefabs[numLeft - 1];
+			if (!(Random.value <= prob)) continue;
+			numToChoose--;
+			result[numToChoose] = m_randomSellFX.m_effectPrefabs[numLeft - 1];
 
-				if (numToChoose == 0) {
-					break;
-				}
+			if (numToChoose == 0) {
+				break;
 			}
 		}
 		return result;

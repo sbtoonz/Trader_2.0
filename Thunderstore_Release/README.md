@@ -21,15 +21,16 @@ You are required to put the items you wish the trader to sell as well as their c
 
 Example as shown:
 ```yaml
-PrefabName:
-  cost: 100
+Wood:
+  cost: 10
   stack: 10
-  inventory count: 1
-
-Acorns:
-  cost: 1 
-  stack: 1
-  inventory count: 10000
+  inventory count: 100
+  purchase price: 5
+LeatherScraps:
+  cost: 10
+  stack: 5
+  inventory count: -1
+  purchase price: 50
 ```
 
 where you see PrefabName you need to put the prefab the trader should sell. Yes this trader supports custom items.
@@ -141,3 +142,7 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.2.5
 * Knarr can now buy things from the player!, This has a new line entry your your trader_config.yaml file that is called 'purchase price' if this value is set to 0 the item will not show in the list of things knarr can buy from the player
+
+### V0.2.6
+* Added options to hide repair tab
+* Added option to hide sell tab

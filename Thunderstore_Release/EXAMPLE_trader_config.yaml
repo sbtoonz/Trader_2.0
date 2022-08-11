@@ -1,20 +1,45 @@
 Wood:
-    cost: 10
-    stack: 10
-    inventory count: 100
+  cost: 10
+  stack: 10
+  inventory count: 100
+  purchase price: 5
 LeatherScraps:
-    cost: 10
-    stack: 5
-    inventory count: -1
+  cost: 10
+  stack: 5
+  inventory count: -1
+  purchase price: 50
 FineWood:
-    cost: 15
-    stack: 1
-    inventory count: -1
+  cost: 15
+  stack: 1
+  inventory count: 1
+  purchase price: 10
 SwordCheat:
-    cost: 1000
-    stack: 1
-    inventory count: -1
+  cost: 999
+  stack: 1
+  inventory count: -1
+  purchase price: 0
 LightSaber:
-    cost: 1
-    stack: 1
-    inventory count: 100
+  cost: 1
+  stack: 1
+  inventory count: 100
+  purchase price: 0
+Mushroom:
+  cost: 40
+  stack: 4
+  inventory count: 89
+  purchase price: 1
+Raspberry:
+  cost: 10
+  stack: 1
+  inventory count: 244
+  purchase price: 50
+Stone:
+  cost: 0
+  stack: 1
+  inventory count: 0
+  purchase price: 20
+Dandelion:
+  cost: 0
+  stack: 1
+  inventory count: 0
+  purchase price: 1
