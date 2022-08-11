@@ -37,7 +37,14 @@
     <DocumentationFile>bin\Release\Trader2.0.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Github|AnyCPU' ">
-    <OutputPath>bin\Github\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Trader2.0.xml</DocumentationFile>
   </PropertyGroup>
   <Choose>
     <When Condition="($(OS) == 'Unix' OR $(OS) == 'OSX') AND $(GamePath) == ''">
@@ -74,6 +81,9 @@
     </Reference>
     <Reference Include="AugaAPI">
       <HintPath>Libs\AugaAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="ServerSync" Condition="'$(Configuration)'=='Github'">
+      <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
@@ -396,10 +406,13 @@
     <ClInclude Include="Libs\ShaderReplacer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </ClInclude>
+    <Content Include="Libs\AugaAPI.dll" />
+    <Content Include="Libs\ServerSync.dll" />
+    <Content Include="Libs\Unity.Auga.dll" />
     <Content Include="trader_config.yml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ServerSync\ServerSync.csproj">
+    <ProjectReference Include="..\ServerSync\ServerSync.csproj" Condition="'$(Configuration)'=='Release'">
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>
