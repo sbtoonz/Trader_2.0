@@ -1,9 +1,8 @@
 name: Build and publish Mod
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags:
+      - "v*"
 
 jobs:
   Build-Mod:
