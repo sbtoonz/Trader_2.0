@@ -98,13 +98,26 @@ jobs:
           path: '/home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll'
 
 
-      - name: Grab Version
+
+      - name: Set Output Version
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+          
+      - name: Check Version Output
+        env:
+          RELEASE_VERSION: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
         run: |
-          cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
-          sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
-          cat VERSION
-          echo "::set-output name=version::$(cat VERSION)"
-        id: version
+          echo $RELEASE_VERSION
+          echo ${{ steps.vars.outputs.tag }}
+          
+          
+      #- name: Grab Version
+        #run: |
+          #cat Trader2.0/ModCore.cs | grep 'ModVersion =' > tmp.txt
+          #sed 's|[private const string ModVersion =,]||g' tmp.txt | sed 's|[",]||g' | sed 's|[;,]||g' > VERSION
+          #cat VERSION
+          #echo "::set-output name=version::$(cat VERSION)"
+        #id: version
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
