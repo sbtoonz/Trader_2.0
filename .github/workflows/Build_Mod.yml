@@ -96,7 +96,7 @@ jobs:
           # Artifact name
           name: 'ColorMePortal'
           # A file, directory or wildcard pattern that describes what to upload
-          path: '/home/runner/work/Trader2.0/Trader2.0/Trader2.0/bin/Release/Trader20.dll'
+          path: '/home/runner/work/Trader2.0/Trader2.0/bin/Release/Trader20.dll'
 
 
       - name: Grab Version
@@ -116,6 +116,6 @@ jobs:
           name: ${{steps.version.outputs.version}}
           tag_name: ${{steps.version.outputs.version}}
           body_path: CHANGELOG.MD
-          files: /home/runner/work/Trader2.0/Trader2.0/Trader2.0/bin/Release/Trader20.dll
+          files: /home/runner/work/Trader2.0/Trader2.0/bin/Release/Trader20.dll
         env:
           GITHUB_TOKEN: ${{secrets.PATOKEN}}
