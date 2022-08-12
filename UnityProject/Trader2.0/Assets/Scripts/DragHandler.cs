@@ -7,8 +7,8 @@ using UnityEngine.EventSystems;
 public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
  
     private Vector2 pointerOffset;
-    private RectTransform canvasRectTransform;
-    private RectTransform panelRectTransform;
+    private RectTransform? canvasRectTransform;
+    private RectTransform? panelRectTransform;
     private bool clampedToLeft;
     private bool clampedToRight;
     private bool clampedToTop;
@@ -28,10 +28,11 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
  
     #region IBeginDragHandler implementation
- 
+
+    /// <inheritdoc />
     public void OnBeginDrag (PointerEventData eventData)
     {
-        panelRectTransform.SetAsLastSibling ();
+        panelRectTransform!.SetAsLastSibling ();
         RectTransformUtility.ScreenPointToLocalPointInRectangle (panelRectTransform, eventData.position, eventData.pressEventCamera, out pointerOffset);
  
     }
@@ -51,15 +52,15 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             ClampToWindow ();
             Vector2 clampedPosition = panelRectTransform.localPosition;
             if (clampedToRight) {
-                clampedPosition.x = (canvasRectTransform.rect.width * 0.5f) - (panelRectTransform.rect.width * (1 - panelRectTransform.pivot.x));
+                clampedPosition.x = (canvasRectTransform!.rect.width * 0.5f) - (panelRectTransform.rect.width * (1 - panelRectTransform.pivot.x));
             } else if(clampedToLeft){
-                clampedPosition.x = (-canvasRectTransform.rect.width * 0.5f) + (panelRectTransform.rect.width * panelRectTransform.pivot.x);
+                clampedPosition.x = (-canvasRectTransform!.rect.width * 0.5f) + (panelRectTransform.rect.width * panelRectTransform.pivot.x);
             }
  
             if(clampedToTop){
-                clampedPosition.y = (canvasRectTransform.rect.height * 0.5f) - (panelRectTransform.rect.height * (1 - panelRectTransform.pivot.y));
+                clampedPosition.y = (canvasRectTransform!.rect.height * 0.5f) - (panelRectTransform.rect.height * (1 - panelRectTransform.pivot.y));
             }else if(clampedToBottom){
-                clampedPosition.y = (-canvasRectTransform.rect.height * 0.5f) + (panelRectTransform.rect.height * panelRectTransform.pivot.y);
+                clampedPosition.y = (-canvasRectTransform!.rect.height * 0.5f) + (panelRectTransform.rect.height * panelRectTransform.pivot.y);
             }
             panelRectTransform.localPosition = clampedPosition;
            // Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
@@ -80,8 +81,8 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     void ClampToWindow(){
         Vector3[] canvasCorners = new Vector3[4];
         Vector3[] panelRectCorners = new Vector3[4];
-        canvasRectTransform.GetWorldCorners (canvasCorners);
-        panelRectTransform.GetWorldCorners (panelRectCorners);
+        canvasRectTransform!.GetWorldCorners (canvasCorners);
+        panelRectTransform!.GetWorldCorners (panelRectCorners);
  
         if (panelRectCorners [2].x > canvasCorners [2].x) {
             if (!clampedToRight) {

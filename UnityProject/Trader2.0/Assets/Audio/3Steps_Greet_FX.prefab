@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3284063765137738349}
   - component: {fileID: 7636702041284557510}
   m_Layer: 0
-  m_Name: Greet_FX
+  m_Name: 3Steps_Greet_FX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,8 @@ AudioSource:
   m_GameObject: {fileID: 5248099147093257264}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300000, guid: d6826637f302fc743aa2d34c5c01173a,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -116,7 +117,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 25
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
-	private static NewTrader m_instance;
+	private static NewTrader? m_instance;
 	public string m_name = "Knarr";
 
 	public float m_standRange = 15f;
@@ -41,18 +41,18 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
 	public EffectList m_randomSellFX = new EffectList();
 
-	public SnapToGround _snapper;
+	public SnapToGround? _snapper;
 
 	private bool m_didGreet = false;
 
 	private bool m_didGoodbye = false;
 
-	private Animator m_animator;
+	private Animator? m_animator;
 
-	private LookAt m_lookAt;
-	public static NewTrader instance => m_instance;
+	private LookAt? m_lookAt;
+	public static NewTrader? instance => m_instance;
 
-	[SerializeField] internal OdinStore _store;
+	[SerializeField] internal OdinStore? _store;
 
 
 	[SerializeField] internal float rotateAtPlayerSpeed;
@@ -158,14 +158,14 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
 		if ((bool)closestPlayer)
 		{
-			m_animator.SetBool(Stand, value: true);
-			m_lookAt.SetLoockAtTarget(closestPlayer.GetHeadPoint());
+			m_animator!.SetBool(Stand, value: true);
+			m_lookAt!.SetLoockAtTarget(closestPlayer.GetHeadPoint());
 			var position = closestPlayer.transform.position;
 			Vector3 targetDir = position - transform.position;
 			float singleStep = rotateAtPlayerSpeed * Time.deltaTime;
 			Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, singleStep, 0.0f);
 			transform.rotation = Quaternion.LookRotation(newDir);
-			float num = Vector3.Distance(position, instance.transform.position);
+			float num = Vector3.Distance(position, instance!.transform.position);
 			
 			
 			if (!m_didGreet && num <= m_greetRange)
@@ -195,14 +195,14 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		}
 		else
 		{
-			m_animator.SetBool(Stand, value: false);
-			m_lookAt.ResetTarget();
+			m_animator!.SetBool(Stand, value: false);
+			m_lookAt!.ResetTarget();
 		}
 	}
 
 	private void RandomTalk()
 	{
-		if (m_animator.GetBool(Stand) && !StoreGui.IsVisible() && Player.IsPlayerInRange(base.transform.position, m_greetRange))
+		if (m_animator!.GetBool(Stand) && !StoreGui.IsVisible() && Player.IsPlayerInRange(base.transform.position, m_greetRange))
 		{
 			Say(m_randomTalk, "Talk");
 			m_randomTalkFX.Create(base.transform.position, Quaternion.identity);
@@ -257,7 +257,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 		Chat.instance.SetNpcText(base.gameObject, Vector3.up * 1.5f, 20f, m_hideDialogDelay, "", text, large: false);
 		if (trigger.Length > 0)
 		{
-			m_animator.SetTrigger(trigger);
+			m_animator!.SetTrigger(trigger);
 		}
 	}
 

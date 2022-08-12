@@ -58,8 +58,8 @@ namespace Trader20
             [UsedImplicitly]
             public static void Postfix()
             {
-                Localization.instance.AddWord("BuyPage", Trader20.BuyPageLocalization.Value);
-                Localization.instance.AddWord("SellPage", Trader20.SellPageLocalization.Value);
+                Localization.instance.AddWord("BuyPage", Trader20.BuyPageLocalization?.Value);
+                Localization.instance.AddWord("SellPage", Trader20.SellPageLocalization?.Value);
             }
         }
 
@@ -159,7 +159,7 @@ namespace Trader20
                     {
                         if(AuguaSetupRan) return;
                         
-                        GameObject augapanel = null;
+                        GameObject augapanel = null!;
                         var typeAll = Resources.FindObjectsOfTypeAll<GameObject>();
                         foreach (var o in typeAll)
                         {
@@ -175,10 +175,10 @@ namespace Trader20
                         Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
                             .GetIcon();
                         var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
-                        anchor.anchoredPosition= Trader20.StoreScreenPos!.Value;
+                        anchor!.anchoredPosition= Trader20.StoreScreenPos!.Value;
                         
                         
-                        OdinStore.instance.BuyButtonImage!.sprite =
+                        OdinStore.instance!.BuyButtonImage!.sprite =
                             __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         var bkg1 = __instance.transform.Find("Store/AugaPanelBase/Background").gameObject;
@@ -206,8 +206,8 @@ namespace Trader20
                         
                         OdinStore.instance.Coins!.sprite = Trader20.Coins;
                         OdinStore.instance.Coins.transform.localPosition = new Vector3(-174.054f, 308.3599f, 0);
-                        OdinStore.instance.SelectedCost.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
-                        OdinStore.instance.InvCountPanel.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
+                        OdinStore.instance!.SelectedCost!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
+                        OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
                         OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
@@ -228,9 +228,9 @@ namespace Trader20
                             __instance.GetComponentInParent<Localize>().transform, false);
                     
                         var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
-                        anchor.anchoredPosition= __instance.m_listRoot.anchoredPosition;
+                        anchor!.anchoredPosition= __instance.m_listRoot.anchoredPosition;
                     
-                        OdinStore.instance.Coins!.sprite = Trader20.Coins;
+                        OdinStore.instance!.Coins!.sprite = Trader20.Coins;
                         OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton").GetComponent<Image>().sprite);
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
@@ -249,10 +249,10 @@ namespace Trader20
                             Object.Instantiate(InventoryGui.instance.transform.Find("root/Crafting/RepairSimple"))
                                 .gameObject.GetComponent<Image>();
 
-                        OdinStore.instance.RepairRect.gameObject.GetComponent<Image>().sprite = RepairBKGpanel.sprite;
+                        OdinStore.instance.RepairRect!.gameObject.GetComponent<Image>().sprite = RepairBKGpanel.sprite;
                         OdinStore.instance.RepairRect.gameObject.GetComponent<Image>().material = RepairBKGpanel.material;
-                        OdinStore.instance.repairHammerImage.sprite = repairImage.sprite;
-                        OdinStore.instance.repairButton.image.sprite = repairButtonButton.image.sprite;
+                        OdinStore.instance.repairHammerImage!.sprite = repairImage.sprite;
+                        OdinStore.instance.repairButton!.image.sprite = repairButtonButton.image.sprite;
                         OdinStore.instance.repairButton.onClick.AddListener(delegate
                         {
                             
@@ -275,7 +275,7 @@ namespace Trader20
                         });
                         OdinStore.instance.repairButton.transition = Selectable.Transition.SpriteSwap;
                         OdinStore.instance.repairButton.spriteState = repairButtonButton.spriteState;
-                        OdinStore.instance.repairText.gameObject.SetActive(false);
+                        OdinStore.instance.repairText!.gameObject.SetActive(false);
 
                     }
                     
@@ -305,7 +305,7 @@ namespace Trader20
                                 Trader20.knarrlogger.LogError("Failed to load ItemDrop for trader's item: " + variable.Key);
                                 continue;
                             }
-                            OdinStore.instance.AddItemToDict(id, variable.Value.ItemCostInt,
+                            OdinStore.instance!.AddItemToDict(id, variable.Value.ItemCostInt,
                                 variable.Value.ItemCount, variable.Value.Invcount);
                         }
 
@@ -322,7 +322,7 @@ namespace Trader20
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
         public static class SpawnKnarr
         {
-            private static GameObject tempKnarr;
+            private static GameObject? tempKnarr = new GameObject();
 
             [UsedImplicitly]
             private static void Prefix(ZoneSystem __instance)

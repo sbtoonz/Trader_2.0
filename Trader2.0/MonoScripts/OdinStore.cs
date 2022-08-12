@@ -9,9 +9,11 @@ using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
+// ReSharper disable NotAccessedField.Global
+// ReSharper disable InconsistentNaming
 public class OdinStore : MonoBehaviour
 {
+    
     private static OdinStore? m_instance;
     
     [SerializeField] private GameObject? m_StorePanel;
@@ -47,7 +49,7 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? repairHammerImage;
     
     
-    [SerializeField] internal RectTransform TabRect;
+    [SerializeField] internal RectTransform? TabRect;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
@@ -62,7 +64,7 @@ public class OdinStore : MonoBehaviour
     private void Awake() 
     {
         m_instance = this;
-        var rect = m_StorePanel?.transform as RectTransform;
+        var rect = m_StorePanel!.transform as RectTransform;
         rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
         m_StorePanel!.SetActive(false);
         StoreTitle!.text = "Knarr's Shop";
@@ -70,13 +72,13 @@ public class OdinStore : MonoBehaviour
 
     private void Start()
     {
-        if (Trader20.Trader20.ConfigShowRepair.Value == false)
+        if (Trader20.Trader20.ConfigShowRepair?.Value == false)
         {
-            RepairRect.gameObject.SetActive(false);
+            if (RepairRect != null) RepairRect.gameObject.SetActive(false);
         }
-        if (Trader20.Trader20.ConfigShowTabs.Value == false)
+        if (Trader20.Trader20.ConfigShowTabs?.Value == false)
         {
-            TabRect.gameObject.SetActive(false);
+            TabRect!.gameObject.SetActive(false);
         }
     }
 
@@ -93,7 +95,7 @@ public class OdinStore : MonoBehaviour
         {
             return;
         }
-        if (Vector3.Distance(NewTrader.instance.transform.position, Player.m_localPlayer.transform.position) > 15)
+        if (Vector3.Distance(NewTrader.instance!.transform.position, Player.m_localPlayer.transform.position) > 15)
         {
             Hide();
         }
@@ -159,6 +161,7 @@ public class OdinStore : MonoBehaviour
     /// <param name="cost"></param>
     /// <param name="invCount"></param>
     /// <param name="rectForElements"></param>
+    /// <param name="isPlayerItem"></param>
     public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
         ElementFormat newElement = new();
@@ -350,7 +353,7 @@ public class OdinStore : MonoBehaviour
     private static void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
         
-        if(Trader20.Trader20.ConfigWriteSalesBuysToYml.Value != true) return;
+        if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
         var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
@@ -484,7 +487,7 @@ public class OdinStore : MonoBehaviour
             int i = FindIndex(tempElement.Drop!);
             if (!CanBuy(i)) return;
             SellItem(i);
-            NewTrader.instance.OnSold();
+            NewTrader.instance!.OnSold();
             UpdateCoins(); 
         }
         catch (Exception e)
@@ -505,7 +508,7 @@ public class OdinStore : MonoBehaviour
         var cost = _storeInventory.ElementAt(i).Value.Cost;
         if (playerbank < cost) return false;
         Player.m_localPlayer.GetInventory()
-            .RemoveItem(ObjectDB.instance.GetItemPrefab(Trader20.Trader20.CurrencyPrefabName.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
+            .RemoveItem(ObjectDB.instance.GetItemPrefab(Trader20.Trader20.CurrencyPrefabName?.Value).GetComponent<ItemDrop>().m_itemData.m_shared.m_name,
                 cost);
         return true;
     }
@@ -549,10 +552,10 @@ public class OdinStore : MonoBehaviour
             switch (_elements[0].InventoryCount)
             {
                 case >= 1:
-                    InventoryCount.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
+                    InventoryCount!.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
                     break;
                 case -1:
-                    InvCountPanel.SetActive(false);
+                    InvCountPanel!.SetActive(false);
                     break;
             }
         }
@@ -589,7 +592,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void ShowInvCount()
     {
-        InvCountPanel.SetActive(true);
+        InvCountPanel!.SetActive(true);
     }
 
     /// <summary>
@@ -597,7 +600,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void HideInvCount()
     {
-        InvCountPanel.SetActive(false);
+        InvCountPanel!.SetActive(false);
     }
 
     private static GameObject CurrentCurrency()
@@ -664,7 +667,7 @@ public class OdinStore : MonoBehaviour
 
     private async Task SetupPlayerItemListTask()
     {
-        if (!SellListRoot.gameObject.activeSelf)
+        if (!SellListRoot!.gameObject.activeSelf)
         {
             await Task.Yield();
         }
@@ -716,7 +719,7 @@ public class OdinStore : MonoBehaviour
         //Check for existing entry
         UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
         
-        if (SellListRoot.transform.childCount >= 1)
+        if (SellListRoot!.transform.childCount >= 1)
         {
             foreach (Transform transform in SellListRoot.transform)
             {

@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class GUIShaderSwapper : MonoBehaviour
 {
-    public CanvasRenderer[] CanvasRenderers;
-    public List<Image> Images = new List<Image>();
+    public CanvasRenderer[]? CanvasRenderers;
+    public List<Image>? Images = new List<Image>();
 
-    public Material litgui;
+    public Material? litgui;
     private void Awake()
     {
         var templist = Resources.FindObjectsOfTypeAll<Material>();
@@ -18,14 +18,14 @@ public class GUIShaderSwapper : MonoBehaviour
                 litgui = VARIABLE;
             }
         }
-        foreach (var VARIABLE in Images)
+        foreach (var variable in Images!)
         {
-            VARIABLE.material = litgui;
+            variable.material = litgui;
         }
 
-        foreach (var VARIABLE in CanvasRenderers)
+        foreach (var variable in CanvasRenderers!)
         {
-            VARIABLE.SetMaterial(litgui, litgui.mainTexture);
+            variable.SetMaterial(litgui, litgui!.mainTexture);
         }
     }
 }

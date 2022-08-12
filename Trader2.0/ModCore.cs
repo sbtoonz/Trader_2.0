@@ -125,7 +125,7 @@ namespace Trader20
         private static void OnValChangUpdateStore()
         {
             if (!ObjectDB.instance || ObjectDB.instance.m_items.Count <= 0 || ObjectDB.instance.GetItemPrefab("Wood") == null) return;
-            OdinStore.instance.DumpDict();
+            OdinStore.instance!.DumpDict();
             foreach (var variable in TraderConfig.Value)
             {
                 var drop = ObjectDB.instance.GetItemPrefab(variable.Key);

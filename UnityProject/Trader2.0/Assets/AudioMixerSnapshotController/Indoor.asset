@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!245 &24500000
+AudioMixerSnapshotController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Indoor
+  m_AudioMixer: {fileID: 24100000, guid: 85deceab4af6e3f40ac197e57daf565a, type: 2}
+  m_SnapshotID: 719c1390bb807409fa69a68807b94f61
+  m_FloatValues: {}
+  m_TransitionOverrides: {}

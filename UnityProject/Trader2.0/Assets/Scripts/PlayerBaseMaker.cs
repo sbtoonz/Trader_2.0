@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class PlayerBaseMaker : MonoBehaviour
 {
-    private EffectArea _playerBase;
-    private GameObject _holder;
+    private EffectArea? _playerBase;
+    private GameObject? _holder;
     private void OnEnable()
     {
         if (_playerBase != null) return;
