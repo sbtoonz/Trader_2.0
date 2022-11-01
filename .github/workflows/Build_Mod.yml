@@ -85,7 +85,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p /home/runner/work/Trader2.0/Trader2.0/ServerSync/bin/Release
-          wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
+          wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.13/ServerSync.dll
           mkdir -p /home/runner/work/Trader2.0/Trader2.0/Trader2.0/Libs
           mv -v ServerSync.dll /home/runner/work/Trader2.0/Trader2.0/Trader2.0/Libs/
           msbuild Trader2.0.sln /p:Configuration=Github
