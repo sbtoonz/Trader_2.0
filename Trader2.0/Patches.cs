@@ -359,7 +359,6 @@ namespace Trader20
                             m_prioritized = true,
                             m_forestTresholdMax = 5,
                             m_unique = true,
-                            m_chanceToSpawn = 100,
                             m_inForest = true,
                         });
                     }
