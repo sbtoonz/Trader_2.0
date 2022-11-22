@@ -146,3 +146,12 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.2.6
 * Added options to hide repair tab
 * Added option to hide sell tab
+
+### V0.2.7
+* ServerSync Update
+
+### V0.2.8
+* ServerSync Update
+
+### V0.2.9
+* Mistlands Update
