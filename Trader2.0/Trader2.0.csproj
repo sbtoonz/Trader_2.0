@@ -416,6 +416,10 @@
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ServerSync\ServerSync.csproj">
+      <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
+      <Name>ServerSync</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
