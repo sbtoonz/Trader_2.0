@@ -43,6 +43,7 @@ namespace Trader20
         internal static ConfigEntry<string>? SellPageLocalization;
         internal static ConfigEntry<bool>? ConfigShowTabs;
         internal static ConfigEntry<bool>? ConfigShowRepair;
+        internal static ConfigEntry<bool>? KnarrPlaySound;
 
 
         internal static ManualLogSource knarrlogger = new ManualLogSource(ModName);
@@ -109,6 +110,7 @@ namespace Trader20
 
             ConfigShowTabs = config("General", "Show the Buy/Sell tabs", true, "This is the setting to enable/disable the selling interface");
             ConfigShowRepair = config("General", "Show the Repair Icon", true, "This is the setting to enable/disable showing of the repair icon");
+            KnarrPlaySound = config("General", "Should Knarr play his audio?", true, "This is the setting to enable/disable the audio playback when walking up to knarr");
             
             
             SetupWatcher();
