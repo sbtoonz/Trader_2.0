@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -95,7 +94,7 @@ public class OdinStore : MonoBehaviour
         {
             return;
         }
-        if (Vector3.Distance(NewTrader.instance!.transform.position, Player.m_localPlayer.transform.position) > 15)
+        if (Vector3.Distance(NewTrader.instance!.transform.position, player.transform.position) > 15)
         {
             Hide();
         }
@@ -647,12 +646,6 @@ public class OdinStore : MonoBehaviour
         return finalSide;
     }
 
-    public bool IsOnSale()
-    {
-        
-        return false;
-    }
-
     /// <summary>
     ///  This calls the async task which populates what knarr can buy from the player
     /// </summary>
@@ -684,11 +677,9 @@ public class OdinStore : MonoBehaviour
                 Destroy(transform.gameObject);
             }
         }
-        foreach (var itemData in m_tempItems)
+        foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
         {
-            if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
-            if(ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) ==0)continue;
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
         }
         await Task.Yield();
     }
@@ -726,11 +717,9 @@ public class OdinStore : MonoBehaviour
                 Destroy(transform.gameObject);
             }
         }
-        foreach (var itemData in m_tempItems)
+        foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
         {
-            if(!YMLContainsKey(itemData.m_dropPrefab.name)) continue;
-            if(ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) ==0)continue;
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);            
+            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
         }
         switch (m_tempItems.Count)
         {

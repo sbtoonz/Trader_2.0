@@ -232,12 +232,18 @@ public class OdinStore : MonoBehaviour
     
     public async void FillPlayerItemListVoid()
     {
+        await FillPlayerSaleList();
     }
-    public async Task FillPlayerSaleList()
+    private async Task FillPlayerSaleList()
     {
+        await Task.WhenAny(SetupPlayerItemListTask()).ConfigureAwait(false);
     }
-    
-    
+
+    private async Task SetupPlayerItemListTask()
+    {
+        await Task.Yield();
+    }
+
     public void SelectKnarrFirstItemForDisplay()
     {
     }
