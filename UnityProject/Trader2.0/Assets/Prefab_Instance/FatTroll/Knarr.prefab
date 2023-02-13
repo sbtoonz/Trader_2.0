@@ -691,6 +691,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4453680523120708016}
   - component: {fileID: 9143689905146564525}
+  - component: {fileID: 4817739876290831151}
   m_Layer: 0
   m_Name: Troll_Mesh
   m_TagString: Untagged
@@ -816,6 +817,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.17503071, y: 0.2083857, z: -0.1354779}
     m_Extent: {x: 1.342953, y: 1.1343877, z: 1.0442344}
   m_DirtyAABB: 0
+--- !u!114 &4817739876290831151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3314786612117729773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc4b029062ba12e4cb6e29523043deee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _renderers:
+  - {fileID: 9143689905146564525}
 --- !u!1 &3457383995178219631
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,7 +1529,6 @@ GameObject:
   - component: {fileID: 8248588759842237965}
   - component: {fileID: 5212895232100809140}
   - component: {fileID: 6535820988851220605}
-  - component: {fileID: 537103611309112549}
   - component: {fileID: 8157449538387906329}
   m_Layer: 0
   m_Name: Knarr
@@ -1798,20 +1812,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_offset: 0
---- !u!114 &537103611309112549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6458935346658124851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc4b029062ba12e4cb6e29523043deee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _renderers:
-  - {fileID: 9143689905146564525}
 --- !u!114 &8157449538387906329
 MonoBehaviour:
   m_ObjectHideFlags: 0
