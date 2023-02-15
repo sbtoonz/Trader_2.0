@@ -76,30 +76,43 @@ public class ShaderReplacer : MonoBehaviour
                 s = "Custom/Creature";
                 break;
             case ShaderType.Decal:
+                s = "Custom/Decal";
                 break;
             case ShaderType.Distortion:
+                s = "Custom/Distortion";
                 break;
             case ShaderType.Flow:
+                s = "Custom/Flow";
                 break;
             case ShaderType.FlowOpaque:
+                s = "Custom/FlowOpaque";
                 break;
             case ShaderType.Grass:
+                s = "Custom/Grass";
                 break;
             case ShaderType.GuiScroll:
+                s = "Custom/GuiScroll";
                 break;
             case ShaderType.HeightMap:
+                s = "Custom/HeightMap";
                 break;
             case ShaderType.Icon:
+                s = "Custom/Icon";
                 break;
             case ShaderType.InteriorSide:
+                s = "Custom/InteriorSide";
                 break;
             case ShaderType.LitGui:
+                s = "Custom/LitGui";
                 break;
             case ShaderType.LitParticles:
+                s = "Custom/LitParticles";
                 break;
             case ShaderType.MapShader:
+                s = "Custom/mapshader";
                 break;
             case ShaderType.ParticleDetail:
+                s = "Custom/ParticleDecal";
                 break;
             case ShaderType.Piece:
                 break;

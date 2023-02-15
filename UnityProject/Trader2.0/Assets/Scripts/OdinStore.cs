@@ -43,6 +43,9 @@ public class OdinStore : MonoBehaviour
     
     [SerializeField] internal RectTransform TabRect;
     
+    [SerializeField] internal bool BuyPageActive;
+    [SerializeField] internal bool SellPageActive;
+    
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
@@ -317,5 +320,25 @@ public class OdinStore : MonoBehaviour
             UpdateGenDescription(_elements[0]);
         }
         UpdateCoins();
+    }
+
+    public void SetBuyBool()
+    {
+        if (SellPageActive)
+        {
+            SellPageActive = false;
+        }
+
+        BuyPageActive = true;
+    }
+
+    public void SetSellBool()
+    {
+        if (BuyPageActive)
+        {
+            BuyPageActive = false;
+        }
+
+        SellPageActive = true;
     }
 }

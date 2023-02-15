@@ -49,6 +49,9 @@ public class OdinStore : MonoBehaviour
     
     
     [SerializeField] internal RectTransform? TabRect;
+
+    [SerializeField] internal bool BuyPageActive = true;
+    [SerializeField] internal bool SellPageActive;
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
@@ -470,8 +473,8 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void DisableGenDescription()
     {
-        SelectedItemDescription!.gameObject.SetActive(false);
-        ItemDropIcon!.gameObject.SetActive(false);
+        SelectedItemDescription.gameObject.SetActive(false);
+        ItemDropIcon.gameObject.SetActive(false);
         tempElement = null;
     }
 
@@ -570,6 +573,32 @@ public class OdinStore : MonoBehaviour
         UpdateCoins();
     }
 
+    /// <summary>
+    /// Sets the boolean for the viewpage for gamepad shit
+    /// </summary>
+    public void SetBuyBool()
+    {
+        if (SellPageActive)
+        {
+            SellPageActive = false;
+        }
+
+        BuyPageActive = true;
+    }
+
+    /// <summary>
+    /// Sets the boolean for the viewpage for gamepad shit
+    /// </summary>
+    public void SetSellBool()
+    {
+        if (BuyPageActive)
+        {
+            BuyPageActive = false;
+        }
+
+        SellPageActive = true;
+    }
+    
     /// <summary>
     /// This is called OnTabSelect() for the Buy tab so that the Description and icon for the item in the description panel updates
     /// </summary>
@@ -759,38 +788,93 @@ public class OdinStore : MonoBehaviour
 
     private void SetActiveSelection()
     {
-        for (int i = 0; i < CurrentStoreList.Count; i++)
+        int si = 0;
+        foreach (var VARIABLE in CurrentStoreList)
         {
-            if(i == currentIdx)
+            si++;
+            if (si == currentIdx)
             {
-                CurrentStoreList[i].transform.Find("selected").gameObject.SetActive(true);
+                VARIABLE.gameObject.transform.Find("selected").gameObject.SetActive(true);
             }
-            CurrentStoreList[i].transform.Find("selected").gameObject.SetActive(false);
+            VARIABLE.gameObject.transform.Find("selected").gameObject.SetActive(false);
         }
+
+        si = 0;
     }
     private void UpdateRecipeGamepadInput()
     {
-        
-        if (ZInput.GetButtonDown("JoyLStickDown"))
+     
+        if(BuyPageActive)
         {
-            currentIdx += 1;
-            if (currentIdx >= _elements.Count)
+            if (ZInput.GetButtonDown("JoyLStickDown"))
             {
-                currentIdx = _elements.Count -1;
-            }
-            UpdateGenDescription(_elements[currentIdx]);
-            SetActiveSelection();
-        }
+                currentIdx += 1;
+                if (currentIdx >= _elements.Count)
+                {
+                    currentIdx = _elements.Count - 1;
+                }
 
-        if (ZInput.GetButtonDown("JoyLStickUp"))
-        {
-            currentIdx -= 1;
-            if (currentIdx <= 0)
-            {
-                currentIdx = 0;
+                if (_elements.Count >= 1)
+                {
+                    UpdateGenDescription(_elements[currentIdx]);
+                    SetActiveSelection();
+                }
             }
-            UpdateGenDescription(_elements[currentIdx]);
-            SetActiveSelection();
+
+            if (ZInput.GetButtonDown("JoyLStickUp"))
+            {
+                currentIdx -= 1;
+                if (currentIdx <= 0)
+                {
+                    currentIdx = 0;
+                }
+                if (_elements.Count >= 1)
+                {
+                    UpdateGenDescription(_elements[currentIdx]);
+                    SetActiveSelection();
+                }
+            }
+            if (ZInput.GetButtonDown("JoyTabRight"))
+            {
+                SetSellBool();
+                SelectPlayerFirstItemForDisplay();
+            }
+        }
+        else if (SellPageActive)
+        {
+            if (ZInput.GetButtonDown("JoyLStickDown"))
+            {
+                currentIdx += 1;
+                if (currentIdx >= _playerSellElements.Count)
+                {
+                    currentIdx = _playerSellElements.Count - 1;
+                }
+
+                if(_playerSellElements.Count >=1)
+                {
+                    UpdateGenDescription(_playerSellElements[currentIdx]);
+                    SetActiveSelection();
+                }
+            }
+
+            if (ZInput.GetButtonDown("JoyLStickUp"))
+            {
+                currentIdx -= 1;
+                if (currentIdx <= 0)
+                {
+                    currentIdx = 0;
+                }
+                if(_playerSellElements.Count >=1)
+                {
+                    UpdateGenDescription(_playerSellElements[currentIdx]);
+                    SetActiveSelection();
+                }
+            }
+            if (ZInput.GetButtonDown("JoyTabLeft"))
+            {
+                SetBuyBool();
+                SelectKnarrFirstItemForDisplay();
+            }
         }
     }
     
