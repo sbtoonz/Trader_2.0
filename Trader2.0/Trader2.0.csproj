@@ -400,9 +400,6 @@
     <Content Include="..\Thunderstore_Release\manifest.json">
       <Link>Thunderstore_Release\manifest.json</Link>
     </Content>
-    <Content Include="..\Thunderstore_Release\plugins\Trader20.dll">
-      <Link>Thunderstore_Release\plugins\Trader20.dll</Link>
-    </Content>
     <Content Include="..\Thunderstore_Release\README.md">
       <Link>Thunderstore_Release\README.md</Link>
     </Content>
@@ -421,6 +418,11 @@
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="..\Thunderstore_Release\plugins">
+      <Link>Thunderstore_Release\plugins</Link>
+    </Folder>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

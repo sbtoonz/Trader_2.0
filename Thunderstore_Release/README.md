@@ -161,3 +161,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.3.1
 * Add configuration option to turn off knarr's audio cue's when walking up to him
+
+### V0.3.2
+* Alpha Gamepad support is here for knarr now for those who care.
