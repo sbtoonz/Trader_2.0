@@ -107,11 +107,13 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
                 m_didGreet = true;
                 m_didGoodbye = false;
                 Say(m_randomGreets, "Greet");
-                GameObject FxGreet =
+                if(Trader20.Trader20.KnarrPlaySound!.Value)
+                {
+                    GameObject FxGreet =
                         m_randomGreetFX.m_effectPrefabs[Random.Range(0, m_randomGreetFX.m_effectPrefabs.Length)].m_prefab;
                     FxGreet.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
                     Instantiate(FxGreet, transform.position, Quaternion.identity);
-
+                }
             }
 
             if (m_didGreet && !m_didGoodbye && num >= m_byeRange)
@@ -119,13 +121,14 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
                 m_didGoodbye = true;
                 m_didGreet = false;
                 Say(m_randomGoodbye, "Greet");
-
+                if (Trader20.Trader20.KnarrPlaySound!.Value)
+                {
                     GameObject FxBye =
                         m_randomGoodbyeFX.m_effectPrefabs[Random.Range(0, m_randomGoodbyeFX.m_effectPrefabs.Length)]
                             .m_prefab;
                     FxBye.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
                     Instantiate(FxBye, transform.position, Quaternion.identity);
-
+                }
             }
         }
         else
@@ -139,11 +142,11 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
     {
         if (m_animator!.GetBool(Stand) && !StoreGui.IsVisible() && Player.IsPlayerInRange(base.transform.position, m_greetRange))
         {
-
-
+            Say(m_randomTalk, "Talk");
+            if (Trader20.Trader20.KnarrPlaySound!.Value)
+            {
                 m_randomTalkFX.Create(base.transform.position, Quaternion.identity);
-            
-
+            }
         }
     }
 

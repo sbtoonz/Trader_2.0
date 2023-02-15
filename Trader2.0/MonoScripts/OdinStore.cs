@@ -60,6 +60,9 @@ public class OdinStore : MonoBehaviour
     internal List<ElementFormat> _elements = new();
     internal List<ElementFormat> _playerSellElements = new();
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
+    
+    //gamepad
+    internal int currentIdx = 0;
     private void Awake() 
     {
         m_instance = this;
@@ -98,7 +101,7 @@ public class OdinStore : MonoBehaviour
         {
             Hide();
         }
-        if ( Input.GetKeyDown(KeyCode.Escape))
+        if ( Input.GetKeyDown(KeyCode.Escape) || ZInput.GetButtonDown("JoyButtonB"))
         {
             ZInput.ResetButtonStatus("JoyButtonB");
             Hide();
@@ -111,6 +114,7 @@ public class OdinStore : MonoBehaviour
         {
             Hide();
         }
+        UpdateRecipeGamepadInput();
     }
 
     
@@ -170,6 +174,9 @@ public class OdinStore : MonoBehaviour
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
+        newElement._uiTooltip = ElementGO.GetComponent<UITooltip>();
+        newElement._uiTooltip.m_text = newElement.ItemName;
+        newElement._uiTooltip.m_topic = newElement.Drop.m_itemData.GetTooltip();
 
         newElement.InventoryCount = invCount;
         
@@ -185,8 +192,8 @@ public class OdinStore : MonoBehaviour
             1 => "",
             _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
         };
-        var elementthing = Instantiate(newElement.Element, rectForElements!.transform, false);
-        elementthing.GetComponent<Button>().onClick.AddListener(delegate
+        var instantiated_element = Instantiate(newElement.Element, rectForElements!.transform, false);
+        instantiated_element.GetComponent<Button>().onClick.AddListener(delegate
         {
             UpdateGenDescription(newElement);
             switch (invCount)
@@ -201,8 +208,8 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         });
-        elementthing.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
-        elementthing.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
+        instantiated_element.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
+        instantiated_element.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
         if (isPlayerItem)
         {
             _playerSellElements.Add(newElement);
@@ -210,7 +217,7 @@ public class OdinStore : MonoBehaviour
         else
         {
             _elements.Add(newElement);
-            CurrentStoreList.Add(elementthing);
+            CurrentStoreList.Add(instantiated_element);
         }
         
     }
@@ -523,6 +530,7 @@ public class OdinStore : MonoBehaviour
         internal int? Price;
         internal ItemDrop? Drop;
         internal int? InventoryCount;
+        internal UITooltip? _uiTooltip;
     }
     
     /// <summary>
@@ -538,9 +546,9 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void Show()
     {
-        if (_storeInventory.Count <= 0 && Player.m_localPlayer.GetInventory().m_inventory.Count <=0)
+        if (_storeInventory.Count <= 0)
         {
-            Trader20.Trader20.knarrlogger.LogWarning("Store and player inventory are empty not showing UI");
+            Trader20.Trader20.knarrlogger.LogWarning("Store is empty not showing UI");
             return;
         }
         m_StorePanel!.SetActive(true);
@@ -747,6 +755,38 @@ public class OdinStore : MonoBehaviour
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
         return currentList.ContainsKey(s);
+    }
+
+    private void UpdateRecipeGamepadInput()
+    {
+        
+        //Todo: Fix the selected gameobject and also fix the UITooltip not popping when selected.
+        //Todo: Fix smart choice between buy/sell selection of items to scroll with gamepad when using pad
+        if (ZInput.GetButtonDown("JoyLStickDown"))
+        {
+            currentIdx += 1;
+            if (currentIdx >= _elements.Count)
+            {
+                currentIdx = _elements.Count -1;
+            }
+            UpdateGenDescription(_elements[currentIdx]);
+            _elements[currentIdx].Element.transform.Find("selected").gameObject.SetActive(true);
+            _elements[currentIdx-1].Element.transform.Find("selected").gameObject.SetActive(true);
+            _elements[currentIdx]._uiTooltip.m_showTimer = 5;
+        }
+
+        if (ZInput.GetButtonDown("JoyLStickUp"))
+        {
+            currentIdx -= 1;
+            if (currentIdx <= 0)
+            {
+                currentIdx = 0;
+            }
+            UpdateGenDescription(_elements[currentIdx]);
+            _elements[currentIdx].Element.transform.Find("selected").gameObject.SetActive(true);
+            _elements[currentIdx+1].Element.transform.Find("selected").gameObject.SetActive(true);
+            _elements[currentIdx]._uiTooltip.m_showTimer = 5;
+        }
     }
     
 }

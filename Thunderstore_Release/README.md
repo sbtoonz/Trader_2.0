@@ -155,3 +155,9 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.2.9
 * Mistlands Update
+
+### V0.3.0
+* Avoid package deprecation 
+
+### V0.3.1
+* Add configuration option to turn off knarr's audio cue's when walking up to him

@@ -180,6 +180,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5275459843785624528}
   - component: {fileID: 5457503784115739737}
+  - component: {fileID: 5014195741751128506}
   m_Layer: 5
   m_Name: ItemElement
   m_TagString: Untagged
@@ -257,6 +258,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5014195741751128506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5344753315730512436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 438561839, guid: 9f9f52833cc29a54c93d686c6439c791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_tooltipPrefab: {fileID: 1179748668776680, guid: 29dcd8b42c52490408d86972a6e33e22,
+    type: 3}
+  m_text: Tooltip
+  m_topic: 
+  m_gamepadFocusObject: {fileID: 5345641869137502581}
 --- !u!1 &5344909168681698378
 GameObject:
   m_ObjectHideFlags: 0

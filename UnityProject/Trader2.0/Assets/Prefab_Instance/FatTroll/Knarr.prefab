@@ -831,6 +831,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _renderers:
   - {fileID: 9143689905146564525}
+  _shaderType: 4
 --- !u!1 &3457383995178219631
 GameObject:
   m_ObjectHideFlags: 0

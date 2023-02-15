@@ -67,11 +67,11 @@ Material:
     - _AddRain: 1
     - _BumpScale: 1
     - _Cull: 0
-    - _Cutoff: 0.137
+    - _Cutoff: 0.28
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 0.11
     - _GlossyReflections: 1
     - _Hue: 0
     - _MetalGloss: 0
