@@ -257,7 +257,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5457630125971964980}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5345641869137502581}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &5014195741751128506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 438561839, guid: 9f9f52833cc29a54c93d686c6439c791, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tooltipPrefab: {fileID: 1179748668776680, guid: 29dcd8b42c52490408d86972a6e33e22,
+  m_tooltipPrefab: {fileID: 1207292503745772, guid: 81154c15def760446bda0b9b708d7be5,
     type: 3}
   m_text: Tooltip
   m_topic: 

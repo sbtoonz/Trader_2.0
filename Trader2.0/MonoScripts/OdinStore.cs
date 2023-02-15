@@ -175,8 +175,8 @@ public class OdinStore : MonoBehaviour
         newElement.Drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
         newElement._uiTooltip = ElementGO.GetComponent<UITooltip>();
-        newElement._uiTooltip.m_text = newElement.ItemName;
-        newElement._uiTooltip.m_topic = newElement.Drop.m_itemData.GetTooltip();
+        newElement._uiTooltip.m_text = Localization.instance.Localize(newElement.Drop.m_itemData.m_shared.m_name);
+        newElement._uiTooltip.m_topic = Localization.instance.Localize(newElement.Drop.m_itemData.GetTooltip());
 
         newElement.InventoryCount = invCount;
         
@@ -757,22 +757,29 @@ public class OdinStore : MonoBehaviour
         return currentList.ContainsKey(s);
     }
 
+    private void SetActiveSelection()
+    {
+        for (int i = 0; i < CurrentStoreList.Count; i++)
+        {
+            if(i == currentIdx)
+            {
+                CurrentStoreList[i].transform.Find("selected").gameObject.SetActive(true);
+            }
+            CurrentStoreList[i].transform.Find("selected").gameObject.SetActive(false);
+        }
+    }
     private void UpdateRecipeGamepadInput()
     {
         
-        //Todo: Fix the selected gameobject and also fix the UITooltip not popping when selected.
-        //Todo: Fix smart choice between buy/sell selection of items to scroll with gamepad when using pad
         if (ZInput.GetButtonDown("JoyLStickDown"))
         {
             currentIdx += 1;
-            if (currentIdx >= _elements.Count)
+            if (currentIdx >= CurrentStoreList.Count)
             {
                 currentIdx = _elements.Count -1;
             }
             UpdateGenDescription(_elements[currentIdx]);
-            _elements[currentIdx].Element.transform.Find("selected").gameObject.SetActive(true);
-            _elements[currentIdx-1].Element.transform.Find("selected").gameObject.SetActive(true);
-            _elements[currentIdx]._uiTooltip.m_showTimer = 5;
+            SetActiveSelection();
         }
 
         if (ZInput.GetButtonDown("JoyLStickUp"))
@@ -783,9 +790,7 @@ public class OdinStore : MonoBehaviour
                 currentIdx = 0;
             }
             UpdateGenDescription(_elements[currentIdx]);
-            _elements[currentIdx].Element.transform.Find("selected").gameObject.SetActive(true);
-            _elements[currentIdx+1].Element.transform.Find("selected").gameObject.SetActive(true);
-            _elements[currentIdx]._uiTooltip.m_showTimer = 5;
+            SetActiveSelection();
         }
     }
     
