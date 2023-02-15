@@ -230,6 +230,10 @@ public class OdinStore : MonoBehaviour
     {
         try
         {
+            if (_elements.Count >= 1)
+            {
+                _elements.Clear();
+            }
             foreach (var itemData in _storeInventory)
             {
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
@@ -316,8 +320,7 @@ public class OdinStore : MonoBehaviour
                         InventoryCount!.text = _elements[0].InventoryCount.ToString();
                         tempElement = null;
                         UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
-                        RemoveItemFromDict(itemDrop);
-                        ClearStore();
+                        if(RemoveItemFromDict(itemDrop))ClearStore();
                     }
                     catch (Exception e)
                     {
@@ -351,9 +354,6 @@ public class OdinStore : MonoBehaviour
         Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
         ZLog.Log("Knarr Sold Item " + concatinated);
         LogSales(concatinated).ConfigureAwait(false);
-        
-        //if UpdateYML ? Idfk what to call that config but the YML would get written every buy/sell
-        
     }
 
     private static void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
@@ -774,7 +774,7 @@ public class OdinStore : MonoBehaviour
         if (ZInput.GetButtonDown("JoyLStickDown"))
         {
             currentIdx += 1;
-            if (currentIdx >= CurrentStoreList.Count)
+            if (currentIdx >= _elements.Count)
             {
                 currentIdx = _elements.Count -1;
             }
