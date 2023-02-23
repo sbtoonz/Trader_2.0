@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using UnityEngine;
 
@@ -12,10 +13,12 @@ public class PlayerBaseMaker : MonoBehaviour
         _holder.SetActive(false);
         var temp = Instantiate(_holder, transform.position, Quaternion.identity);
         _playerBase = temp.AddComponent<EffectArea>();
+        if (_playerBase == null) return;
         _playerBase.m_type = EffectArea.Type.NoMonsters;
         var sphere = temp.AddComponent<SphereCollider>();
         sphere.radius = 5;
         sphere.isTrigger = true;
         _playerBase.m_statusEffect = "SE_Cozy";
+        _holder.transform.SetParent(transform);
     }
 }

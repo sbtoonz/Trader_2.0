@@ -64,9 +64,11 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
     {
         m_animator = GetComponentInChildren<Animator>();
         m_lookAt = GetComponentInChildren<LookAt>();
-        InvokeRepeating("RandomTalk", m_randomTalkInterval, m_randomTalkInterval);
+        InvokeRepeating(nameof(RandomTalk), m_randomTalkInterval, m_randomTalkInterval);
         nextTime = 0.0f;
         SnapToGround.SnappAll();
+        _snapper = GetComponent<SnapToGround>();
+        if(_snapper)_snapper.Snap();
     }
 
     private void Awake()
@@ -95,10 +97,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
             m_animator!.SetBool(Stand, value: true);
             m_lookAt!.SetLoockAtTarget(closestPlayer.GetHeadPoint());
             var position = closestPlayer.transform.position;
-            Vector3 targetDir = position - transform.position;
-            float singleStep = rotateAtPlayerSpeed * Time.deltaTime;
-            Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, singleStep, 0.0f);
-            transform.rotation = Quaternion.LookRotation(newDir);
             float num = Vector3.Distance(position, instance!.transform.position);
 			
 			
