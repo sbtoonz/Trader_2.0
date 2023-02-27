@@ -46,6 +46,7 @@ public class ShaderReplacer : MonoBehaviour
 
     private void Awake()
     {
+        if (SystemInfo.graphicsDeviceName == null) return;
         foreach (var renderer in _renderers)
         {
             foreach (var material in renderer.sharedMaterials)
