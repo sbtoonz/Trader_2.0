@@ -38,7 +38,7 @@ enum ShaderType
     YggdrasilRoot,
     ToonDeferredShading2017
 }
-public class ShaderReplacer : MonoBehaviour
+public class ShaderReplacerNew : MonoBehaviour
 {
     [Tooltip("Use this Field For Normal Renderers")] [SerializeField]
     internal Renderer[] _renderers;
@@ -46,7 +46,7 @@ public class ShaderReplacer : MonoBehaviour
 
     private void Awake()
     {
-        if (SystemInfo.graphicsDeviceName == null) return;
+        if (IsHeadlessMode()) return;
         foreach (var renderer in _renderers)
         {
             foreach (var material in renderer.sharedMaterials)
@@ -151,5 +151,10 @@ public class ShaderReplacer : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(shaderchoice), shaderchoice, null);
         }
         return s;
+    }
+    
+    public static bool IsHeadlessMode()
+    {
+        return UnityEngine.SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null;
     }
 }
