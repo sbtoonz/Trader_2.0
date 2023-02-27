@@ -164,3 +164,7 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.3.2
 * Alpha Gamepad support is here for knarr now for those who care.
+
+### V0.3.3
+* Remove some artifact rotation controlling code from Knarr
+* Fix server join issues with knarr. During refactor of ShaderReplacer code I did introduce a bug which prevented knarr from being started on some server instances properly. This should now be resolved.
