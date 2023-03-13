@@ -136,6 +136,7 @@ public class OdinStore : MonoBehaviour
 
     private async void  ClearStore()
     {
+        //Todo: Setup a pool of objects to call out instead of destroying all the shit
         if (CurrentStoreList.Count != _storeInventory.Count)
         {
             foreach (var go in CurrentStoreList)
@@ -150,6 +151,7 @@ public class OdinStore : MonoBehaviour
     
     internal async void ForceClearStore()
     {
+        //Todo: Setup a pool of objects to call out instead of destroying all the shit
         foreach (var go in CurrentStoreList)
         {
             Destroy(go);

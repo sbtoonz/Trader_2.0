@@ -106,27 +106,20 @@ namespace Trader20
             if (s)
             {
                 ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
-                foreach (var KP in ZoneSystem.instance.m_locationInstances)
+                foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
                 {
-                    
-                        if(KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name)
-                        {
-                            ZLog.Log("Knarr Random Spawn location = " + KP.Value.m_position);
-                            ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
-                            Minimap.instance.AddPin(KP.Value.m_position, Minimap.PinType.Boss, "Knarr", true, false,
-                                Game.instance.GetPlayerProfile().GetPlayerID());
-                        }
-                    
+                    ZLog.LogWarning("Knarr Random Spawn location = " + KP.Value.m_position);
+                    ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
+                    Minimap.instance.AddPin(KP.Value.m_position, Minimap.PinType.Boss, "Knarr", true, false,
+                        Game.instance.GetPlayerProfile().GetPlayerID());
                 }
-
-                ;
                 if (zdolist.Count <= 0)
                 {
-                    ZLog.LogError("No instances of Knarr found");
+                    ZLog.LogError("No instances of Knarr found marking potential spawn points");
                 }
                 foreach (var zdo in zdolist)
                 {
-                    ZLog.Log("/Spawned Knarr instances at: " + zdo.m_position);
+                    ZLog.LogWarning("/Spawned Knarr instances at: " + zdo.m_position);
                 }
             }
             else
