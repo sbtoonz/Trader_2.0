@@ -8,6 +8,7 @@ using TMPro;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Jobs;
 using Random = UnityEngine.Random;
 // ReSharper disable NotAccessedField.Global
 // ReSharper disable InconsistentNaming
@@ -151,32 +152,21 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    private async void  ClearStore()
+    internal async void ClearStore()
     {
         //Todo: Setup a pool of objects to call out instead of destroying all the shit
-        if (CurrentStoreList.Count != _storeInventory.Count)
-        {
-            foreach (var go in CurrentStoreList)
-            {
-                Destroy(go);
-            }
-            
-            CurrentStoreList.Clear();
-            await ReadAllStoreItems();
-        }
-    }
-    
-    internal async void ForceClearStore()
-    {
-        //Todo: Setup a pool of objects to call out instead of destroying all the shit
+        if (CurrentStoreList.Count == _storeInventory.Count) return;
+        if(!BuyPageActive)return;
         foreach (var go in CurrentStoreList)
         {
+            Debug.Log($"Destroying Object {go.name}");
             Destroy(go);
         }
-            
         CurrentStoreList.Clear();
-        await ReadAllStoreItems();
+        ReadKnarrsItems();
+        
     }
+
 
     /// <summary>
     /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
@@ -189,14 +179,16 @@ public class OdinStore : MonoBehaviour
     /// <param name="isPlayerItem"></param>
     public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
-        ElementFormat newElement = new();
-        newElement.Drop = drop;
+        ElementFormat newElement = new()
+        {
+            Drop = drop
+        };
         newElement.Drop.m_itemData = drop.m_itemData.Clone();
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
-        newElement._uiTooltip = ElementGO.GetComponent<UITooltip>();
+        newElement._uiTooltip = ElementGO!.GetComponent<UITooltip>();
         newElement._uiTooltip.m_text = Localization.instance.Localize(newElement.Drop.m_itemData.m_shared.m_name);
         newElement._uiTooltip.m_topic = Localization.instance.Localize(newElement.Drop.m_itemData.GetTooltip());
 
@@ -247,34 +239,19 @@ public class OdinStore : MonoBehaviour
     /// Async task that reads all items in store inventory and then adds them to display list
     /// </summary>
     ///
-    private async Task  ReadStoreItems()
+    //Todo: This method sucks ass for performance I need to fix0r it 
+    private async void ReadKnarrsItems()
     {
+        var tasks = new Task[_storeInventory.Count];
         try
         {
             if (_elements.Count >= 1)
             {
                 _elements.Clear();
             }
-            foreach (var itemData in _storeInventory)
+            for (int i = 0; i < tasks.Length; ++i)
             {
-                if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
-                {
-                    if(itemData.Value.InvCount == 0) continue;
-                    if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
-                    {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-                    }
-                    else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
-                    {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-                    }
-                }
-                else
-                {
-                    if(itemData.Value.InvCount == 0) continue;
-                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-                }
-
+                tasks[i] = ScanKnarrItem(_storeInventory.ElementAt(i));
             }
         }
         catch (Exception ex)
@@ -283,16 +260,34 @@ public class OdinStore : MonoBehaviour
         }
         finally
         {
-            await Task.Yield(); 
+            await Task.WhenAll(tasks);
         }
         
 
         
     }
 
-    private async Task ReadAllStoreItems()
+    private async Task ScanKnarrItem(KeyValuePair<ItemDrop , StoreInfo<int, int, int>> itemData)
     {
-        await Task.WhenAny(ReadStoreItems());
+        if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
+        {
+            if(itemData.Value.InvCount == 0) await Task.Yield();
+            if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+            {
+                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+            }
+            else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
+            {
+                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+            }
+        }
+        else
+        {
+            if(itemData.Value.InvCount == 0) await Task.Yield();
+            AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+        }
+
+        await Task.Yield();
     }
 
     /// <summary>
@@ -573,21 +568,24 @@ public class OdinStore : MonoBehaviour
             return;
         }
         m_StorePanel!.SetActive(true);
-        ClearStore();
-        if(_elements.Count >=1)
+        if (BuyPageActive)
         {
-            UpdateGenDescription(_elements[0]);
-            switch (_elements[0].InventoryCount)
+            ClearStore();
+            if (_elements.Count >= 1)
             {
-                case >= 1:
-                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(0).Value.InvCount.ToString());
-                    break;
-                case -1:
-                    InvCountPanel!.SetActive(false);
-                    break;
+                UpdateGenDescription(_elements[0]);
+                switch (_elements[0].InventoryCount)
+                {
+                    case >= 1:
+                        InventoryCount_TMP!.SetText(_storeInventory.ElementAt(0).Value.InvCount.ToString());
+                        break;
+                    case -1:
+                        InvCountPanel!.SetActive(false);
+                        break;
+                }
             }
         }
-        FillPlayerItemListVoid();
+        if(SellPageActive)FillPlayerItemListVoid();
         UpdateCoins();
     }
 

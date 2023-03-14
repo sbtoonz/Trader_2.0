@@ -18,7 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -442,8 +442,14 @@
 	 <Target Name="Copy" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
-    <Target Name="Copy" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
+    <Target Name="Copy1" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
+	</Target>
+    <Target Name="Copy2" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
+     <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).pdb&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).pdb&quot;" />
+	</Target>
+    <Target Name="Debugger" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
+     <Exec Command="$(SolutionDir)pdb2mdb.exe &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 	 <Target Name="Copy_Thunderstore" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;..\Thunderstore_Release\plugins\$(AssemblyName).dll&quot;" />

@@ -150,8 +150,8 @@ namespace Trader20
                    
                 }
             }
-            OdinStore.instance.ForceClearStore();
-            OdinStore.instance.FillPlayerItemListVoid();
+            if(OdinStore.instance.BuyPageActive)OdinStore.instance.ClearStore();
+            if(OdinStore.instance.SellPageActive)OdinStore.instance.FillPlayerItemListVoid();
         }
         private void SetupWatcher()
         {
