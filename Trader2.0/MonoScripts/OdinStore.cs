@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,47 +13,63 @@ using Random = UnityEngine.Random;
 // ReSharper disable InconsistentNaming
 public class OdinStore : MonoBehaviour
 {
-    
+   
+    [Header("Store instance")]
     private static OdinStore? m_instance;
-    
     [SerializeField] private GameObject? m_StorePanel;
-    [SerializeField] private RectTransform? ListRoot;
-    [SerializeField] private RectTransform? SellListRoot;
-    [SerializeField] private Text? SelectedItemDescription;
-    [SerializeField] private Image? ItemDropIcon;
-    [SerializeField] internal Text? SelectedCost;
     [SerializeField] private Text? StoreTitle;
-    [SerializeField] private Button? BuyButton;
-    [SerializeField] private Button? SellButton;
-    [SerializeField] private Text? SelectedName;
-
-    [SerializeField] private Text? InventoryCount;
-    [SerializeField] internal GameObject? InvCountPanel;
-    
+    [SerializeField] private TextMeshProUGUI? StoreTitle_TMP;
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
+    [SerializeField] internal RectTransform? TabRect;
     
+    [Space]
+    [Header("Items Panel")]
+    [SerializeField] private RectTransform? ListRoot;
+    [SerializeField] private Image? ItemDropIcon;
+    [SerializeField] internal Text? SelectedCost;
+    [SerializeField] internal TextMeshProUGUI? SelectedCost_TMP;
+    [SerializeField] private Text? SelectedItemDescription;
+    [SerializeField] private TextMeshProUGUI? SelectedItemDescription_TMP;
+    [SerializeField] private Text? SelectedName;
+    [SerializeField] private TextMeshProUGUI? SelectedName_TMP;
     
-    //ElementData
-    [SerializeField] private GameObject? ElementGO;
-
-    [SerializeField] private NewTrader? _trader; 
-    [SerializeField] internal Image? BuyButtonImage;
+    [Space]
+    [Header("Sell Panel")]
+    [SerializeField] private Button? SellButton;
+    [SerializeField] private RectTransform? SellListRoot;
+    [SerializeField] private Text? InventoryCount;
+    [SerializeField] private TextMeshProUGUI? InventoryCount_TMP;
+    [SerializeField] internal Text? repairText;
+    [SerializeField] internal TextMeshProUGUI? repairText_TMP;
+    [SerializeField] internal GameObject? InvCountPanel;
     [SerializeField] internal Image? SellButtonImage;
+    [SerializeField] internal bool SellPageActive;
+    
+    [Space]
+    [Header("Buy Panel")]
+    [SerializeField] private Button? BuyButton;
+    [SerializeField] internal Image? BuyButtonImage;
     [SerializeField] internal Image? Coins;
-
+    [SerializeField] internal bool BuyPageActive = true;
+    
+    [Space]
+    [Header("Elements")]
+    [SerializeField] private GameObject? ElementGO;
+    
+    
+    [Space]
+    [Header("Repair Tab")]
     [SerializeField] internal RectTransform? RepairRect;
     [SerializeField] internal Image? repairImage;
-    [SerializeField] internal Text? repairText;
     [SerializeField] internal Button? repairButton;
     [SerializeField] internal Image? repairHammerImage;
     
+    //Future: Objectpool for GO's holding sale/buy items
+    internal List<GameObject> _forSaleObjects = new();
+    internal List<GameObject> _forBuyObjects = new();
     
-    [SerializeField] internal RectTransform? TabRect;
 
-    [SerializeField] internal bool BuyPageActive = true;
-    [SerializeField] internal bool SellPageActive;
-    
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
 
@@ -735,12 +752,12 @@ public class OdinStore : MonoBehaviour
         Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
         
         Player.m_localPlayer.GetInventory().AddItem(
-        CurrentCurrency().name, 
-        stack, 
-        CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
-        CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
-        0L, 
-        "");
+            CurrentCurrency().name, 
+            stack, 
+            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+            0L, 
+            "");
         
         string text = "";
         text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 

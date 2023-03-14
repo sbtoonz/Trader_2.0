@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -9,42 +10,59 @@ using Random = UnityEngine.Random;
 
 public class OdinStore : MonoBehaviour
 {
-    private static OdinStore m_instance;
+    [Header("Store instance")]
+    private static OdinStore? m_instance;
+    [SerializeField] private GameObject? m_StorePanel;
+    [SerializeField] private Text? StoreTitle;
+    [SerializeField] private TextMeshProUGUI? StoreTitle_TMP;
+    [SerializeField] internal Image? Bkg1;
+    [SerializeField] internal Image? Bkg2;
+    [SerializeField] internal RectTransform? TabRect;
     
-    [SerializeField] private GameObject m_StorePanel;
-    [SerializeField] private RectTransform ListRoot;
-    [SerializeField] private RectTransform SellListRoot;
-    [SerializeField] private Text SelectedItemDescription;
-    [SerializeField] private Image ItemDropIcon;
-    [SerializeField] internal Text SelectedCost;
-    [SerializeField] private Text StoreTitle;
-    [SerializeField] private Button BuyButton;
-    [SerializeField] private Button SellButton;
-    [SerializeField] private Text SelectedName;
-    [SerializeField] private Text InventoryCount;
-    [SerializeField] internal GameObject InvCountPanel;
-
-    [SerializeField] internal Image Bkg1;
-    [SerializeField] internal Image Bkg2;
-
-    //ElementData
-    [SerializeField] private GameObject ElementGO;
+    [Space]
+    [Header("Items Panel")]
+    [SerializeField] private RectTransform? ListRoot;
+    [SerializeField] private Image? ItemDropIcon;
+    [SerializeField] internal Text? SelectedCost;
+    [SerializeField] internal TextMeshProUGUI? SelectedCost_TMP;
+    [SerializeField] private Text? SelectedItemDescription;
+    [SerializeField] private TextMeshProUGUI? SelectedItemDescription_TMP;
+    [SerializeField] private Text? SelectedName;
+    [SerializeField] private TextMeshProUGUI? SelectedName_TMP;
     
-    [SerializeField] private NewTrader _trader; 
-    [SerializeField] internal Image BuyButtonImage;
-    [SerializeField] internal Image SellButtonImage;
-    [SerializeField] internal Image Coins;
-    
-    [SerializeField] internal RectTransform RepairRect;
-    [SerializeField] internal Image repairImage;
-    [SerializeField] internal Text repairText;
-    [SerializeField] internal Button repairButton;
-    [SerializeField] internal Image repairHammerImage;
-    
-    [SerializeField] internal RectTransform TabRect;
-    
-    [SerializeField] internal bool BuyPageActive;
+    [Space]
+    [Header("Sell Panel")]
+    [SerializeField] private Button? SellButton;
+    [SerializeField] private RectTransform? SellListRoot;
+    [SerializeField] private Text? InventoryCount;
+    [SerializeField] private TextMeshProUGUI? InventoryCount_TMP;
+    [SerializeField] internal Text? repairText;
+    [SerializeField] internal TextMeshProUGUI? repairText_TMP;
+    [SerializeField] internal GameObject? InvCountPanel;
+    [SerializeField] internal Image? SellButtonImage;
     [SerializeField] internal bool SellPageActive;
+    
+    [Space]
+    [Header("Buy Panel")]
+    [SerializeField] private Button? BuyButton;
+    [SerializeField] internal Image? BuyButtonImage;
+    [SerializeField] internal Image? Coins;
+    [SerializeField] internal bool BuyPageActive = true;
+    
+    [Space]
+    [Header("Elements")]
+    [SerializeField] private GameObject? ElementGO;
+    
+    
+    [Space]
+    [Header("Repair Tab")]
+    [SerializeField] internal RectTransform? RepairRect;
+    [SerializeField] internal Image? repairImage;
+    [SerializeField] internal Button? repairButton;
+    [SerializeField] internal Image? repairHammerImage;
+    
+
+
     
     //StoreInventoryListing
     internal Dictionary<ItemDrop, KeyValuePair<int, int>> _storeInventory = new Dictionary<ItemDrop, KeyValuePair<int,int>>();
@@ -59,6 +77,7 @@ public class OdinStore : MonoBehaviour
         m_instance = this;
         m_StorePanel.SetActive(false);
         StoreTitle.text = "Odins Store";
+        StoreTitle_TMP.SetText("Odins Store");
         try
         {
             Bkg1.material = litpanel;
