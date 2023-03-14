@@ -199,7 +199,7 @@ namespace Trader20
                         
                         OdinStore.instance.Coins!.sprite = Trader20.Coins;
                         OdinStore.instance.Coins.transform.localPosition = new Vector3(-174.054f, 308.3599f, 0);
-                        OdinStore.instance!.SelectedCost!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
+                        OdinStore.instance!.SelectedCost_TMP!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
                         OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
                         OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);

@@ -89,7 +89,7 @@ public class OdinStore : MonoBehaviour
         var rect = m_StorePanel!.transform as RectTransform;
         rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
         m_StorePanel!.SetActive(false);
-        StoreTitle!.text = "Knarr's Shop";
+        StoreTitle_TMP!.SetText("Knarr's Shop");
     }
 
     private void Start()
@@ -225,8 +225,7 @@ public class OdinStore : MonoBehaviour
                     break;
                 case >= 1:
                     InvCountPanel!.SetActive(true);
-                    InventoryCount!.text =
-                        _storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString();
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString());
                     break;
             }
         });
@@ -331,7 +330,7 @@ public class OdinStore : MonoBehaviour
         {
             case >= 1:
                 _storeInventory.ElementAt(i).Value.InvCount -= _storeInventory.ElementAt(i).Value.Stack;
-                InventoryCount!.text = _storeInventory.ElementAt(i).Value.InvCount.ToString();
+                InventoryCount_TMP!.SetText(_storeInventory.ElementAt(i).Value.InvCount.ToString());
                 int? temp = _storeInventory.ElementAt(i).Value.InvCount;
                 UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData,(int)temp, false);
                 if (temp <= 0)
@@ -339,7 +338,7 @@ public class OdinStore : MonoBehaviour
                     try
                     {
                         UpdateGenDescription(_elements[0]);
-                        InventoryCount!.text = _elements[0].InventoryCount.ToString();
+                        InventoryCount_TMP!.SetText(_elements[0].InventoryCount.ToString());
                         tempElement = null;
                         UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
                         if(RemoveItemFromDict(itemDrop))ClearStore();
@@ -479,10 +478,10 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
-        SelectedItemDescription!.gameObject.SetActive(true);
+        SelectedItemDescription_TMP!.gameObject.SetActive(true);
         ItemDropIcon!.gameObject.SetActive(true);
-        SelectedItemDescription!.text = element.Drop!.m_itemData.m_shared.m_description;
-        SelectedItemDescription.gameObject.AddComponent<Localize>();
+        SelectedItemDescription_TMP!.SetText(element.Drop!.m_itemData.m_shared.m_description);
+        SelectedItemDescription_TMP.gameObject.AddComponent<Localize>();
         ItemDropIcon!.sprite = element.Icon;
         tempElement = element;
     }
@@ -502,7 +501,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void UpdateCoins()
     {
-        SelectedCost!.text = GetPlayerCoins().ToString();
+        SelectedCost_TMP!.SetText(GetPlayerCoins().ToString());
     }
     
     /// <summary>
@@ -581,7 +580,7 @@ public class OdinStore : MonoBehaviour
             switch (_elements[0].InventoryCount)
             {
                 case >= 1:
-                    InventoryCount!.text = _storeInventory.ElementAt(0).Value.InvCount.ToString();
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(0).Value.InvCount.ToString());
                     break;
                 case -1:
                     InvCountPanel!.SetActive(false);
