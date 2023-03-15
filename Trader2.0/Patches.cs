@@ -308,7 +308,13 @@ namespace Trader20
                         }
                     }
                 }
+
+                OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
+                    .GetComponent<InventoryGui>();
+                OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
+
             }
+           
         }
 
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]

@@ -58,11 +58,9 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? repairImage;
     [SerializeField] internal Button? repairButton;
     [SerializeField] internal Image? repairHammerImage;
-    
-    //Future: Objectpool for GO's holding sale/buy items
-    internal List<GameObject> _forSaleObjects = new();
-    internal List<GameObject> _forBuyObjects = new();
-    
+
+
+    internal static InventoryGui? gui = null;
 
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
