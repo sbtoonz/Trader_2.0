@@ -1032,9 +1032,7 @@ public class OdinStore : MonoBehaviour
 
     private void OnSplitOK()
     {
-        //split the item and give the remains to knarr
-       // m_splitSlider.value;
-       int stack = (int)(ReturnYMLPlayerPurchaseValue(m_splitItem.m_dropPrefab.name) * m_splitSlider.value);
+        int stack = (int)(ReturnYMLPlayerPurchaseValue(m_splitItem.m_dropPrefab.name) * m_splitSlider.value);
        Player.m_localPlayer.GetInventory().RemoveItem(m_splitItem, (int)m_splitSlider.value);
         
        Player.m_localPlayer.GetInventory().AddItem(

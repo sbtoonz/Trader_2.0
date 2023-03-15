@@ -171,7 +171,7 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Remove some artifact rotation controlling code from Knarr
 * Fix server join issues with knarr. During refactor of ShaderReplacer code I did introduce a bug which prevented knarr from being started on some server instances properly. This should now be resolved.
 
-</details>
+
 
 ### V0.3.4
 * Updated Knarr to use TextMesh pro ... cuz I have been waiting since valheim launched to get this in game
@@ -180,3 +180,9 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.3.5
 * Fixed a whoopsy I missed in last push. Tstore makes it hard to just reup the same mod so here is a new version
+
+</details>
+
+
+### V0.3.6
+* Added the ability to split up the items sold to knarr when you have more than 1 item in your inventory.
