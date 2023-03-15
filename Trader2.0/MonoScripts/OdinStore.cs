@@ -8,7 +8,6 @@ using TMPro;
 using Trader20;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Jobs;
 using Random = UnityEngine.Random;
 // ReSharper disable NotAccessedField.Global
 // ReSharper disable InconsistentNaming
@@ -18,7 +17,6 @@ public class OdinStore : MonoBehaviour
     [Header("Store instance")]
     private static OdinStore? m_instance;
     [SerializeField] private GameObject? m_StorePanel;
-    [SerializeField] private Text? StoreTitle;
     [SerializeField] private TextMeshProUGUI? StoreTitle_TMP;
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
@@ -28,20 +26,15 @@ public class OdinStore : MonoBehaviour
     [Header("Items Panel")]
     [SerializeField] private RectTransform? ListRoot;
     [SerializeField] private Image? ItemDropIcon;
-    [SerializeField] internal Text? SelectedCost;
     [SerializeField] internal TextMeshProUGUI? SelectedCost_TMP;
-    [SerializeField] private Text? SelectedItemDescription;
     [SerializeField] private TextMeshProUGUI? SelectedItemDescription_TMP;
-    [SerializeField] private Text? SelectedName;
     [SerializeField] private TextMeshProUGUI? SelectedName_TMP;
     
     [Space]
     [Header("Sell Panel")]
     [SerializeField] private Button? SellButton;
     [SerializeField] private RectTransform? SellListRoot;
-    [SerializeField] private Text? InventoryCount;
     [SerializeField] private TextMeshProUGUI? InventoryCount_TMP;
-    [SerializeField] internal Text? repairText;
     [SerializeField] internal TextMeshProUGUI? repairText_TMP;
     [SerializeField] internal GameObject? InvCountPanel;
     [SerializeField] internal Image? SellButtonImage;
@@ -77,11 +70,15 @@ public class OdinStore : MonoBehaviour
     public static OdinStore? instance => m_instance;
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
-    internal List<GameObject> CurrentStoreList = new();
-    internal List<ElementFormat> _elements = new();
+    internal List<ElementFormat> _knarSellElements = new();
     internal List<ElementFormat> _playerSellElements = new();
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
     
+    
+    //ElementPool
+    internal GameObject ElementPoolGO;
+    internal List<ElementFormat> ElementPoolObjects = new();
+
     //gamepad
     internal int currentIdx = 0;
     private void Awake() 
@@ -89,8 +86,9 @@ public class OdinStore : MonoBehaviour
         m_instance = this;
         var rect = m_StorePanel!.transform as RectTransform;
         rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
-        m_StorePanel!.SetActive(false);
         StoreTitle_TMP!.SetText("Knarr's Shop");
+        CreateAndFillElementPool();
+        m_StorePanel!.SetActive(false);
     }
 
     private void Start()
@@ -139,11 +137,6 @@ public class OdinStore : MonoBehaviour
     }
 
     
-
-    private bool IsActive()
-    {
-        return m_StorePanel!.activeSelf;
-    }
     private void OnDestroy()
     {
         if (m_instance == this)
@@ -152,21 +145,71 @@ public class OdinStore : MonoBehaviour
         }
     }
 
-    internal async void ClearStore()
+    private ElementFormat GetPooledElement()
     {
-        //Todo: Setup a pool of objects to call out instead of destroying all the shit
-        if (CurrentStoreList.Count == _storeInventory.Count) return;
-        if(!BuyPageActive)return;
-        foreach (var go in CurrentStoreList)
-        {
-            Debug.Log($"Destroying Object {go.name}");
-            Destroy(go);
-        }
-        CurrentStoreList.Clear();
-        ReadKnarrsItems();
-        
+        return ElementPoolObjects.FirstOrDefault(t => !t.Element!.activeInHierarchy)!;
     }
 
+    private void ReturnPooledElement(ElementFormat element)
+    {
+        element.Element!.transform.SetParent(ElementPoolGO.transform);
+        element.Element.SetActive(false);
+        element._uiTooltip = null;
+        element.Drop = null;
+        element.Icon = null;
+        element.Price = null;
+        element.InventoryCount = null;
+        element.ItemName = null;
+    }
+    private void CreateAndFillElementPool()
+    {
+        ElementPoolGO = new GameObject("ElementPool");
+        ElementPoolGO!.transform.SetParent(this.transform);
+        ElementPoolGO.transform.SetSiblingIndex(-1);
+        ElementPoolGO.SetActive(false);
+        for (int i = 0; i < ObjectDB.instance.m_items.Count; i++)
+        {
+            GameObject obj = (GameObject)Instantiate(ElementGO, ElementPoolGO!.transform, false)!;
+            obj.SetActive(false);
+            ElementFormat element = new ElementFormat()
+            {
+                Element = obj
+            };
+            ElementPoolObjects.Add(element);
+        }
+    }
+
+
+    private bool IsActive()
+    {
+        return m_StorePanel!.activeSelf;
+    }
+    private async void  ClearStore()
+    {
+        if (BuyPageActive)
+        {
+            if (_knarSellElements.Count != _storeInventory.Count)
+            {
+                foreach (var go in _knarSellElements)
+                {
+                    ReturnPooledElement(go);
+                }
+
+                _knarSellElements.Clear();
+                await ReadAllStoreItems().ConfigureAwait(false);
+            }
+        }
+
+        if (SellPageActive)
+        {
+            foreach (var playerSellElement in _playerSellElements)
+            {
+                ReturnPooledElement(playerSellElement);
+            }
+            FillPlayerItemListVoid();
+        }
+    }
+    
 
     /// <summary>
     /// This method is invoked to add an item to the visual display of the store, it expects the ItemDrop.ItemData and the stack as arguments
@@ -179,16 +222,14 @@ public class OdinStore : MonoBehaviour
     /// <param name="isPlayerItem"></param>
     public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
-        ElementFormat newElement = new()
-        {
-            Drop = drop
-        };
+        ElementFormat newElement = GetPooledElement();
+        newElement.Drop = drop;
         newElement.Drop.m_itemData = drop.m_itemData.Clone();
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
         newElement.Element = ElementGO;
-        newElement._uiTooltip = ElementGO!.GetComponent<UITooltip>();
+        newElement._uiTooltip = ElementGO.GetComponent<UITooltip>();
         newElement._uiTooltip.m_text = Localization.instance.Localize(newElement.Drop.m_itemData.m_shared.m_name);
         newElement._uiTooltip.m_topic = Localization.instance.Localize(newElement.Drop.m_itemData.GetTooltip());
 
@@ -229,29 +270,43 @@ public class OdinStore : MonoBehaviour
         }
         else
         {
-            _elements.Add(newElement);
-            CurrentStoreList.Add(instantiated_element);
+            _knarSellElements.Add(newElement);
         }
-        
+        newElement.Element.SetActive(true);
     }
 
     /// <summary>
     /// Async task that reads all items in store inventory and then adds them to display list
     /// </summary>
     ///
-    //Todo: This method sucks ass for performance I need to fix0r it 
-    private async void ReadKnarrsItems()
+    private async Task  ReadStoreItems()
     {
-        var tasks = new Task[_storeInventory.Count];
         try
         {
-            if (_elements.Count >= 1)
+            if (_knarSellElements.Count >= 1)
             {
-                _elements.Clear();
+                _knarSellElements.Clear();
             }
-            for (int i = 0; i < tasks.Length; ++i)
+            foreach (var itemData in _storeInventory)
             {
-                tasks[i] = ScanKnarrItem(_storeInventory.ElementAt(i));
+                if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
+                {
+                    if(itemData.Value.InvCount == 0) continue;
+                    if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+                    {
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                    }
+                    else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
+                    {
+                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                    }
+                }
+                else
+                {
+                    if(itemData.Value.InvCount == 0) continue;
+                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                }
+
             }
         }
         catch (Exception ex)
@@ -260,34 +315,16 @@ public class OdinStore : MonoBehaviour
         }
         finally
         {
-            await Task.WhenAll(tasks);
+            await Task.Yield(); 
         }
         
 
         
     }
 
-    private async Task ScanKnarrItem(KeyValuePair<ItemDrop , StoreInfo<int, int, int>> itemData)
+    private async Task ReadAllStoreItems()
     {
-        if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
-        {
-            if(itemData.Value.InvCount == 0) await Task.Yield();
-            if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
-            {
-                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-            }
-            else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
-            {
-                AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-            }
-        }
-        else
-        {
-            if(itemData.Value.InvCount == 0) await Task.Yield();
-            AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
-        }
-
-        await Task.Yield();
+        await Task.WhenAny(ReadStoreItems());
     }
 
     /// <summary>
@@ -332,8 +369,8 @@ public class OdinStore : MonoBehaviour
                 {
                     try
                     {
-                        UpdateGenDescription(_elements[0]);
-                        InventoryCount_TMP!.SetText(_elements[0].InventoryCount.ToString());
+                        UpdateGenDescription(_knarSellElements[0]);
+                        InventoryCount_TMP!.SetText(_knarSellElements[0].InventoryCount.ToString());
                         tempElement = null;
                         UpdateYmlFileFromSaleOrBuy(_storeInventory.ElementAt(i).Key.m_itemData, (int)temp, false);
                         if(RemoveItemFromDict(itemDrop))ClearStore();
@@ -486,7 +523,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void DisableGenDescription()
     {
-        SelectedItemDescription.gameObject.SetActive(false);
+        SelectedItemDescription_TMP.gameObject.SetActive(false);
         ItemDropIcon.gameObject.SetActive(false);
         tempElement = null;
     }
@@ -568,24 +605,21 @@ public class OdinStore : MonoBehaviour
             return;
         }
         m_StorePanel!.SetActive(true);
-        if (BuyPageActive)
+        ClearStore();
+        if(_knarSellElements.Count >=1)
         {
-            ClearStore();
-            if (_elements.Count >= 1)
+            UpdateGenDescription(_knarSellElements[0]);
+            switch (_knarSellElements[0].InventoryCount)
             {
-                UpdateGenDescription(_elements[0]);
-                switch (_elements[0].InventoryCount)
-                {
-                    case >= 1:
-                        InventoryCount_TMP!.SetText(_storeInventory.ElementAt(0).Value.InvCount.ToString());
-                        break;
-                    case -1:
-                        InvCountPanel!.SetActive(false);
-                        break;
-                }
+                case >= 1:
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(0).Value.InvCount.ToString());
+                    break;
+                case <=0:
+                    InvCountPanel!.SetActive(false);
+                    break;
             }
         }
-        if(SellPageActive)FillPlayerItemListVoid();
+        FillPlayerItemListVoid();
         UpdateCoins();
     }
 
@@ -620,7 +654,7 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public void SelectKnarrFirstItemForDisplay()
     {
-        if(_elements.Count>0) UpdateGenDescription(_elements[0]);
+        if(_knarSellElements.Count>0) UpdateGenDescription(_knarSellElements[0]);
     }
 
     /// <summary>
@@ -805,14 +839,14 @@ public class OdinStore : MonoBehaviour
     private void SetActiveSelection()
     {
         int si = 0;
-        foreach (var VARIABLE in CurrentStoreList)
+        foreach (var VARIABLE in _knarSellElements)
         {
             si++;
             if (si == currentIdx)
             {
-                VARIABLE.gameObject.transform.Find("selected").gameObject.SetActive(true);
+                VARIABLE.Element!.gameObject.transform.Find("selected").gameObject.SetActive(true);
             }
-            VARIABLE.gameObject.transform.Find("selected").gameObject.SetActive(false);
+            VARIABLE.Element!.gameObject.transform.Find("selected").gameObject.SetActive(false);
         }
 
         si = 0;
@@ -825,14 +859,14 @@ public class OdinStore : MonoBehaviour
             if (ZInput.GetButtonDown("JoyLStickDown"))
             {
                 currentIdx += 1;
-                if (currentIdx >= _elements.Count)
+                if (currentIdx >= _knarSellElements.Count)
                 {
-                    currentIdx = _elements.Count - 1;
+                    currentIdx = _knarSellElements.Count - 1;
                 }
 
-                if (_elements.Count >= 1)
+                if (_knarSellElements.Count >= 1)
                 {
-                    UpdateGenDescription(_elements[currentIdx]);
+                    UpdateGenDescription(_knarSellElements[currentIdx]);
                     SetActiveSelection();
                 }
             }
@@ -844,9 +878,9 @@ public class OdinStore : MonoBehaviour
                 {
                     currentIdx = 0;
                 }
-                if (_elements.Count >= 1)
+                if (_knarSellElements.Count >= 1)
                 {
-                    UpdateGenDescription(_elements[currentIdx]);
+                    UpdateGenDescription(_knarSellElements[currentIdx]);
                     SetActiveSelection();
                 }
             }

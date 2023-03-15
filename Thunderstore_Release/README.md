@@ -45,6 +45,8 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 <p align="center"><a href="https://discord.gg/mbkPcvu9ax"><img src="https://i.imgur.com/Ji3u63C.png"></a></p>
 
+<details>
+<summary>Old Release Notes</summary>
 
 ### V0.0.1
 * Initial release
@@ -168,3 +170,10 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.3.3
 * Remove some artifact rotation controlling code from Knarr
 * Fix server join issues with knarr. During refactor of ShaderReplacer code I did introduce a bug which prevented knarr from being started on some server instances properly. This should now be resolved.
+
+</details>
+
+### V0.3.4
+* Updated Knarr to use TextMesh pro ... cuz I have been waiting since valheim launched to get this in game
+* Major performance upgrades when using huge item lists with knarr (techy terms are object pooling)
+* Updated to be compat with latest game version

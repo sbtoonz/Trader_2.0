@@ -13,8 +13,7 @@ public class OdinStore : MonoBehaviour
     
     [Header("Store instance")]
     private static OdinStore? m_instance;
-    [SerializeField]  private GameObject? m_StorePanel;
-    [SerializeField] private Text? StoreTitle;
+    [SerializeField] private GameObject? m_StorePanel;
     [SerializeField] private TextMeshProUGUI? StoreTitle_TMP;
     [SerializeField] internal Image? Bkg1;
     [SerializeField] internal Image? Bkg2;
@@ -24,20 +23,15 @@ public class OdinStore : MonoBehaviour
     [Header("Items Panel")]
     [SerializeField] private RectTransform? ListRoot;
     [SerializeField] private Image? ItemDropIcon;
-    [SerializeField] internal Text? SelectedCost;
     [SerializeField] internal TextMeshProUGUI? SelectedCost_TMP;
-    [SerializeField] private Text? SelectedItemDescription;
     [SerializeField] private TextMeshProUGUI? SelectedItemDescription_TMP;
-    [SerializeField] private Text? SelectedName;
     [SerializeField] private TextMeshProUGUI? SelectedName_TMP;
     
     [Space]
     [Header("Sell Panel")]
     [SerializeField] private Button? SellButton;
     [SerializeField] private RectTransform? SellListRoot;
-    [SerializeField] private Text? InventoryCount;
     [SerializeField] private TextMeshProUGUI? InventoryCount_TMP;
-    [SerializeField] internal Text? repairText;
     [SerializeField] internal TextMeshProUGUI? repairText_TMP;
     [SerializeField] internal GameObject? InvCountPanel;
     [SerializeField] internal Image? SellButtonImage;
@@ -61,7 +55,6 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Image? repairImage;
     [SerializeField] internal Button? repairButton;
     [SerializeField] internal Image? repairHammerImage;
-    
 
 
     
@@ -77,7 +70,6 @@ public class OdinStore : MonoBehaviour
     {
         m_instance = this;
         m_StorePanel.SetActive(false);
-        StoreTitle.text = "Odins Store";
         StoreTitle_TMP.SetText("Odins Store");
         try
         {
@@ -224,8 +216,8 @@ public class OdinStore : MonoBehaviour
     /// <param name="element"></param>
     public void UpdateGenDescription(ElementFormat element)
     {
-        SelectedItemDescription.text = element._drop.m_itemData.m_shared.m_description;
-        SelectedItemDescription.gameObject.AddComponent<Localize>();
+        SelectedItemDescription_TMP.text = element._drop.m_itemData.m_shared.m_description;
+        SelectedItemDescription_TMP.gameObject.AddComponent<Localize>();
         ItemDropIcon.sprite = element.Icon;
         tempElement = element;
     }

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 802799124
+CRC: 569826417
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 53178efba39bc773cbe7cb86f41a3207
+    Hash: 236234cc4975431b68b9a1d699d50fc8
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 6b275dbca29c584ab50c90033b75412c
+    Hash: 7ebdd9c3d59aec5d7f11ef5c2f31d467
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -194,6 +194,7 @@ SerializeReferenceClassIdentifiers:
   ClassName: EffectList/EffectData
 Assets:
 - Assets/Prefab_Instance/SalesPanel/CustomTrader.prefab
+- Assets/Prefab_Instance/SalesPanel/Element/NewItemElement.prefab
 - Assets/Prefab_Instance/SalesPanel/Element/ItemElement.prefab
 - Assets/Prefab_Instance/FatTroll/Knarr.prefab
 Dependencies: []

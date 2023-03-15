@@ -85,8 +85,8 @@ namespace Trader20
             StoreScreenPos = config("General", "Position Of Trader Prefab On Screen", Vector3.zero,
                 "This is the location on screen of the traders for sale screen", false);
 
-            RandomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your world?", false,
-                "Whether or not knarr should spawn using locationsystem");
+            RandomlySpawnKnarr = config("General", "Should Knarr randomly spawn around your BRAND NEW world?", false,
+                "Whether or not knarr should spawn using locationsystem on fresh worlds");
 
             LOGStoreSales = config("General", "Log what/when/to whom knarr sells things", false,
                 "This is to log when a player buys an item from Knarr and in what volume");
@@ -150,8 +150,6 @@ namespace Trader20
                    
                 }
             }
-            if(OdinStore.instance.BuyPageActive)OdinStore.instance.ClearStore();
-            if(OdinStore.instance.SellPageActive)OdinStore.instance.FillPlayerItemListVoid();
         }
         private void SetupWatcher()
         {

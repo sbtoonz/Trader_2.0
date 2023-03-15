@@ -79,7 +79,13 @@ public class CustomTrader : MonoBehaviour
         DontDestroyOnLoad(ElementPoolGo);
         DeployElementPool();
         
-        //ReadKnarrItems
+       
+        ReadKnarrItems();
+        
+    }
+
+    public void OnBuyItem()
+    {
     }
 
     private void Start()
@@ -92,23 +98,14 @@ public class CustomTrader : MonoBehaviour
         
     }
 
-    private void OnEnable()
-    {
-        
-    }
-
-    private void OnDisable()
-    {
-        
-    }
-
-    private void OnDestroy()
-    {
-        
-    }
 
     private async void OnGUI()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Hide();
+        }
+        
         if (CleaningQueue.Count <= 0) return;
         var tasks = new Task[CleaningQueue.Count];
         for (int i = 0; i < tasks.Length; i++)
@@ -133,6 +130,8 @@ public class CustomTrader : MonoBehaviour
         element.InventoryCount = null;
         element.UITooltip = null;
         element.Price = null;
+        var i = ElementPool.Count + 1;
+        ElementPool.Add(i, element);
         await Task.Yield();
     }
 
@@ -179,18 +178,28 @@ public class CustomTrader : MonoBehaviour
         }
     }
 
-    private void ReadKnarrItems()
+    private async void ReadKnarrItems()
     {
+        if(_knarrsDisplayedElements.Count == StoreInventory.Count)return;
         var tasks = new Task<NewElementFormat>[StoreInventory.Count];
         for (int i = 0; i < tasks.Length; i++)
         {
             var store = StoreInventory.ElementAt(i).Value;
             tasks[i] = GetAndSetupElement(StoreInventory.ElementAt(i).Key, store.Cost, store.Stack, store.InvCount);
             tasks[i].Result.Element!.transform.SetParent(KnarrsListPanel, false);
+            _knarrsDisplayedElements.Add(tasks[i].Result, store);
         }
+        
+        await Task.Yield();
     }
-    
+    private void Hide()
+    {
+        m_StorePanel!.SetActive(false);
+    }
 }
+/// <summary>
+/// 
+/// </summary>
 [Serializable]
 public class NewElementFormat
 {
@@ -203,8 +212,21 @@ public class NewElementFormat
     internal UITooltip? UITooltip;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TItemCost"></typeparam>
+/// <typeparam name="TItemStack"></typeparam>
+/// <typeparam name="TItemInventoryCount"></typeparam>
 [Serializable]
 public class StoreInfoNew<TItemCost, TItemStack, TItemInventoryCount> {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cost"></param>
+    /// <param name="stack"></param>
+    /// <param name="count"></param>
+    /// <param name="drop"></param>
     public StoreInfoNew(TItemCost cost, TItemStack stack, TItemInventoryCount count, ItemDrop drop) {
         Cost = cost;
         Stack = stack;

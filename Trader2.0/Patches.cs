@@ -268,7 +268,7 @@ namespace Trader20
                         });
                         OdinStore.instance.repairButton.transition = Selectable.Transition.SpriteSwap;
                         OdinStore.instance.repairButton.spriteState = repairButtonButton.spriteState;
-                        OdinStore.instance.repairText!.gameObject.SetActive(false);
+                        OdinStore.instance.repairText_TMP!.gameObject.SetActive(false);
 
                     }
                     
