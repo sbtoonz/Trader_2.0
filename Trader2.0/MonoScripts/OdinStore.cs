@@ -70,7 +70,10 @@ public class OdinStore : MonoBehaviour
     internal Button m_splitOkButton;
     internal Image m_splitIcon;
     internal Text m_splitIconName;
-    
+    internal ItemDrop.ItemData m_splitItem;
+    private string m_splitInput = "";
+    private DateTime m_lastSplitInput;
+    public float m_splitNumInputTimeoutSec = 0.5f;
 
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
@@ -147,7 +150,7 @@ public class OdinStore : MonoBehaviour
         UpdateRecipeGamepadInput();
         if (iscurrentlysplitting)
         {
-            gui.m_hiddenFrames++;
+            UpdateSplitDialog();;
         }
     }
 
@@ -190,7 +193,7 @@ public class OdinStore : MonoBehaviour
     private void CreateAndFillElementPool()
     {
         ElementPoolGO = new GameObject("ElementPool");
-        ElementPoolGO!.transform.SetParent(this.transform);
+        ElementPoolGO!.transform.SetParent(transform);
         ElementPoolGO.transform.SetSiblingIndex(-1);
         ElementPoolGO.SetActive(false);
         for (int i = 0; i < ObjectDB.instance.m_items.Count; i++)
@@ -784,58 +787,44 @@ public class OdinStore : MonoBehaviour
         
         //Do logic to spawn the selection GUI and feed it the players item --> pipe out the selected volume to stack;
         //
-        int tempstack = sellableItem.m_stack;
-        gui!.m_splitIcon.sprite = sellableItem.GetIcon();
-        gui.m_splitAmount.text = tempstack.ToString();
-        gui.m_splitSlider.maxValue = sellableItem.m_stack;
-        gui.m_splitSlider.minValue = 0;
-        gui.m_splitItem = sellableItem;
-        
-        gui.m_splitOkButton.onClick.AddListener(delegate
+        if (sellableItem.m_stack > 1)
         {
-            
-        });
-        gui.m_splitCancelButton.onClick.AddListener(delegate
-        {
-            
-        });
-        gui.m_splitSlider.onValueChanged.AddListener(delegate(float newValue)
-        {
-            
-            
-        });
-        
+            ShowSplitDialog(sellableItem);
+        }
         // Need to tick gui.HiddenFrames++ it looks like while the split dialog is active for knarr
         // and then reset that back down to 0 once im done with everything;
         //
-        int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
-        Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
-        
-        Player.m_localPlayer.GetInventory().AddItem(
-            CurrentCurrency().name, 
-            stack, 
-            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
-            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
-            0L, 
-            "");
-        
-        string text = "";
-        text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
-        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, sellableItem.m_shared.m_icons[0]);
-        Gogan.LogEvent("Game", "SoldItem", text, 0L);
-        //Check for existing entry
-        UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
-        
-        ClearStore();
-        
-        switch (_playerSellElements.Count)
+        else
         {
-            case > 0:
-                UpdateGenDescription(_playerSellElements[0]);
-                break;
-            case <=0:
-                DisableGenDescription();
-                break;
+            int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
+            Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
+        
+            Player.m_localPlayer.GetInventory().AddItem(
+                CurrentCurrency().name, 
+                stack, 
+                CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+                CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+                0L, 
+                "");
+        
+            string text = "";
+            text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
+            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, sellableItem.m_shared.m_icons[0]);
+            Gogan.LogEvent("Game", "SoldItem", text, 0L);
+            //Check for existing entry
+            UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
+        
+            ClearStore();
+        
+            switch (_playerSellElements.Count)
+            {
+                case > 0:
+                    UpdateGenDescription(_playerSellElements[0]);
+                    break;
+                case <=0:
+                    DisableGenDescription();
+                    break;
+            }
         }
         
     }
@@ -950,14 +939,132 @@ public class OdinStore : MonoBehaviour
 
     internal void BuildKnarrSplitDialog()
     {
-        splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, this.transform, false);
+        splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
         m_splitPanel = splitDiagGO.transform;
-        m_splitIcon = splitDiagGO.GetComponentInChildren<Image>();
+        m_splitIcon = splitDiagGO.transform.Find("win_bkg/Icon_bkg/Icon").gameObject.GetComponent<Image>();
         m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
         m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
         m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
         m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<Text>();
         m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<Text>();
+        m_splitCancelButton.onClick.AddListener(delegate
+        {
+            OnSplitCancel();
+            
+        });
+        m_splitOkButton.onClick.AddListener(delegate
+        {
+            OnSplitOK(); 
+            
+        });
+        m_splitSlider.onValueChanged.AddListener(delegate(float val)
+        {
+            OnSplitSliderChanged(val);
+            
+        });
+    }
+
+    private void OnSplitCancel()
+    {
+        m_splitItem = null;
+        iscurrentlysplitting = false;
+        m_splitPanel.gameObject.SetActive(false);
+    }
+    private void OnSplitSliderChanged(float value)
+    {
+        Text splitAmount = m_splitAmount;
+        int num = (int) value;
+        string str1 = num.ToString();
+        num = (int) m_splitSlider.maxValue;
+        string str2 = num.ToString();
+        string str3 = str1 + "/" + str2;
+        splitAmount.text = str3;
+    }
+    
+    private void ShowSplitDialog(ItemDrop.ItemData item)
+    {
+        int num = Input.GetKey(KeyCode.LeftControl) ? 1 : (Input.GetKey(KeyCode.RightControl) ? 1 : 0);
+        m_splitSlider.minValue = 1f;
+        m_splitSlider.maxValue = (float) item.m_stack;
+        if (num == 0)
+            m_splitSlider.value = (float) Mathf.CeilToInt((float) item.m_stack / 2f);
+        else if ((double) m_splitSlider.value / (double) item.m_stack > 0.5)
+            m_splitSlider.value = Mathf.Min(m_splitSlider.value, (float) item.m_stack);
+        m_splitIcon.sprite = item.GetIcon();
+        m_splitIconName.text = Localization.instance.Localize(item.m_shared.m_name);
+        m_splitPanel.gameObject.SetActive(true);
+        m_splitItem = item;
+        iscurrentlysplitting = true;
+        OnSplitSliderChanged(m_splitSlider.value);
+    }
+    private void UpdateSplitDialog()
+    {
+        if (!m_splitSlider.gameObject.activeInHierarchy)
+            return;
+        for (int index = 0; index < 10; ++index)
+        {
+            if (Input.GetKeyDown((KeyCode) (256 + index)) || Input.GetKeyDown((KeyCode) (48 + index)))
+            {
+                if (m_lastSplitInput + TimeSpan.FromSeconds((double) m_splitNumInputTimeoutSec) < DateTime.Now)
+                    m_splitInput = "";
+                m_lastSplitInput = DateTime.Now;
+                m_splitInput += index.ToString();
+                int result;
+                if (!int.TryParse(m_splitInput, out result)) continue;
+                m_splitSlider.value = Mathf.Clamp((float) result, 1f, m_splitSlider.maxValue);
+                OnSplitSliderChanged(m_splitSlider.value);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && (double) m_splitSlider.value > 1.0)
+        {
+            --m_splitSlider.value;
+            OnSplitSliderChanged(m_splitSlider.value);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow) && (double) m_splitSlider.value < (double) m_splitSlider.maxValue)
+        {
+            ++m_splitSlider.value;
+            OnSplitSliderChanged(m_splitSlider.value);
+        }
+        if (!Input.GetKeyDown(KeyCode.KeypadEnter) && !Input.GetKeyDown(KeyCode.Return))
+            return;
+        OnSplitOK();
+    }
+
+    private void OnSplitOK()
+    {
+        //split the item and give the remains to knarr
+       // m_splitSlider.value;
+       int stack = (int)(ReturnYMLPlayerPurchaseValue(m_splitItem.m_dropPrefab.name) * m_splitSlider.value);
+       Player.m_localPlayer.GetInventory().RemoveItem(m_splitItem, (int)m_splitSlider.value);
+        
+       Player.m_localPlayer.GetInventory().AddItem(
+           CurrentCurrency().name, 
+           stack, 
+           CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+           CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+           0L, 
+           "");
+        
+       string text = "";
+       text = ((m_splitItem.m_stack <= 1) ? m_splitItem.m_shared.m_name : (m_splitItem.m_stack + "x" + m_splitItem.m_shared.m_name)); 
+       Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, m_splitItem.m_shared.m_icons[0]);
+       Gogan.LogEvent("Game", "SoldItem", text, 0L);
+       //Check for existing entry
+       UpdateYmlFileFromSaleOrBuy(m_splitItem, m_splitItem.m_stack, true);
+        
+       ClearStore();
+        
+       switch (_playerSellElements.Count)
+       {
+           case > 0:
+               UpdateGenDescription(_playerSellElements[0]);
+               break;
+           case <=0:
+               DisableGenDescription();
+               break;
+       }
+       m_splitPanel.gameObject.SetActive(false);
+       iscurrentlysplitting = false;
     }
     
 }
