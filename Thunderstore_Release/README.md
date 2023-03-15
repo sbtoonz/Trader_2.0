@@ -177,3 +177,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Updated Knarr to use TextMesh pro ... cuz I have been waiting since valheim launched to get this in game
 * Major performance upgrades when using huge item lists with knarr (techy terms are object pooling)
 * Updated to be compat with latest game version
+
+### V0.3.5
+* Fixed a whoopsy I missed in last push. Tstore makes it hard to just reup the same mod so here is a new version

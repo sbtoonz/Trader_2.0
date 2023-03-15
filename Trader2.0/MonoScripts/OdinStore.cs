@@ -147,12 +147,23 @@ public class OdinStore : MonoBehaviour
 
     private ElementFormat GetPooledElement()
     {
-        return ElementPoolObjects.FirstOrDefault(t => !t.Element!.activeInHierarchy)!;
+        ElementFormat element = new ElementFormat(new GameObject());
+        for (int i = 0; i < ElementPoolObjects.Count; i++)
+        {
+            if(ElementPoolObjects[i].Element.activeSelf)continue;
+            if (!ElementPoolObjects[i].Element.activeSelf)
+            {
+                element = ElementPoolObjects[i];
+                return element;
+            }
+        }
+        return null;
     }
 
     private void ReturnPooledElement(ElementFormat element)
     {
-        element.Element!.transform.SetParent(ElementPoolGO.transform);
+        element.Element.transform.SetParent(ElementPoolGO.transform);
+        element.Element.transform.SetSiblingIndex(-1);
         element.Element.SetActive(false);
         element._uiTooltip = null;
         element.Drop = null;
@@ -171,10 +182,7 @@ public class OdinStore : MonoBehaviour
         {
             GameObject obj = (GameObject)Instantiate(ElementGO, ElementPoolGO!.transform, false)!;
             obj.SetActive(false);
-            ElementFormat element = new ElementFormat()
-            {
-                Element = obj
-            };
+            ElementFormat element = new ElementFormat(element: obj);
             ElementPoolObjects.Add(element);
         }
     }
@@ -202,10 +210,6 @@ public class OdinStore : MonoBehaviour
 
         if (SellPageActive)
         {
-            foreach (var playerSellElement in _playerSellElements)
-            {
-                ReturnPooledElement(playerSellElement);
-            }
             FillPlayerItemListVoid();
         }
     }
@@ -228,13 +232,10 @@ public class OdinStore : MonoBehaviour
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement.Drop.m_itemData.m_stack = stack;
-        newElement.Element = ElementGO;
-        newElement._uiTooltip = ElementGO.GetComponent<UITooltip>();
+        newElement._uiTooltip = newElement.Element.GetComponent<UITooltip>();
         newElement._uiTooltip.m_text = Localization.instance.Localize(newElement.Drop.m_itemData.m_shared.m_name);
         newElement._uiTooltip.m_topic = Localization.instance.Localize(newElement.Drop.m_itemData.GetTooltip());
-
         newElement.InventoryCount = invCount;
-        
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
         var component = newElement.Element.transform.Find("name").GetComponent<Text>();
         component.text = newElement.ItemName;
@@ -247,13 +248,12 @@ public class OdinStore : MonoBehaviour
             1 => "",
             _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
         };
-        var instantiated_element = Instantiate(newElement.Element, rectForElements!.transform, false);
-        instantiated_element.GetComponent<Button>().onClick.AddListener(delegate
+        newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
         {
             UpdateGenDescription(newElement);
             switch (invCount)
             {
-                case -1:
+                case <=0:
                     InvCountPanel!.SetActive(false);
                     break;
                 case >= 1:
@@ -262,8 +262,9 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         });
-        instantiated_element.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
-        instantiated_element.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
+        newElement.Element.transform.SetParent(rectForElements, false);
+        newElement.Element.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
+        newElement.Element.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
         if (isPlayerItem)
         {
             _playerSellElements.Add(newElement);
@@ -575,15 +576,21 @@ public class OdinStore : MonoBehaviour
     /// <summary>
     /// Format of the Element GameObject that populates the for sale list.
     /// </summary>
+    [Serializable]
     public class ElementFormat
     {
-        internal GameObject? Element;
-        internal Sprite? Icon;
-        internal string? ItemName;
-        internal int? Price;
-        internal ItemDrop? Drop;
-        internal int? InventoryCount;
-        internal UITooltip? _uiTooltip;
+        internal GameObject Element { get; set; }
+        internal Sprite? Icon{ get; set; }
+        internal string? ItemName{ get; set; }
+        internal int? Price{ get; set; }
+        internal ItemDrop? Drop{ get; set; }
+        internal int? InventoryCount{ get; set; }
+        internal UITooltip? _uiTooltip{ get; set; }
+
+        public ElementFormat(GameObject? element)
+        {
+            Element = element;
+        }
     }
     
     /// <summary>
@@ -619,7 +626,6 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         }
-        FillPlayerItemListVoid();
         UpdateCoins();
     }
 
@@ -673,21 +679,6 @@ public class OdinStore : MonoBehaviour
                 break;
         }
     }
-    /// <summary>
-    /// This is called to show the panel holding the inventory text
-    /// </summary>
-    public void ShowInvCount()
-    {
-        InvCountPanel!.SetActive(true);
-    }
-
-    /// <summary>
-    /// This is called to hide the panel holding the inventory text
-    /// </summary>
-    public void HideInvCount()
-    {
-        InvCountPanel!.SetActive(false);
-    }
 
     private static GameObject CurrentCurrency()
     {
@@ -738,37 +729,40 @@ public class OdinStore : MonoBehaviour
     /// </summary>
     public async void FillPlayerItemListVoid()
     {
-        await FillPlayerSaleList();
+        await FillPlayerSaleList().ConfigureAwait(true);
     }
-    private async Task FillPlayerSaleList()
+    private Task FillPlayerSaleList()
     {
-        await Task.WhenAny(SetupPlayerItemListTask());
+        SetupPlayerItemListTask();
+        return Task.CompletedTask;
     }
 
-    private async Task SetupPlayerItemListTask()
+    private void SetupPlayerItemListTask()
     {
-        if (!SellListRoot!.gameObject.activeSelf)
-        {
-            await Task.Yield();
-        }
-        _playerSellElements.Clear();
         var playerInv = Player.m_localPlayer.GetInventory();
         var playerItems = playerInv.GetAllItems();
         
         m_tempItems = playerItems;
-        
-        if (SellListRoot.transform.childCount >= 1)
+
+        if (_playerSellElements.Count() > 0)
         {
-            foreach (Transform transform in SellListRoot.transform)
+            foreach (var element in _playerSellElements)
             {
-                Destroy(transform.gameObject);
+                ReturnPooledElement(element);
+            }
+        }
+        _playerSellElements.Clear();
+        if (SellListRoot.transform.childCount > 0)
+        {
+            foreach (Transform t in SellListRoot.transform)
+            {
+                
             }
         }
         foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
         {
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
         }
-        await Task.Yield();
     }
 
     /// <summary>
