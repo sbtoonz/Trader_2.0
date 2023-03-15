@@ -1,6 +1,7 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
-
+#nullable enable
 enum ShaderType
 {
     Alpha,
@@ -40,7 +41,7 @@ enum ShaderType
 }
 public class ShaderReplacerNew : MonoBehaviour
 {
-    [Tooltip("Use this Field For Normal Renderers")] [SerializeField]
+    [Tooltip("Use this Field For Normal Renderers")] [SerializeField] [ItemCanBeNull]
     internal Renderer[] _renderers;
     [SerializeField] internal ShaderType _shaderType;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
+#nullable enable
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
     private static NewTrader? m_instance;

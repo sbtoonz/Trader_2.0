@@ -7,12 +7,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
+#nullable enable
 public class OdinStore : MonoBehaviour
 {
+    
     [Header("Store instance")]
     private static OdinStore? m_instance;
-    [SerializeField] private GameObject? m_StorePanel;
+    [SerializeField]  private GameObject? m_StorePanel;
     [SerializeField] private Text? StoreTitle;
     [SerializeField] private TextMeshProUGUI? StoreTitle_TMP;
     [SerializeField] internal Image? Bkg1;

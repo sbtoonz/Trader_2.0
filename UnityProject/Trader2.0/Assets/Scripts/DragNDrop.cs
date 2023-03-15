@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-
+#nullable enable
 public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public Transform target;
