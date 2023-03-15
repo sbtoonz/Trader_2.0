@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using AugaUnity;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -312,6 +313,7 @@ namespace Trader20
                 OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
                     .GetComponent<InventoryGui>();
                 OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
+                OdinStore.instance!.BuildKnarrSplitDialog();
 
             }
            
@@ -392,6 +394,6 @@ namespace Trader20
             }
 
         }
-        
+
     }
 }

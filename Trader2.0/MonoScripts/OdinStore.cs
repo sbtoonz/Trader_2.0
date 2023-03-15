@@ -59,8 +59,18 @@ public class OdinStore : MonoBehaviour
     [SerializeField] internal Button? repairButton;
     [SerializeField] internal Image? repairHammerImage;
 
-
+    
+//split dialog
     internal static InventoryGui? gui = null;
+    internal static GameObject splitDiagGO;
+    internal Transform m_splitPanel;
+    internal Slider m_splitSlider;
+    internal Text m_splitAmount;
+    internal Button m_splitCancelButton;
+    internal Button m_splitOkButton;
+    internal Image m_splitIcon;
+    internal Text m_splitIconName;
+    
 
     //StoreInventoryListing
     internal Dictionary<ItemDrop, StoreInfo<int, int, int>> _storeInventory = new Dictionary<ItemDrop, StoreInfo<int, int, int>>();
@@ -79,6 +89,9 @@ public class OdinStore : MonoBehaviour
 
     //gamepad
     internal int currentIdx = 0;
+    
+    //split dialog
+    internal bool iscurrentlysplitting = false;
     private void Awake() 
     {
         m_instance = this;
@@ -132,6 +145,10 @@ public class OdinStore : MonoBehaviour
             Hide();
         }
         UpdateRecipeGamepadInput();
+        if (iscurrentlysplitting)
+        {
+            gui.m_hiddenFrames++;
+        }
     }
 
     
@@ -750,13 +767,6 @@ public class OdinStore : MonoBehaviour
             }
         }
         _playerSellElements.Clear();
-        if (SellListRoot.transform.childCount > 0)
-        {
-            foreach (Transform t in SellListRoot.transform)
-            {
-                
-            }
-        }
         foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
         {
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
@@ -771,6 +781,33 @@ public class OdinStore : MonoBehaviour
         // ReSharper disable once Unity.NoNullPropagation
         var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name);
         if (sellableItem == null) return;
+        
+        //Do logic to spawn the selection GUI and feed it the players item --> pipe out the selected volume to stack;
+        //
+        int tempstack = sellableItem.m_stack;
+        gui!.m_splitIcon.sprite = sellableItem.GetIcon();
+        gui.m_splitAmount.text = tempstack.ToString();
+        gui.m_splitSlider.maxValue = sellableItem.m_stack;
+        gui.m_splitSlider.minValue = 0;
+        gui.m_splitItem = sellableItem;
+        
+        gui.m_splitOkButton.onClick.AddListener(delegate
+        {
+            
+        });
+        gui.m_splitCancelButton.onClick.AddListener(delegate
+        {
+            
+        });
+        gui.m_splitSlider.onValueChanged.AddListener(delegate(float newValue)
+        {
+            
+            
+        });
+        
+        // Need to tick gui.HiddenFrames++ it looks like while the split dialog is active for knarr
+        // and then reset that back down to 0 once im done with everything;
+        //
         int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
         Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
         
@@ -789,23 +826,14 @@ public class OdinStore : MonoBehaviour
         //Check for existing entry
         UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
         
-        if (SellListRoot!.transform.childCount >= 1)
-        {
-            foreach (Transform transform in SellListRoot.transform)
-            {
-                Destroy(transform.gameObject);
-            }
-        }
-        foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
-        {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
-        }
-        switch (m_tempItems.Count)
+        ClearStore();
+        
+        switch (_playerSellElements.Count)
         {
             case > 0:
                 UpdateGenDescription(_playerSellElements[0]);
                 break;
-            case 0:
+            case <=0:
                 DisableGenDescription();
                 break;
         }
@@ -918,6 +946,18 @@ public class OdinStore : MonoBehaviour
                 SelectKnarrFirstItemForDisplay();
             }
         }
+    }
+
+    internal void BuildKnarrSplitDialog()
+    {
+        splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, this.transform, false);
+        m_splitPanel = splitDiagGO.transform;
+        m_splitIcon = splitDiagGO.GetComponentInChildren<Image>();
+        m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
+        m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
+        m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
+        m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<Text>();
+        m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<Text>();
     }
     
 }
