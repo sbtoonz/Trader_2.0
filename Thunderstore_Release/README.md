@@ -12,7 +12,7 @@ This file also has a filewatcher for it built into the mod
 that means that when you edit this file the store updates in game!
 
 
-![](https://github.com/sbtoonz/Trader_2.0/raw/master/Images/ezgif.com-gif-maker%20(3).gif)
+![](https://cdn.discordapp.com/attachments/1081545225287249930/1085701970825842798/ezgif.com-video-to-gif.gif)
 ### Configuration
 
 There is a yaml file that is generated on first launch of the mod. This file will live in your BepInEx/configs folder and becalled trader_config.yaml
