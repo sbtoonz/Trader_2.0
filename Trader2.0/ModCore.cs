@@ -149,6 +149,11 @@ namespace Trader20
                     knarrlogger.LogError("Please Check your Prefab name "+ variable.Key);
                    
                 }
+
+                if (OdinStore.instance != null)
+                {
+                    OdinStore.instance.ClearStore();
+                }
             }
         }
         private void SetupWatcher()

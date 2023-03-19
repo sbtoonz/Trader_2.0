@@ -210,7 +210,7 @@ public class OdinStore : MonoBehaviour
     {
         return m_StorePanel!.activeSelf;
     }
-    private async void  ClearStore()
+    internal async void  ClearStore()
     {
         if (BuyPageActive)
         {
