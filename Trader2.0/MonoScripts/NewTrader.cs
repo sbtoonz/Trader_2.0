@@ -60,6 +60,8 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
     [SerializeField] private float nextTime { get; set; }
     [SerializeField] private float modifier { get; set; }
 
+    internal ZNetView m_netview;
+
     private void Start()
     {
         m_animator = GetComponentInChildren<Animator>();
@@ -74,6 +76,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
     private void Awake()
     {
         m_instance = this;
+        m_netview = GetComponent<ZNetView>();
     }
 
     private void OnDestroy()
@@ -91,7 +94,9 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
     private void LateUpdate()
     {
+        if(!m_netview.IsOwner())return;
         Player closestPlayer = Player.GetClosestPlayer(base.transform.position, m_standRange);
+        
         if ((bool)closestPlayer)
         {
             m_animator!.SetBool(Stand, value: true);
