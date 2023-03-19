@@ -150,10 +150,11 @@ namespace Trader20
                    
                 }
 
-                if (OdinStore.instance != null)
-                {
-                    OdinStore.instance.ClearStore();
-                }
+               
+            }
+            if (OdinStore.instance != null)
+            {
+                OdinStore.instance.ClearStore();
             }
         }
         private void SetupWatcher()

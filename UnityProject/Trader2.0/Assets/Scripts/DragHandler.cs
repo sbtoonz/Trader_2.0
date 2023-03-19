@@ -46,6 +46,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if(panelRectTransform == null){
             return;
         }
+        if(OdinStore.instance != null && !OdinStore.instance.gameObject.activeSelf)return;
         Vector2 localPointerPosition;
         if(RectTransformUtility.ScreenPointToLocalPointInRectangle (canvasRectTransform, eventData.position, eventData.pressEventCamera, out localPointerPosition)){
             panelRectTransform.localPosition = localPointerPosition - pointerOffset;
@@ -63,7 +64,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 clampedPosition.y = (-canvasRectTransform!.rect.height * 0.5f) + (panelRectTransform.rect.height * panelRectTransform.pivot.y);
             }
             panelRectTransform.localPosition = clampedPosition;
-           // Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
+            if (Trader20.Trader20.StoreScreenPos != null) Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
         }
     }
  
@@ -73,7 +74,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
  
     public void OnEndDrag (PointerEventData eventData)
     {
-        //Trader20.Trader20.instance.SaveConfig();
+        
     }
  
     #endregion

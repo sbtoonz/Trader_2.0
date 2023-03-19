@@ -181,8 +181,13 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.3.5
 * Fixed a whoopsy I missed in last push. Tstore makes it hard to just reup the same mod so here is a new version
 
-</details>
-
 
 ### V0.3.6
 * Added the ability to split up the items sold to knarr when you have more than 1 item in your inventory.
+
+</details>
+
+### V0.3.7
+* Fixed item sync with servers not happening in situations
+* Increased knarrs range of spawn (for older worlds using genloc)
+* Fixed SOME FPS loss reported while knarr exists in world
