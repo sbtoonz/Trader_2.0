@@ -82,7 +82,7 @@ public class OdinStore : MonoBehaviour
     internal static ElementFormat? tempElement;
     internal static Material? litpanel;
     internal List<ElementFormat> _knarSellElements = new();
-    internal List<ElementFormat> _playerSellElements = new();
+    internal List<ElementFormat> _playerSellElements;
     private List<ItemDrop.ItemData> m_tempItems = new List<ItemDrop.ItemData>();
     
     
@@ -95,8 +95,9 @@ public class OdinStore : MonoBehaviour
     
     //split dialog
     internal bool iscurrentlysplitting = false;
-    private void Awake() 
+    private void Awake()
     {
+        _playerSellElements = new List<ElementFormat>();
         m_instance = this;
         var rect = m_StorePanel!.transform as RectTransform;
         rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
@@ -428,7 +429,7 @@ public class OdinStore : MonoBehaviour
         LogSales(concatinated).ConfigureAwait(false);
     }
 
-    private static void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
+    internal void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
         
         if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
@@ -768,8 +769,9 @@ public class OdinStore : MonoBehaviour
             {
                 ReturnPooledElement(element);
             }
+            _playerSellElements.Clear();
         }
-        _playerSellElements.Clear();
+        
         foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
         {
             AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
@@ -829,20 +831,57 @@ public class OdinStore : MonoBehaviour
         
     }
 
-    private protected int ReturnYMLPlayerPurchaseValue(string s)
+    private int ReturnYMLPlayerPurchaseValue(string s)
     {
-        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-        file.Close();
-        return currentList[s].PurchaseFromPlayerCost;
+        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+        {
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            return currentList[s].PurchaseFromPlayerCost;
+        }
+
+        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
+        {
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            return currentList[s].PurchaseFromPlayerCost;
+        }
+
+        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
+        {
+            return Trader20.Trader20.TraderConfig.Value[s].PurchaseFromPlayerCost;
+        }
+
+        return 0;
     }
 
-    private protected bool YMLContainsKey(string s)
+    private bool YMLContainsKey(string s)
     {
-        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-        file.Close();
-        return currentList.ContainsKey(s);
+        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+        {
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            return currentList.ContainsKey(s);
+        }
+
+        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
+        {
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            return currentList.ContainsKey(s);
+        }
+
+        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
+        {
+            return Trader20.Trader20.TraderConfig.Value.ContainsKey(s);
+        }
+
+        return false;
+
     }
 
     private void SetActiveSelection()

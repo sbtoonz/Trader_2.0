@@ -131,9 +131,10 @@ namespace Trader20
             foreach (var variable in TraderConfig.Value)
             {
                 var drop = ObjectDB.instance.GetItemPrefab(variable.Key);
+                ItemDrop id = null;
                 if(drop)
                 {
-                    var id = drop.GetComponent<ItemDrop>();
+                    id = drop.GetComponent<ItemDrop>();
                     if(id == null)
                     {
                         Trader20.knarrlogger.LogError("Failed to load ItemDrop for trader's item: " + variable.Key);
@@ -149,13 +150,13 @@ namespace Trader20
                     knarrlogger.LogError("Please Check your Prefab name "+ variable.Key);
                    
                 }
-
-               
             }
+            //if you are the server shoot the YML file to the client if you are the client write the  YML to local storage?
             if (OdinStore.instance != null)
             {
                 OdinStore.instance.ClearStore();
             }
+            
         }
         private void SetupWatcher()
         {
