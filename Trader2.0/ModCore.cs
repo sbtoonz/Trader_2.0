@@ -19,7 +19,10 @@ namespace Trader20
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
-            DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion
+            DisplayName = ModName,
+            CurrentVersion = ModVersion, 
+            MinimumRequiredVersion = ModVersion, 
+            ModRequired = true
         };
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
