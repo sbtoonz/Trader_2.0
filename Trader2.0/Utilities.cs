@@ -8,6 +8,33 @@ namespace Trader20
 {
     public static class Utilities
     {
+	    internal enum ConnectionState
+	    {
+		    Server,
+		    Client,
+		    Local,
+		    Unknown
+	    }
+	    internal static ConnectionState GetConnectionState()
+	    {
+		    if (ZNet.instance == null) return ConnectionState.Local;
+		    if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //server
+		    {
+			    return ConnectionState.Server;
+		    }
+
+		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
+		    {
+			    return ConnectionState.Client;
+		    }
+
+		    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+		    {
+			    return ConnectionState.Local;
+		    }
+
+		    return ConnectionState.Unknown;
+	    }
         internal static AssetBundle? LoadAssetBundle(string bundleName)
         {
             var resource = typeof(Trader20).Assembly.GetManifestResourceNames().Single

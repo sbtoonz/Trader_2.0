@@ -48,6 +48,7 @@ namespace Trader20
                 ZRoutedRpc.instance.Register<bool>("FindKnarrDone", RPC_FindKnarrResponse);
                 ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
                 ZRoutedRpc.instance.Register<string, int, bool>("SendItemInfoToServer", RPC_SendItemInfoToServer);
+                ZRoutedRpc.instance.Register<string, int>("SendLogItemToServer", RPC_SendSaleLogInfoToServer);
             }
 
             
@@ -132,11 +133,37 @@ namespace Trader20
         
         private static void RPC_SendItemInfoToServer(long uid, string drop, int stack, bool playerItem)
         {
-            if (!ZNet.instance.IsServer()) return;
+            if(Utilities.GetConnectionState() != Utilities.ConnectionState.Server) return;
             var id = ZNetScene.instance.GetPrefab(drop).gameObject.GetComponent<ItemDrop>();
             id.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(drop);
             if (OdinStore.instance != null)
                 OdinStore.instance.UpdateYmlFileFromSaleOrBuy(id.m_itemData, stack, playerItem);
+        }
+
+        private static void RPC_SendSaleLogInfoToServer(long uid, string dropName, int i)
+        {
+            if(Utilities.GetConnectionState() != Utilities.ConnectionState.Server) return;
+            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+            string cost = OdinStore.instance._storeInventory.ElementAt(i).Value.Cost.ToString();
+            var envman = EnvMan.instance;
+            var theTime = DateTime.Now;
+            string concatinated = "";
+            var drop = ZNetScene.instance.GetPrefab(dropName).gameObject.GetComponent<ItemDrop>();
+            StoreInfo<int, int, int> outObj;
+            if (OdinStore.instance._storeInventory.TryGetValue(drop, out outObj))
+            {
+                concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(drop.m_itemData.m_shared.m_name) + " For: "+ cost;
+                Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+                ZLog.Log("Knarr Sold Item " + concatinated);
+                OdinStore.instance.LogSales(concatinated).ConfigureAwait(false);
+            }
+        }
+
+        private static void RPC_InitialYMLWrite_OnClientConnect(long uid)
+        {
+            if(Utilities.GetConnectionState() == Utilities.ConnectionState.Server) return;
+            // get the Trader20.TraderConfig write the contents to a temp var take the var and write those out to a yaml file 
         }
 
         private static void RPC_SetKnarrMapIcon(long uid, Vector3 position)

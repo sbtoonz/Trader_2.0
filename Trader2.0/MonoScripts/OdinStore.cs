@@ -407,134 +407,150 @@ public class OdinStore : MonoBehaviour
         }
 
         if (!Trader20.Trader20.LOGStoreSales!.Value) return;
-        if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
-        {
-            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
-            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
-            string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
-            var envman = EnvMan.instance;
-            var theTime = DateTime.Now;
-            if(envman)
-            {
-                float fraction = envman.m_smoothDayFraction;
-                int hour = (int)(fraction * 24);
-                int minute = (int)((fraction * 24 - hour) * 60);
-                int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
-                DateTime now = DateTime.Now;
-                theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
-                int days = EnvMan.instance.GetCurrentDay();
-            
-            
-            }
-            var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
-            Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
-            ZLog.Log("Knarr Sold Item " + concatinated);
-            LogSales(concatinated).ConfigureAwait(false);
-        }
 
-        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //server
+        string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+        string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+        string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
+        var envman = EnvMan.instance;
+        var theTime = DateTime.Now;
+        string concatinated = "";
+        switch (Utilities.GetConnectionState())
         {
-            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
-            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
-            string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
-            var envman = EnvMan.instance;
-            var theTime = DateTime.Now;
-            if(envman)
-            {
-                float fraction = envman.m_smoothDayFraction;
-                int hour = (int)(fraction * 24);
-                int minute = (int)((fraction * 24 - hour) * 60);
-                int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
-                DateTime now = DateTime.Now;
-                theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
-                int days = EnvMan.instance.GetCurrentDay();
+            
+            case Utilities.ConnectionState.Server:
+                if(envman)
+                {
+                    float fraction = envman.m_smoothDayFraction;
+                    int hour = (int)(fraction * 24);
+                    int minute = (int)((fraction * 24 - hour) * 60);
+                    int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                    DateTime now = DateTime.Now;
+                    theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                    int days = EnvMan.instance.GetCurrentDay();
             
             
-            }
-            var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
-            Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
-            ZLog.Log("Knarr Sold Item " + concatinated);
-            LogSales(concatinated).ConfigureAwait(false);
+                }
+                concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+                Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+                ZLog.Log("Knarr Sold Item " + concatinated);
+                LogSales(concatinated).ConfigureAwait(false);
+                break;
+            case Utilities.ConnectionState.Client:
+                ZRoutedRpc.instance.InvokeRoutedRPC("SendLogItemToServer", itemDrop.m_itemData.m_dropPrefab.name, _storeInventory.ElementAt(i).Value.Cost);
+                break;
+            case Utilities.ConnectionState.Local:
+              
+                if (envman)
+                {
+                    float fraction = envman.m_smoothDayFraction;
+                    int hour = (int)(fraction * 24);
+                    int minute = (int)((fraction * 24 - hour) * 60);
+                    int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                    DateTime now = DateTime.Now;
+                    theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                    int days = EnvMan.instance.GetCurrentDay();
+                    concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+                    Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+                    ZLog.Log("Knarr Sold Item " + concatinated);
+                    LogSales(concatinated).ConfigureAwait(false);
+                }
+                break;
+            case Utilities.ConnectionState.Unknown:
+                break;
+            default:
+                break;
         }
-
-        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
-        {
-         
-            // send RPC with what you bought so the server can keep track
-        }
-        
-        
     }
 
     internal void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
         
         if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
-  
-        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+        file.Close();
+        switch (Utilities.GetConnectionState())
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
-            {
-                if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
-                if (isPlayerItem) test.Invcount += sellableItem.m_stack;
-                else test.Invcount = newInvCount;
-                currentList[sellableItem.m_dropPrefab.name] = test;
-                var tempdict = YMLParser.Serializers(currentList);
-                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
-            }else
-            {
-                //Setup the data entry for the YML file 
-                var entry = new ItemDataEntry();
-                entry.Invcount += sellableItem.m_stack;
-                entry.ItemCount += sellableItem.m_stack;
-                //if none found make an entry
-                Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-                var serializeddata = YMLParser.Serializers(itemDataEntries);
-                YMLParser.AppendYmLfile(serializeddata);
-            }
-        }
-
-        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
-        {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            //resolve a name from the objectDB itemdb entry
-            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
-            {
-                if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
-                if (isPlayerItem) test.Invcount += sellableItem.m_stack;
-                else test.Invcount = newInvCount;
-                currentList[sellableItem.m_dropPrefab.name] = test;
-                var tempdict = YMLParser.Serializers(currentList);
-                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
-            }else
-            {
-                //Setup the data entry for the YML file 
-                var entry = new ItemDataEntry();
-                entry.Invcount += sellableItem.m_stack;
-                entry.ItemCount += sellableItem.m_stack;
-                //if none found make an entry
-                Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-                var serializeddata = YMLParser.Serializers(itemDataEntries);
-                YMLParser.AppendYmLfile(serializeddata);
-            }
-        }
-
-        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
-        {
-            
-            ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
+            case Utilities.ConnectionState.Server:
+                //resolve a name from the objectDB itemdb entry
+                if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+                {
+                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+                    if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+                    else test.Invcount = newInvCount;
+                    currentList[sellableItem.m_dropPrefab.name] = test;
+                    var tempdict = YMLParser.Serializers(currentList);
+                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                }else
+                {
+                    //Setup the data entry for the YML file 
+                    var entry = new ItemDataEntry();
+                    entry.Invcount += sellableItem.m_stack;
+                    entry.ItemCount += sellableItem.m_stack;
+                    //if none found make an entry
+                    Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+                    itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+                    var serializeddata = YMLParser.Serializers(itemDataEntries);
+                    YMLParser.AppendYmLfile(serializeddata);
+                }
+                break;
+            case Utilities.ConnectionState.Client:
+                //Patches.cs RPC_SendItemInfoToServer(string dropname, int newstack, bool playerItem)
+                ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
+                //Take Trader20.TraderConfig.Value and dump it into the local clients yml file... cuz aggressive 
+                if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+                {
+                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+                    if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+                    else test.Invcount = newInvCount;
+                    currentList[sellableItem.m_dropPrefab.name] = test;
+                    var tempdict = YMLParser.Serializers(currentList);
+                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                }
+                else
+                {
+                    //Setup the data entry for the YML file 
+                    var entry = new ItemDataEntry();
+                    entry.Invcount += sellableItem.m_stack;
+                    entry.ItemCount += sellableItem.m_stack;
+                    //if none found make an entry
+                    Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+                    itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+                    var serializeddata = YMLParser.Serializers(itemDataEntries);
+                    YMLParser.AppendYmLfile(serializeddata);
+                }
+                break;
+            case Utilities.ConnectionState.Local:
+                if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+                {
+                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+                    if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+                    else test.Invcount = newInvCount;
+                    currentList[sellableItem.m_dropPrefab.name] = test;
+                    var tempdict = YMLParser.Serializers(currentList);
+                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                }else
+                {
+                    //Setup the data entry for the YML file 
+                    var entry = new ItemDataEntry();
+                    entry.Invcount += sellableItem.m_stack;
+                    entry.ItemCount += sellableItem.m_stack;
+                    //if none found make an entry
+                    Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+                    itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+                    var serializeddata = YMLParser.Serializers(itemDataEntries);
+                    YMLParser.AppendYmLfile(serializeddata);
+                }
+                break;
+            case Utilities.ConnectionState.Unknown:
+                break;
+            default:
+                break;
         }
         
     }
 
-    private async Task LogSales(string saleinfo)
+    internal async Task LogSales(string saleinfo)
     {
         await WriteSales(saleinfo).ConfigureAwait(false);
     }
@@ -915,6 +931,8 @@ public class OdinStore : MonoBehaviour
         
     }
 
+    
+    //Todo: Maybe revert the client operation here and force write the YML on recv'd from server
     private int ReturnYMLPlayerPurchaseValue(string s)
     {
         if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
