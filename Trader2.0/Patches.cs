@@ -47,9 +47,10 @@ namespace Trader20
                 ZRoutedRpc.instance.Register<bool>("RequestRemoveKnarr", RPC_RemoveKnarrReq);
                 ZRoutedRpc.instance.Register<bool>("FindKnarrDone", RPC_FindKnarrResponse);
                 ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
+                ZRoutedRpc.instance.Register<string, int, bool>("SendItemInfoToServer", RPC_SendItemInfoToServer);
             }
 
-
+            
         }
 
         [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
@@ -128,7 +129,15 @@ namespace Trader20
                 ZLog.LogError("Non Admin invoking locator command");
             }
         }
-
+        
+        private static void RPC_SendItemInfoToServer(long uid, string drop, int stack, bool playerItem)
+        {
+            if (!ZNet.instance.IsServer()) return;
+            var id = ZNetScene.instance.GetPrefab(drop).gameObject.GetComponent<ItemDrop>();
+            id.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(drop);
+            if (OdinStore.instance != null)
+                OdinStore.instance.UpdateYmlFileFromSaleOrBuy(id.m_itemData, stack, playerItem);
+        }
 
         private static void RPC_SetKnarrMapIcon(long uid, Vector3 position)
         {

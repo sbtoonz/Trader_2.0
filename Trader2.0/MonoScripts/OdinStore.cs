@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using TMPro;
@@ -406,56 +407,131 @@ public class OdinStore : MonoBehaviour
         }
 
         if (!Trader20.Trader20.LOGStoreSales!.Value) return;
-        string playerID = Player.m_localPlayer.GetPlayerID().ToString();
-        string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
-        string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
-        var envman = EnvMan.instance;
-        var theTime = DateTime.Now;
-        if(envman)
+        if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
         {
-            float fraction = envman.m_smoothDayFraction;
-            int hour = (int)(fraction * 24);
-            int minute = (int)((fraction * 24 - hour) * 60);
-            int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
-            DateTime now = DateTime.Now;
-            theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
-            int days = EnvMan.instance.GetCurrentDay();
+            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+            string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
+            var envman = EnvMan.instance;
+            var theTime = DateTime.Now;
+            if(envman)
+            {
+                float fraction = envman.m_smoothDayFraction;
+                int hour = (int)(fraction * 24);
+                int minute = (int)((fraction * 24 - hour) * 60);
+                int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                DateTime now = DateTime.Now;
+                theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                int days = EnvMan.instance.GetCurrentDay();
             
             
+            }
+            var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+            Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+            ZLog.Log("Knarr Sold Item " + concatinated);
+            LogSales(concatinated).ConfigureAwait(false);
         }
-        var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
-        Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
-        ZLog.Log("Knarr Sold Item " + concatinated);
-        LogSales(concatinated).ConfigureAwait(false);
+
+        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //server
+        {
+            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+            string cost = _storeInventory.ElementAt(i).Value.Cost.ToString();
+            var envman = EnvMan.instance;
+            var theTime = DateTime.Now;
+            if(envman)
+            {
+                float fraction = envman.m_smoothDayFraction;
+                int hour = (int)(fraction * 24);
+                int minute = (int)((fraction * 24 - hour) * 60);
+                int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                DateTime now = DateTime.Now;
+                theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                int days = EnvMan.instance.GetCurrentDay();
+            
+            
+            }
+            var concatinated = "[" + theTime + "] "+ playerID + " - " + playerName + " Purchased: " + Localization.instance.Localize(itemDrop.m_itemData.m_shared.m_name) + " For: "+ cost;
+            Gogan.LogEvent("Game", "Knarr Sold Item",concatinated , 0);
+            ZLog.Log("Knarr Sold Item " + concatinated);
+            LogSales(concatinated).ConfigureAwait(false);
+        }
+
+        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
+        {
+         
+            // send RPC with what you bought so the server can keep track
+        }
+        
+        
     }
 
     internal void UpdateYmlFileFromSaleOrBuy(ItemDrop.ItemData sellableItem, int newInvCount, bool isPlayerItem)
     {
         
         if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
-        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
-        var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-        file.Close();
-        if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+  
+        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
         {
-            if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
-            if (isPlayerItem) test.Invcount += sellableItem.m_stack;
-            else test.Invcount = newInvCount;
-            currentList[sellableItem.m_dropPrefab.name] = test;
-            var tempdict = YMLParser.Serializers(currentList);
-            File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
-        }else
-        {
-            //Setup the data entry for the YML file 
-            var entry = new ItemDataEntry();
-            entry.Invcount += sellableItem.m_stack;
-            entry.ItemCount += sellableItem.m_stack;
-            //if none found make an entry
-            Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-            itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-            var serializeddata = YMLParser.Serializers(itemDataEntries);
-            YMLParser.AppendYmLfile(serializeddata);
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+            {
+                if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+                if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+                else test.Invcount = newInvCount;
+                currentList[sellableItem.m_dropPrefab.name] = test;
+                var tempdict = YMLParser.Serializers(currentList);
+                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+            }else
+            {
+                //Setup the data entry for the YML file 
+                var entry = new ItemDataEntry();
+                entry.Invcount += sellableItem.m_stack;
+                entry.ItemCount += sellableItem.m_stack;
+                //if none found make an entry
+                Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+                var serializeddata = YMLParser.Serializers(itemDataEntries);
+                YMLParser.AppendYmLfile(serializeddata);
+            }
         }
+
+        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
+        {
+            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+            file.Close();
+            //resolve a name from the objectDB itemdb entry
+            if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
+            {
+                if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
+                if (isPlayerItem) test.Invcount += sellableItem.m_stack;
+                else test.Invcount = newInvCount;
+                currentList[sellableItem.m_dropPrefab.name] = test;
+                var tempdict = YMLParser.Serializers(currentList);
+                File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+            }else
+            {
+                //Setup the data entry for the YML file 
+                var entry = new ItemDataEntry();
+                entry.Invcount += sellableItem.m_stack;
+                entry.ItemCount += sellableItem.m_stack;
+                //if none found make an entry
+                Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
+                itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
+                var serializeddata = YMLParser.Serializers(itemDataEntries);
+                YMLParser.AppendYmLfile(serializeddata);
+            }
+        }
+
+        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
+        {
+            
+            ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
+        }
+        
     }
 
     private async Task LogSales(string saleinfo)
@@ -771,10 +847,17 @@ public class OdinStore : MonoBehaviour
             }
             _playerSellElements.Clear();
         }
-        
-        foreach (var itemData in m_tempItems.Where(itemData => YMLContainsKey(itemData.m_dropPrefab.name)).Where(itemData => ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0))
+
+        foreach (var itemData in m_tempItems)
         {
-            AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
+            if (YMLContainsKey(itemData.m_dropPrefab.name))
+            {
+                if (ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0)
+                {
+                    AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
+
+                }
+            }
         }
     }
 
@@ -828,6 +911,7 @@ public class OdinStore : MonoBehaviour
                     break;
             }
         }
+        UpdateCoins();
         
     }
 
@@ -877,7 +961,7 @@ public class OdinStore : MonoBehaviour
 
         if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
         {
-            return Trader20.Trader20.TraderConfig.Value.ContainsKey(s);
+            if(Trader20.Trader20.TraderConfig.Value.ContainsKey(s)) return true;
         }
 
         return false;
@@ -1072,36 +1156,37 @@ public class OdinStore : MonoBehaviour
     private void OnSplitOK()
     {
         int stack = (int)(ReturnYMLPlayerPurchaseValue(m_splitItem.m_dropPrefab.name) * m_splitSlider.value);
-       Player.m_localPlayer.GetInventory().RemoveItem(m_splitItem, (int)m_splitSlider.value);
+        Player.m_localPlayer.GetInventory().RemoveItem(m_splitItem, (int)m_splitSlider.value);
         
-       Player.m_localPlayer.GetInventory().AddItem(
-           CurrentCurrency().name, 
-           stack, 
-           CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
-           CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
-           0L, 
-           "");
+        Player.m_localPlayer.GetInventory().AddItem(
+            CurrentCurrency().name, 
+            stack, 
+            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+            CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+            0L, 
+            "");
+
+        string text = "";
+        text = ((m_splitItem.m_stack <= 1) ? m_splitItem.m_shared.m_name : (m_splitItem.m_stack + "x" + m_splitItem.m_shared.m_name)); 
+        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, m_splitItem.m_shared.m_icons[0]);
+        Gogan.LogEvent("Game", "SoldItem", text, 0L);
+        //Check for existing entry
+        UpdateYmlFileFromSaleOrBuy(m_splitItem, m_splitItem.m_stack, true);
         
-       string text = "";
-       text = ((m_splitItem.m_stack <= 1) ? m_splitItem.m_shared.m_name : (m_splitItem.m_stack + "x" + m_splitItem.m_shared.m_name)); 
-       Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, m_splitItem.m_shared.m_icons[0]);
-       Gogan.LogEvent("Game", "SoldItem", text, 0L);
-       //Check for existing entry
-       UpdateYmlFileFromSaleOrBuy(m_splitItem, m_splitItem.m_stack, true);
+        ClearStore();
         
-       ClearStore();
-        
-       switch (_playerSellElements.Count)
-       {
-           case > 0:
-               UpdateGenDescription(_playerSellElements[0]);
-               break;
-           case <=0:
-               DisableGenDescription();
-               break;
-       }
-       m_splitPanel.gameObject.SetActive(false);
-       iscurrentlysplitting = false;
+        switch (_playerSellElements.Count)
+        {
+            case > 0:
+                UpdateGenDescription(_playerSellElements[0]);
+                break;
+            case <=0:
+                DisableGenDescription();
+                break;
+        }
+        m_splitPanel.gameObject.SetActive(false);
+        iscurrentlysplitting = false;
+        UpdateCoins();
     }
     
 }
