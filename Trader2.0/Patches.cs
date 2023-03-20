@@ -143,8 +143,18 @@ namespace Trader20
         private static void RPC_SendSaleLogInfoToServer(long uid, string dropName, int i)
         {
             if(Utilities.GetConnectionState() != Utilities.ConnectionState.Server) return;
-            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
-            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+            var playlist = ZNet.instance.GetPlayerList();
+            string playerID = "";
+            string? playerName = "";
+            foreach (var playerInfo in playlist)
+            {
+                if (playerInfo.m_characterID.m_userID == uid)
+                {
+                    playerID = playerInfo.m_characterID.m_userID.ToString();
+                    playerName = playerInfo.m_name;
+                    break;
+                }
+            }
             string cost = OdinStore.instance._storeInventory.ElementAt(i).Value.Cost.ToString();
             var envman = EnvMan.instance;
             var theTime = DateTime.Now;

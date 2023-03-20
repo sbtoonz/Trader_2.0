@@ -17,7 +17,7 @@ namespace Trader20
 	    }
 	    internal static ConnectionState GetConnectionState()
 	    {
-		    if (ZNet.instance == null) return ConnectionState.Local;
+			if (ZNet.instance == null) return ConnectionState.Local;
 		    if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //server
 		    {
 			    return ConnectionState.Server;
@@ -25,7 +25,7 @@ namespace Trader20
 
 		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
 		    {
-			    return ConnectionState.Client;
+return ConnectionState.Client;
 		    }
 
 		    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
