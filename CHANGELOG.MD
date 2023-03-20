@@ -12,7 +12,7 @@ This file also has a filewatcher for it built into the mod
 that means that when you edit this file the store updates in game!
 
 
-![](https://github.com/sbtoonz/Trader_2.0/raw/master/Images/ezgif.com-gif-maker%20(3).gif)
+![](https://cdn.discordapp.com/attachments/1081545225287249930/1085701970825842798/ezgif.com-video-to-gif.gif)
 ### Configuration
 
 There is a yaml file that is generated on first launch of the mod. This file will live in your BepInEx/configs folder and becalled trader_config.yaml
@@ -181,8 +181,19 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.3.5
 * Fixed a whoopsy I missed in last push. Tstore makes it hard to just reup the same mod so here is a new version
 
-</details>
-
 
 ### V0.3.6
 * Added the ability to split up the items sold to knarr when you have more than 1 item in your inventory.
+
+### V0.3.7
+* Fixed item sync with servers not happening in situations
+* Increased knarrs range of spawn (for older worlds using genloc)
+* Fixed SOME FPS loss reported while knarr exists in world
+
+
+### V0.3.8
+* Address reports of lag
+</details>
+
+### V0.3.9
+* Fixed a NRE (red text spam) report when using knarr on servers and disvovering his location

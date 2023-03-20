@@ -59,6 +59,8 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
     [SerializeField] private float nextTime { get; set; }
     [SerializeField] private float modifier { get; set; }
+    
+    [SerializeField] internal ZNetView m_netview;
 
     private void Start()
     {

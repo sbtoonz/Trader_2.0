@@ -120,7 +120,6 @@ public class OdinStore : MonoBehaviour
 
     private void Update()
     {
-        if(NewTrader.instance != null && !NewTrader.instance.m_netview.IsOwner())return;
         if (!IsActive()) return;
         if (IsActive())
         {

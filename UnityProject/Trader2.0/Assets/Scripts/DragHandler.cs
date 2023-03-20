@@ -64,7 +64,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 clampedPosition.y = (-canvasRectTransform!.rect.height * 0.5f) + (panelRectTransform.rect.height * panelRectTransform.pivot.y);
             }
             panelRectTransform.localPosition = clampedPosition;
-            if (Trader20.Trader20.StoreScreenPos != null) Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
+            //if (Trader20.Trader20.StoreScreenPos != null) Trader20.Trader20.StoreScreenPos.Value = clampedPosition;
         }
     }
  

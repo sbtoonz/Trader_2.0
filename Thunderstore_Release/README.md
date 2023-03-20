@@ -185,9 +185,15 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.3.6
 * Added the ability to split up the items sold to knarr when you have more than 1 item in your inventory.
 
-</details>
-
 ### V0.3.7
 * Fixed item sync with servers not happening in situations
 * Increased knarrs range of spawn (for older worlds using genloc)
 * Fixed SOME FPS loss reported while knarr exists in world
+
+
+### V0.3.8
+* Address reports of lag
+</details>
+
+### V0.3.9
+* Fixed a NRE (red text spam) report when using knarr on servers and disvovering his location
