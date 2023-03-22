@@ -523,10 +523,20 @@ public class OdinStore : MonoBehaviour
             case Utilities.ConnectionState.Local:
                 if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
                 {
-                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
-                    if (isPlayerItem) test.Invcount += sellableItem.m_stack;
-                    else test.Invcount = newInvCount;
-                    currentList[sellableItem.m_dropPrefab.name] = test;
+                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry itemDataEntry)) return;
+                    if (isPlayerItem)
+                    {
+                        if (iscurrentlysplitting)
+                        {
+                            itemDataEntry.Invcount += newInvCount;
+                        }
+                        else itemDataEntry.Invcount += sellableItem.m_stack;
+                    }
+                    else
+                    {
+                        itemDataEntry.Invcount = newInvCount;
+                    }
+                    currentList[sellableItem.m_dropPrefab.name] = itemDataEntry;
                     var tempdict = YMLParser.Serializers(currentList);
                     File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
                 }else
@@ -1189,7 +1199,7 @@ public class OdinStore : MonoBehaviour
         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, m_splitItem.m_shared.m_icons[0]);
         Gogan.LogEvent("Game", "SoldItem", text, 0L);
         //Check for existing entry
-        UpdateYmlFileFromSaleOrBuy(m_splitItem, stack , true);
+        UpdateYmlFileFromSaleOrBuy(m_splitItem, (int)m_splitSlider.value , true);
         
         ClearStore();
         

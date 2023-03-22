@@ -1,7 +1,9 @@
+#nullable enable
 using System;
-using JetBrains.Annotations;
+using System.Collections.Generic;
 using UnityEngine;
 #nullable enable
+[Serializable]
 enum ShaderType
 {
     Alpha,
@@ -39,19 +41,29 @@ enum ShaderType
     YggdrasilRoot,
     ToonDeferredShading2017
 }
+
 public class ShaderReplacerNew : MonoBehaviour
 {
-    [Tooltip("Use this Field For Normal Renderers")] [SerializeField] [ItemCanBeNull]
-    internal Renderer[] _renderers;
-    [SerializeField] internal ShaderType _shaderType;
-
+    [Tooltip("Use this Field For Normal Renderers")] 
+    [SerializeField] internal Renderer[] _renderers = null!;
+    [SerializeField] internal ShaderType _shaderType = ShaderType.Creature;
+    [SerializeField] internal bool DebugOutput = false;
     private void Awake()
     {
         if (IsHeadlessMode()) return;
+        if(_renderers.Length <=0) return;
+        if(!this.gameObject.activeInHierarchy)return;
         foreach (var renderer in _renderers)
         {
+            if(renderer == null) continue;
             foreach (var material in renderer.sharedMaterials)
             {
+                if (material == null)
+                {
+                    renderer.gameObject.SetActive(false);
+                    continue;
+                }
+                
                 material.shader = Shader.Find(ReturnEnumString(_shaderType));
             }
         }
@@ -69,7 +81,7 @@ public class ShaderReplacerNew : MonoBehaviour
                 s = "Custom/Blob";
                 break;
             case ShaderType.Bonemass:
-                s = "Custom/BoneMass";
+                s = "Custom/Bonemass";
                 break;
             case ShaderType.Clouds:
                 s = "Custom/Clouds";
@@ -108,7 +120,7 @@ public class ShaderReplacerNew : MonoBehaviour
                 s = "Custom/LitGui";
                 break;
             case ShaderType.LitParticles:
-                s = "Custom/LitParticles";
+                s = "Lux Lit Particles/ Bumped";
                 break;
             case ShaderType.MapShader:
                 s = "Custom/mapshader";
@@ -117,6 +129,7 @@ public class ShaderReplacerNew : MonoBehaviour
                 s = "Custom/ParticleDecal";
                 break;
             case ShaderType.Piece:
+                s = "Custom/Piece";
                 break;
             case ShaderType.Player:
                 break;
