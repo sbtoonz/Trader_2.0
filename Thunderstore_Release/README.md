@@ -197,7 +197,10 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.3.9
 * Fixed a NRE (red text spam) report when using knarr on servers and disvovering his location
 
-</details>
-
 ### V0.4.0
 * Fixed sync issue with player inventory items for sale when YML wasnt given to player prior to join, Added some error handling around this please open a git issue if anything persists
+
+</details>
+
+### V0.4.1
+* Fixed github reported issue, where if player sold items via split panel wrong volume was being given to knarr this is now fixed
