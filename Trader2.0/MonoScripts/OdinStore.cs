@@ -1196,7 +1196,7 @@ public class OdinStore : MonoBehaviour
 
         string text = "";
         text = ((m_splitItem.m_stack <= 1) ? m_splitItem.m_shared.m_name : (m_splitItem.m_stack + "x" + m_splitItem.m_shared.m_name)); 
-        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, m_splitItem.m_shared.m_icons[0]);
+        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, m_splitSlider.value.ToString()), (int)m_splitSlider.value, m_splitItem.m_shared.m_icons[0]);
         Gogan.LogEvent("Game", "SoldItem", text, 0L);
         //Check for existing entry
         UpdateYmlFileFromSaleOrBuy(m_splitItem, (int)m_splitSlider.value , true);
