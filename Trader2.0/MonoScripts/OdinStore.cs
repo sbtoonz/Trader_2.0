@@ -308,10 +308,10 @@ public class OdinStore : MonoBehaviour
             {
                 _knarSellElements.Clear();
             }
-            if(_storeInventory.Count <=0)return;
+            if(_storeInventory.Count <=0 )return;
             foreach (var itemData in _storeInventory)
             {
-                
+                if(itemData.Key == null|| itemData.Value == null)continue;
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
                 {
                     if(itemData.Value.InvCount == 0) continue;
