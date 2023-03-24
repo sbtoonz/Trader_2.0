@@ -32,6 +32,7 @@ namespace Trader20
         internal static AssetBundle? AssetBundle { get; private set; }
         
         internal static readonly string Paths = BepInEx.Paths.ConfigPath;
+        internal static readonly string Paths2 = BepInEx.Paths.BepInExAssemblyPath ;
         internal static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
         internal static ConfigEntry<Vector3>? StoreScreenPos;
@@ -74,9 +75,9 @@ namespace Trader20
             AssetBundle = Utilities.LoadAssetBundle("traderbundle")!;
             _serverConfigLocked = config("General", "Lock Configuration", false, "Lock Configuration");
             configSync.AddLockingConfigEntry(_serverConfigLocked);
-            if (!File.Exists(Paths + "/trader_config.yaml"))
+            if (!File.Exists(Paths + Path.DirectorySeparatorChar + "trader_config.yaml"))
             {
-                File.Create(Paths + "/trader_config.yaml").Close();
+                File.Create(Paths + Path.DirectorySeparatorChar + "trader_config.yaml").Close();
             }
             ReadYamlConfigFile(null!, null!);
             TraderConfig.ValueChanged += OnValChangUpdateStore;
@@ -119,12 +120,14 @@ namespace Trader20
 
             if (LOGStoreSales.Value)
             {
-                if (!File.Exists(Paths + "/TraderSales.log"))
+                if (!File.Exists(Paths + Path.DirectorySeparatorChar+ "TraderSales.log"))
                 {
-                    File.Create(Paths + "/TraderSales.log");
+                    File.Create(Paths + Path.DirectorySeparatorChar + "TraderSales.log");
                 }
             }
             Game.isModded = true;
+            
+           
         }
         private static void OnValChangUpdateStore()
         {
@@ -175,7 +178,7 @@ namespace Trader20
         {
             try
             {
-                var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
+                var file = File.OpenText(Trader20.Paths + Path.DirectorySeparatorChar +"trader_config.yaml");
                 entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 TraderConfig.AssignLocalValue(entry_);

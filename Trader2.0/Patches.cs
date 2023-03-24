@@ -173,6 +173,13 @@ namespace Trader20
         private static void RPC_InitialYMLWrite_OnClientConnect(long uid)
         {
             if(Utilities.GetConnectionState() == Utilities.ConnectionState.Server) return;
+            if (Trader20.TraderConfig.Value.Count >= 1)
+            {
+                if (Utilities.GetConnectionState() == Utilities.ConnectionState.Client)
+                {
+                    
+                }
+            }
             // get the Trader20.TraderConfig write the contents to a temp var take the var and write those out to a yaml file 
         }
 
@@ -325,8 +332,8 @@ namespace Trader20
                 if (ZNetScene.instance.m_prefabs.Count <= 0 )return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
-                if (!File.ReadLines(Trader20.Paths + "/trader_config.yaml").Any()) return;
-                var file = File.OpenText(Trader20.Paths + "/trader_config.yaml");
+                if (!File.ReadLines(Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml").Any()) return;
+                var file = File.OpenText(Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
                 var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 List<Dictionary<string, ItemDataEntry>> PopulatedList =
                     new();

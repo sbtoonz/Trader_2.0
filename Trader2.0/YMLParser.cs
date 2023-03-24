@@ -53,7 +53,7 @@ namespace Trader20
         /// <param name="s"></param>
         internal static void AppendYmLfile(string s)
         {
-            string file = Trader20.Paths + "/trader_config.yaml";
+            string file = Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml";
             using var sw = File.AppendText(file);
             sw.WriteLine(s);
         }

@@ -224,7 +224,7 @@ public class OdinStore : MonoBehaviour
                 }
 
                 _knarSellElements.Clear();
-                await ReadAllStoreItems().ConfigureAwait(false);
+                await ReadAllStoreItems().ConfigureAwait(true);
             }
         }
 
@@ -311,7 +311,6 @@ public class OdinStore : MonoBehaviour
             if(_storeInventory.Count <=0 )return;
             foreach (var itemData in _storeInventory)
             {
-                if(itemData.Key == null|| itemData.Value == null)continue;
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
                 {
                     if(itemData.Value.InvCount == 0) continue;
@@ -469,7 +468,7 @@ public class OdinStore : MonoBehaviour
     {
         
         if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
-        var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+        var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
         switch (Utilities.GetConnectionState())
@@ -483,7 +482,7 @@ public class OdinStore : MonoBehaviour
                     else test.Invcount = newInvCount;
                     currentList[sellableItem.m_dropPrefab.name] = test;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }else
                 {
                     //Setup the data entry for the YML file 
@@ -501,6 +500,7 @@ public class OdinStore : MonoBehaviour
                 //Patches.cs RPC_SendItemInfoToServer(string dropname, int newstack, bool playerItem)
                 ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
                 //Take Trader20.TraderConfig.Value and dump it into the local clients yml file... cuz aggressive 
+                break;
                 if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
                 {
                     if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
@@ -508,7 +508,7 @@ public class OdinStore : MonoBehaviour
                     else test.Invcount = newInvCount;
                     currentList[sellableItem.m_dropPrefab.name] = test;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }
                 else
                 {
@@ -541,7 +541,7 @@ public class OdinStore : MonoBehaviour
                     }
                     currentList[sellableItem.m_dropPrefab.name] = itemDataEntry;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + "/trader_config.yaml", tempdict);
+                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }else
                 {
                     //Setup the data entry for the YML file 
@@ -950,7 +950,7 @@ public class OdinStore : MonoBehaviour
     {
         if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
             var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
             return currentList[s].PurchaseFromPlayerCost;
@@ -958,7 +958,7 @@ public class OdinStore : MonoBehaviour
 
         if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
             var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
             return currentList[s].PurchaseFromPlayerCost;
@@ -976,7 +976,7 @@ public class OdinStore : MonoBehaviour
     {
         if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
             var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
             return currentList.ContainsKey(s);
@@ -984,7 +984,7 @@ public class OdinStore : MonoBehaviour
 
         if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + "/trader_config.yaml");
+            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
             var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
             file.Close();
             return currentList.ContainsKey(s);
