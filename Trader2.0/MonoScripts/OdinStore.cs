@@ -335,6 +335,7 @@ public class OdinStore : MonoBehaviour
         catch (Exception ex)
         {
             Trader20.Trader20.knarrlogger.LogDebug(ex);
+            await Task.Yield();
         }
         finally
         {
