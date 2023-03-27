@@ -1004,7 +1004,6 @@ public class OdinStore : MonoBehaviour
     }
 
     
-    //Todo: Maybe revert the client operation here and force write the YML on recv'd from server
     private int ReturnYMLPlayerPurchaseValue(string s)
     {
         if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
