@@ -905,9 +905,6 @@ public class OdinStore : MonoBehaviour
         {
             ShowSplitDialog(sellableItem);
         }
-        // Need to tick gui.HiddenFrames++ it looks like while the split dialog is active for knarr
-        // and then reset that back down to 0 once im done with everything;
-        //
         else
         {
             int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
@@ -928,6 +925,68 @@ public class OdinStore : MonoBehaviour
             //Check for existing entry
             UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
         
+            /////
+            int i = FindIndex(sellableItem.m_dropPrefab.GetComponent<ItemDrop>());
+            if (!Trader20.Trader20.LOGStoreSales!.Value) return;
+            string playerID = Player.m_localPlayer.GetPlayerID().ToString();
+            string? playerName = Player.m_localPlayer.GetPlayerName() ?? throw new ArgumentNullException(nameof(i));
+            var envman = EnvMan.instance;
+            var theTime = DateTime.Now;
+            string concatinated = "";
+            switch (Utilities.GetConnectionState())
+            {
+
+                case Utilities.ConnectionState.Server:
+                    if (envman)
+                    {
+                        float fraction = envman.m_smoothDayFraction;
+                        int hour = (int)(fraction * 24);
+                        int minute = (int)((fraction * 24 - hour) * 60);
+                        int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                        DateTime now = DateTime.Now;
+                        theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                        int days = EnvMan.instance.GetCurrentDay();
+
+
+                    }
+
+                    concatinated = "[" + theTime + "] " + playerID + " - " + playerName + " Sold: " +
+                                   Localization.instance.Localize(sellableItem.m_shared.m_name) + " For: " + stack;
+                    Gogan.LogEvent("Game", "Knarr Bought Item", concatinated, 0);
+                    ZLog.Log("Knarr Bought Item " + concatinated);
+                    LogSales(concatinated).ConfigureAwait(false);
+                    break;
+                case Utilities.ConnectionState.Client:
+                    ZRoutedRpc.instance.InvokeRoutedRPC("SendLogItemToServer", sellableItem.m_dropPrefab.name,
+                        stack);
+                    break;
+                case Utilities.ConnectionState.Local:
+
+                    if (envman)
+                    {
+                        float fraction = envman.m_smoothDayFraction;
+                        int hour = (int)(fraction * 24);
+                        int minute = (int)((fraction * 24 - hour) * 60);
+                        int second = (int)((((fraction * 24 - hour) * 60) - minute) * 60);
+                        DateTime now = DateTime.Now;
+                        theTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+                        int days = EnvMan.instance.GetCurrentDay();
+                        concatinated = "[" + theTime + "] " + playerID + " - " + playerName + " Purchased: " +
+                                       Localization.instance.Localize(sellableItem.m_shared.m_name) + " For: " +
+                                       stack;
+                        Gogan.LogEvent("Game", "Knarr Sold Item", concatinated, 0);
+                        ZLog.Log("Knarr Sold Item " + concatinated);
+                        LogSales(concatinated).ConfigureAwait(false);
+                    }
+
+                    break;
+                case Utilities.ConnectionState.Unknown:
+                    break;
+                default:
+                    break;
+            }
+        
+            //////
             ClearStore();
         
             switch (_playerSellElements.Count)
