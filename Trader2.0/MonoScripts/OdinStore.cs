@@ -1006,53 +1006,55 @@ public class OdinStore : MonoBehaviour
     
     private int ReturnYMLPlayerPurchaseValue(string s)
     {
-        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+        StreamReader file;
+        Dictionary<string, ItemDataEntry> currentList = new Dictionary<string, ItemDataEntry>();
+        switch (Utilities.GetConnectionState())
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            return currentList[s].PurchaseFromPlayerCost;
+            case Utilities.ConnectionState.Server:
+                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+                file.Close();
+                return currentList[s].PurchaseFromPlayerCost;
+                break;
+            case Utilities.ConnectionState.Client:
+                return Trader20.Trader20.TraderConfig.Value[s].PurchaseFromPlayerCost;
+                break;
+            case Utilities.ConnectionState.Local:
+                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+                file.Close();
+                return currentList[s].PurchaseFromPlayerCost;
+                break;
+            case Utilities.ConnectionState.Unknown:
+                break;
         }
-
-        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
-        {
-            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            return currentList[s].PurchaseFromPlayerCost;
-        }
-
-        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
-        {
-            return Trader20.Trader20.TraderConfig.Value[s].PurchaseFromPlayerCost;
-        }
-
         return 0;
     }
 
     private bool YMLContainsKey(string s)
     {
-        if(ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+        StreamReader file;
+        Dictionary<string, ItemDataEntry> currentList = new Dictionary<string, ItemDataEntry>();
+        switch (Utilities.GetConnectionState())
         {
-            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            return currentList.ContainsKey(s);
+            case Utilities.ConnectionState.Server:
+                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+                file.Close();
+                return currentList.ContainsKey(s);
+                break;
+            case Utilities.ConnectionState.Client:
+                if(Trader20.Trader20.TraderConfig.Value.ContainsKey(s)) return true;
+                break;
+            case Utilities.ConnectionState.Local:
+                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
+                file.Close();
+                return currentList.ContainsKey(s);
+                break;
+            case Utilities.ConnectionState.Unknown:
+                break;
         }
-
-        if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //Server
-        {
-            var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
-            var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
-            file.Close();
-            return currentList.ContainsKey(s);
-        }
-
-        if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Client
-        {
-            if(Trader20.Trader20.TraderConfig.Value.ContainsKey(s)) return true;
-        }
-
         return false;
 
     }
