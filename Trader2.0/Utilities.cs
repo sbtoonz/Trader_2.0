@@ -25,7 +25,7 @@ namespace Trader20
 
 		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
 		    {
-return ConnectionState.Client;
+			    return ConnectionState.Client;
 		    }
 
 		    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
