@@ -203,7 +203,11 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.4.1
 * Fixed github reported issue, where if player sold items via split panel wrong volume was being given to knarr this is now fixed
 
-</details>
 
 ### V0.4.2
 * Fix github reported issue, where if Knarr was installed through r2/thunderstore he would fail to resolve his config file this was due to some old amateur code I wrote.
+
+</details>
+
+### V0.4.3
+* Update Dependencies for latest release version. Update Assets to match unity version

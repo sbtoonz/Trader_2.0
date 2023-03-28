@@ -193,7 +193,21 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ### V0.3.8
 * Address reports of lag
-</details>
 
 ### V0.3.9
 * Fixed a NRE (red text spam) report when using knarr on servers and disvovering his location
+
+### V0.4.0
+* Fixed sync issue with player inventory items for sale when YML wasnt given to player prior to join, Added some error handling around this please open a git issue if anything persists
+
+### V0.4.1
+* Fixed github reported issue, where if player sold items via split panel wrong volume was being given to knarr this is now fixed
+
+
+### V0.4.2
+* Fix github reported issue, where if Knarr was installed through r2/thunderstore he would fail to resolve his config file this was due to some old amateur code I wrote.
+
+</details>
+
+### V0.4.3
+* Update Dependencies for latest release version. Update Assets to match unity version

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1382035643
+CRC: 135218818
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 63e5a8caf6d7934322cedeb656ccfda1
+    Hash: 4c8f68d0303a39a8f1ae2774cd0ea8f9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: c17e202d369aa9c5c6272cbd1694d56c
+    Hash: 0ea3b420825d234b9f2231032de4f2ac
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -130,6 +130,8 @@ ClassTypes:
 - Class: 245
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
+- AssemblyName: Trader20
+  ClassName: ShaderType
 - AssemblyName: Unity.TextMeshPro
   ClassName: TMPro.FaceInfo_Legacy
 - AssemblyName: Unity.TextMeshPro
