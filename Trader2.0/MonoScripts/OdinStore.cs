@@ -318,7 +318,9 @@ public class OdinStore : MonoBehaviour
                     {
                         AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
-                    else if (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
+                    else if 
+                        (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && 
+                         Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
                     {
                         AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
