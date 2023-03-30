@@ -910,24 +910,26 @@ public class OdinStore : MonoBehaviour
         else
         {
             int stack = ReturnYMLPlayerPurchaseValue(sellableItem.m_dropPrefab.name) * sellableItem.m_stack;
-            Player.m_localPlayer.GetInventory().RemoveItem(sellableItem);
+            if (Player.m_localPlayer.GetInventory().RemoveItem(sellableItem))
+            {
+                Player.m_localPlayer.GetInventory().AddItem(
+                    CurrentCurrency().name, 
+                    stack, 
+                    CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
+                    CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
+                    0L, 
+                    "");
         
-            Player.m_localPlayer.GetInventory().AddItem(
-                CurrentCurrency().name, 
-                stack, 
-                CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_quality, 
-                CurrentCurrency().GetComponent<ItemDrop>().m_itemData.m_variant, 
-                0L, 
-                "");
-        
-            string text = "";
-            text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
-            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, sellableItem.m_shared.m_icons[0]);
-            Gogan.LogEvent("Game", "SoldItem", text, 0L);
-            //Check for existing entry
-            UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
-        
-            /////
+                string text = "";
+                text = ((sellableItem.m_stack <= 1) ? sellableItem.m_shared.m_name : (sellableItem.m_stack + "x" + sellableItem.m_shared.m_name)); 
+                Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, Localization.instance.Localize("$msg_sold", text, stack.ToString()), stack, sellableItem.m_shared.m_icons[0]);
+                Gogan.LogEvent("Game", "SoldItem", text, 0L);
+                //Check for existing entry
+                UpdateYmlFileFromSaleOrBuy(sellableItem, sellableItem.m_stack, true);
+
+            }
+            
+            #region Log Sales
             int i = FindIndex(sellableItem.m_dropPrefab.GetComponent<ItemDrop>());
             if (!Trader20.Trader20.LOGStoreSales!.Value) return;
             string playerID = Player.m_localPlayer.GetPlayerID().ToString();
@@ -987,8 +989,8 @@ public class OdinStore : MonoBehaviour
                 default:
                     break;
             }
-        
-            //////
+            #endregion
+            
             ClearStore();
         
             switch (_playerSellElements.Count)

@@ -12,9 +12,15 @@ public class GUIMaterialSwapperThing : MonoBehaviour
     {
         var temp =Resources.FindObjectsOfTypeAll<Material>().Where(x => x.name == "litpanel");
 
+        var enumerable = temp as Material[] ?? temp.ToArray();
+        for (int i = 0; i < Images.Count(); i++)
+        {
+            Images[i].material = enumerable.ToArray().FirstOrDefault();
+            
+        }
         foreach (var image in Images!)
         {
-            image.material = temp.FirstOrDefault();
+            image.material = enumerable.FirstOrDefault();
             image.sprite = referenceimg!.sprite;
         }
     }

@@ -8,16 +8,20 @@ public class GUIShaderSwapper : MonoBehaviour
     public List<Image>? Images = new List<Image>();
 
     public Material? litgui;
+    private bool _hasrun = false;
     private void Awake()
     {
-        var templist = Resources.FindObjectsOfTypeAll<Material>();
-        foreach (var VARIABLE in templist)
+        if(_hasrun) return;
+        if (!litgui)
         {
-            if (VARIABLE.name == "litpanel")
+            var templist = Resources.FindObjectsOfTypeAll<Material>();
+            foreach (var variable in templist)
             {
-                litgui = VARIABLE;
+                if (variable.name != "litpanel") continue;
+                litgui = variable;
             }
         }
+        if (!litgui) return;
         foreach (var variable in Images!)
         {
             variable.material = litgui;
@@ -27,5 +31,8 @@ public class GUIShaderSwapper : MonoBehaviour
         {
             variable.SetMaterial(litgui, litgui!.mainTexture);
         }
+
+        _hasrun = true;
+
     }
 }
