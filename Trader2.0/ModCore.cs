@@ -15,14 +15,13 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.4.3";
+        public const string ModVersion = "0.4.4";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
             DisplayName = ModName,
             CurrentVersion = ModVersion, 
             MinimumRequiredVersion = ModVersion,
-            ModRequired = true
         };
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());

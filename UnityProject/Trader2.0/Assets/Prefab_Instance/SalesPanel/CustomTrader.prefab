@@ -690,7 +690,7 @@ GameObject:
   - component: {fileID: 224200963108403294}
   - component: {fileID: 5494880942761007943}
   - component: {fileID: 5273889234563483539}
-  - component: {fileID: 7075274380243908715}
+  - component: {fileID: 1141678652291915410}
   m_Layer: 5
   m_Name: CustomTrader
   m_TagString: Untagged
@@ -769,7 +769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66aa8387d0a846e44831bc805bd3446d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7075274380243908715
+--- !u!114 &1141678652291915410
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -778,38 +778,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1385034288943148}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b59e1fd2097a47b69a2f83f8f12df491, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b3a3b834d5f35a44abe4ff61d75c576, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasRenderers:
-  - {fileID: 1526114108829262160}
-  - {fileID: 2124245878526296363}
-  - {fileID: 5438409401281079308}
-  - {fileID: 2599801731363363101}
-  - {fileID: 222437334104906310}
-  - {fileID: 222065484128400268}
-  - {fileID: 222756290423891110}
-  - {fileID: 222910127688105385}
-  - {fileID: 222662029650051292}
-  - {fileID: 454505390653390579}
-  - {fileID: 222446675633189843}
-  - {fileID: 222447290938077648}
-  - {fileID: 222485355224509888}
-  - {fileID: 6306461672053008706}
-  - {fileID: 1295150843033508857}
-  - {fileID: 8204991948071260210}
-  - {fileID: 8408477510430825979}
-  - {fileID: 9132051171346526798}
-  Images:
+  referenceimg: {fileID: 2368166045006147923}
+  repairBkg: {fileID: 2368166045006147923}
+  _TabImages:
   - {fileID: 8452921750373952451}
+  - {fileID: 3510892097898404073}
   - {fileID: 2131596441881890443}
-  - {fileID: 114625718117257270}
-  - {fileID: 114364093007178536}
-  - {fileID: 114960693980261177}
-  - {fileID: 7605333457370936373}
-  - {fileID: 2998737962169696557}
-  - {fileID: 2368166045006147923}
-  litgui: {fileID: 2100000, guid: 72154bd6a5728b74498a7458d439b4db, type: 2}
+  - {fileID: 8674790292281989245}
 --- !u!1 &1400458117677133
 GameObject:
   m_ObjectHideFlags: 0
@@ -3074,7 +3052,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4093739384048736380}
   - component: {fileID: 3097157877781055475}
-  - component: {fileID: 1565279835092185053}
   m_Layer: 5
   m_Name: Tabs
   m_TagString: Untagged
@@ -3191,24 +3168,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &1565279835092185053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3118889360236794436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bba695ef8481ede4abaaede7b72206cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Images:
-  - {fileID: 8452921750373952451}
-  - {fileID: 2131596441881890443}
-  - {fileID: 8674790292281989245}
-  - {fileID: 3510892097898404073}
-  referenceimg: {fileID: 114364093007178536}
 --- !u!1 &3240103023520231957
 GameObject:
   m_ObjectHideFlags: 0
