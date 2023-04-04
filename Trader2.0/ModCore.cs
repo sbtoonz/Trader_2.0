@@ -94,11 +94,11 @@ namespace Trader20
             LOGStoreSales = config("General", "Log what/when/to whom knarr sells things", false,
                 "This is to log when a player buys an item from Knarr and in what volume");
 
-            OnlySellKnownItems = config("General", "Only sell known recipes", false,
-                "If set true Knarr will only vend a player recipes the player has discovered already");
+            OnlySellKnownItems = config("General", "Only sell known recipes and materials", false,
+                "If set true Knarr will only vend a player recipes and materials the player has discovered already");
 
-            ShowMatsWhenHidingRecipes = config("General", "Sell Mats when hiding unknown recipes", false,
-                "If set true Knarr will still vend materials");
+            ShowMatsWhenHidingRecipes = config("General", "Sell ALL Materials when hiding unknown recipes", false,
+                "If set true Knarr will still vend ALL materials");
             
             ConfigWriteSalesBuysToYml = config("General", "Change the YML file on sells/buys", true,
                 "If set true Knarr will edit the values in the YML file when a player buys or sells items to him");
