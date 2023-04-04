@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Install NuGet
         uses: nuget/setup-nuget@v1
@@ -125,4 +125,10 @@ jobs:
 
       - name: Test Tstore Release
         run: |
-          tcli.exe build --config=./Thunderstore_Release/
+          wget -O tcli.tar.gz "https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.2.0/tcli-0.2.0-linux-x64.tar.gz"
+          gunzip tcli.tar.gz
+          tar -xfv tcli.tar
+          mv tcli-0.2.0-linux-x64/tcli tcli
+          mv tcli-0.2.0-linux-x64/tcli-bepinex-installer tcli-bepinex-installer
+          ./tcli publi
+          
