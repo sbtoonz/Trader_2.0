@@ -1,0 +1,29 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "sbtoonz"
+name = "KnarrTheTrader"
+versionNumber = "0.4.5"
+description = "Knarr, you know Haldors cousin!"
+websiteUrl = "https://github.com/sbtoonz/Trader_2.0"
+containsNsfwContent = false
+[package.dependencies]
+denikson-BepInExPack_Valheim = "5.4.2102"
+
+
+[build]
+icon = "./icon.png"
+readme = "./README.md"
+outdir = "./"
+
+[[build.copy]]
+source = "./plugins"
+target = "./"
+
+
+[publish]
+repository = "https://thunderstore.io"
+communities = [ "valheim", ]
+categories = [  ]
+
