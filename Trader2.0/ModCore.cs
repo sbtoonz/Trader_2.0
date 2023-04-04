@@ -21,8 +21,7 @@ namespace Trader20
         {
             DisplayName = ModName,
             CurrentVersion = ModVersion, 
-            MinimumRequiredVersion = ModVersion,
-            ModRequired = false
+            MinimumRequiredVersion = ModVersion
         };
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());

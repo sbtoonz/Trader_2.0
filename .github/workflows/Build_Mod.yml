@@ -125,4 +125,4 @@ jobs:
 
       - name: Test Tstore Release
         run: |
-          tcli.exe build --config Thunderstore_Release/
+          tcli.exe build --config=./Thunderstore_Release/
