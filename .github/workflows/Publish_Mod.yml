@@ -1,8 +1,10 @@
-name: Build and publish Mod
+﻿name: Build and publish Mod To Thunderstore
 on:
   push:
+    branches:
+      - TStore
     tags:
-      - "v*"
+      - "*.*"
 
 jobs:
   Build-Mod:
@@ -118,7 +120,16 @@ jobs:
           prerelease: false
           name: ${{ steps.vars.outputs.tag }}
           tag_name: ${{ steps.vars.outputs.tag }}
-          body_path: Thunderstore_Release/README.md
+          body_path: CHANGELOG.MD
           files: /home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll
         env:
           GITHUB_TOKEN: ${{secrets.PATOKEN}}
+
+      - name: Test Tstore Release
+        run: |
+          wget "https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.2.0/tcli-0.2.0-linux-x64.tar.gz"
+          gunzip tcli-0.2.0-linux-x64.tar.gz
+          tar -xf  tcli-0.2.0-linux-x64.tar
+          mv tcli-0.2.0-linux-x64/tcli tcli
+          mv tcli-0.2.0-linux-x64/tcli-bepinex-installer tcli-bepinex-installer
+          ./tcli publish --config-path Thunderstore_Release/thunderstore.toml --package-version ${{ steps.vars.outputs.tag }} --token ${{secrets.TCLI_KEY}}
