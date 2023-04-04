@@ -186,7 +186,6 @@ public class OdinStore : MonoBehaviour
         element.Element.transform.SetSiblingIndex(-1);
         element.Element.SetActive(false);
         element._uiTooltip = null;
-        element.Drop = null;
         element.Icon = null;
         element.Price = null;
         element.InventoryCount = null;
@@ -244,17 +243,17 @@ public class OdinStore : MonoBehaviour
     /// <param name="invCount"></param>
     /// <param name="rectForElements"></param>
     /// <param name="isPlayerItem"></param>
-    public void AddItemToDisplayList(ItemDrop drop, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
+    public void AddItemToDisplayList(GameObject dropObj, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
         ElementFormat newElement = GetPooledElement();
-        newElement.Drop = drop;
-        newElement.Drop.m_itemData = drop.m_itemData.Clone();
+
+        newElement.ItemObject = dropObj;
+        var drop = dropObj.GetComponent<ItemDrop>();
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
-        newElement.Drop.m_itemData.m_stack = stack;
         newElement._uiTooltip = newElement.Element.GetComponent<UITooltip>();
-        newElement._uiTooltip.m_text = Localization.instance.Localize(newElement.Drop.m_itemData.m_shared.m_name);
-        newElement._uiTooltip.m_topic = Localization.instance.Localize(newElement.Drop.m_itemData.GetTooltip());
+        newElement._uiTooltip.m_text = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
+        newElement._uiTooltip.m_topic = Localization.instance.Localize(drop.m_itemData.GetTooltip());
         newElement.InventoryCount = invCount;
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
         var component = newElement.Element.transform.Find("name").GetComponent<Text>();
@@ -278,7 +277,7 @@ public class OdinStore : MonoBehaviour
                     break;
                 case >= 1:
                     InvCountPanel!.SetActive(true);
-                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(FindIndex(newElement.Drop)).Value.InvCount.ToString());
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(FindIndex(drop)).Value.InvCount.ToString());
                     break;
             }
         });
@@ -316,19 +315,19 @@ public class OdinStore : MonoBehaviour
                     if(itemData.Value.InvCount == 0) continue;
                     if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
                     {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                        AddItemToDisplayList(itemData.Key.gameObject, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
                     else if 
                         (itemData.Key.m_itemData.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Material && 
                          Trader20.Trader20.ShowMatsWhenHidingRecipes!.Value == true)
                     {
-                        AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                        AddItemToDisplayList(itemData.Key.gameObject, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }
                 }
                 else
                 {
                     if(itemData.Value.InvCount == 0) continue;
-                    AddItemToDisplayList(itemData.Key, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
+                    AddItemToDisplayList(itemData.Key.gameObject, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                 }
 
             }
@@ -639,7 +638,7 @@ public class OdinStore : MonoBehaviour
     {
         SelectedItemDescription_TMP!.gameObject.SetActive(true);
         ItemDropIcon!.gameObject.SetActive(true);
-        SelectedItemDescription_TMP!.SetText(element.Drop!.m_itemData.m_shared.m_description);
+        SelectedItemDescription_TMP!.SetText(element.ItemObject.GetComponent<ItemDrop>()!.m_itemData.m_shared.m_description);
         SelectedItemDescription_TMP.gameObject.AddComponent<Localize>();
         ItemDropIcon!.sprite = element.Icon;
         tempElement = element;
@@ -669,8 +668,8 @@ public class OdinStore : MonoBehaviour
     public void BuyButtonAction()
     {
         try {
-            if (tempElement?.Drop == null) return;
-            int i = FindIndex(tempElement.Drop!);
+            if (tempElement?.ItemObject == null) return;
+            int i = FindIndex(tempElement.ItemObject.GetComponent<ItemDrop>()!);
             if (!CanBuy(i)) return;
             SellItem(i);
             NewTrader.instance!.OnSold();
@@ -705,12 +704,50 @@ public class OdinStore : MonoBehaviour
     [Serializable]
     public class ElementFormat
     {
-        internal GameObject Element { get; set; }
-        internal Sprite? Icon{ get; set; }
-        internal string? ItemName{ get; set; }
-        internal int? Price{ get; set; }
-        internal ItemDrop? Drop{ get; set; }
-        internal int? InventoryCount{ get; set; }
+        private int? _inventoryCount;
+        private GameObject _element;
+        private GameObject? _itemObject;
+        private Sprite? _icon;
+        private string? _itemName;
+        private int? _price;
+
+        internal GameObject Element
+        {
+            get => _element;
+            set => _element = value;
+        }
+
+        internal Sprite? Icon
+        {
+            get => _icon;
+            set => _icon = value;
+        }
+
+        internal string? ItemName
+        {
+            get => _itemName;
+            set => _itemName = value;
+        }
+
+        internal int? Price
+        {
+            get => _price;
+            set => _price = value;
+        }
+
+        //internal ItemDrop? Drop{ get; set; }
+
+        internal GameObject? ItemObject
+        {
+            get => _itemObject;
+            set => _itemObject = value;
+        }
+        internal int? InventoryCount
+        {
+            get => _inventoryCount;
+            set => _inventoryCount = value;
+        }
+
         internal UITooltip? _uiTooltip{ get; set; }
 
         public ElementFormat(GameObject? element)
@@ -885,7 +922,7 @@ public class OdinStore : MonoBehaviour
             {
                 if (ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name) != 0)
                 {
-                    AddItemToDisplayList(itemData.m_dropPrefab.GetComponent<ItemDrop>(), itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
+                    AddItemToDisplayList(itemData.m_dropPrefab, itemData.m_stack, ReturnYMLPlayerPurchaseValue(itemData.m_dropPrefab.name),  itemData.m_stack, SellListRoot, true);
 
                 }
             }
@@ -898,7 +935,7 @@ public class OdinStore : MonoBehaviour
     public void OnBuyItem() 
     {
         // ReSharper disable once Unity.NoNullPropagation
-        var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.Drop?.m_itemData?.m_shared.m_name);
+        var sellableItem = Player.m_localPlayer.GetInventory().GetItem(tempElement?.ItemObject.GetComponent<ItemDrop>()?.m_itemData?.m_shared.m_name);
         if (sellableItem == null) return;
         
         //Do logic to spawn the selection GUI and feed it the players item --> pipe out the selected volume to stack;

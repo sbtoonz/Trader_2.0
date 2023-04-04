@@ -41,9 +41,8 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 
 ## Join us on discord
 
-<p align="center"><h2>For Questions or Comments please join the Odin Plus Team on Discord:</h2></p>
-
-<p align="center"><a href="https://discord.gg/mbkPcvu9ax"><img src="https://i.imgur.com/Ji3u63C.png"></a></p>
+<p align="center"><h2>For Questions or Comments find knarr related stuff here:</h2></p>
+<a href="https://discord.gg/4znsrzzuXY"> HoremVerse Modding - Knarrs Corner </a>
 
 <details>
 <summary>Old Release Notes</summary>
