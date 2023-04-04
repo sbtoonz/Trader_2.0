@@ -22,13 +22,17 @@ namespace Trader20
 		    {
 			    return ConnectionState.Server;
 		    }
-
+		    
+		    if (ZNet.m_isServer && ZNet.m_openServer) // Local server
+		    {
+			    return ConnectionState.Server;
+		    }
 		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
 		    {
 			    return ConnectionState.Client;
 		    }
 
-		    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //Local
+		    if (ZNet.IsSinglePlayer) 
 		    {
 			    return ConnectionState.Local;
 		    }

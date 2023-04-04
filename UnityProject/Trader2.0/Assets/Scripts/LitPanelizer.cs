@@ -9,13 +9,13 @@ public class LitPanelizer : MonoBehaviour
     public Image? referenceimg;
     public Image? repairBkg;
     public List<Image?> _TabImages = new List<Image?>();
-
+    public List<Image> _ButtonImages = new List<Image>();
     private Material litpanel;
     
 
     private void Awake()
     {
-        litpanel  =Resources.FindObjectsOfTypeAll<Material>().ToList().Find(x => x.name == "litpanel");
+        litpanel = repairBkg!.material;
         foreach (Transform child1 in transform)
         {
             var t = child1.gameObject.GetComponentsInChildren<Renderer>();
@@ -104,6 +104,20 @@ public class LitPanelizer : MonoBehaviour
                                                                     r.material = litpanel;
                                                                 }
                                                             }
+                                                            if (child7.childCount <= 0) continue;
+                                                            {
+                                                                foreach (Transform child8 in child6)
+                                                                {
+                                                                    var t8 = child8.GetComponentsInChildren<Renderer>();
+                                                                    foreach (var r in t8)
+                                                                    {
+                                                                        if (r.material.name.StartsWith("REPLACE_"))
+                                                                        {
+                                                                            r.material = litpanel;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -123,7 +137,12 @@ public class LitPanelizer : MonoBehaviour
         foreach (var tabimage in _TabImages)
         {
             tabimage.sprite = referenceimg.sprite;
-            tabimage.material = litpanel;
+            tabimage.material = referenceimg.material;
+        }
+
+        foreach (var image in _ButtonImages)
+        {
+            image.material = litpanel;
         }
     }
 
