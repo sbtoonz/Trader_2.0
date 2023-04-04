@@ -34,6 +34,7 @@ jobs:
           dotnet restore
           nuget restore
           dotnet tool restore 
+          dotnet tool install -g tcli
 
       - name: Delete old Valheim directory
         run: |
@@ -121,3 +122,7 @@ jobs:
           files: /home/runner/work/Trader_2.0/Trader_2.0/Trader2.0/bin/Release/Trader20.dll
         env:
           GITHUB_TOKEN: ${{secrets.PATOKEN}}
+
+      - name: Test Tstore Release
+        run: |
+          tcli.exe build --config Thunderstore_Release/

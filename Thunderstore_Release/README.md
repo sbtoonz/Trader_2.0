@@ -210,7 +210,12 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.4.3
 * Update Dependencies for latest release version. Update Assets to match unity version
 
-</details>
-
 ### V0.4.4
 * Fix shader issue with knarrs tabs after recent game patch
+
+</details>
+
+### V0.4.5
+* Fix issue where non dedicated hosts were having problems with their clients selling to knarr
+* Fixed more shader issues I noticed
+* Fixed git reported issue that sales tab impacted global item stack
