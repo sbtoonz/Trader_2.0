@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -12,10 +13,11 @@ namespace Trader20
 {
     /// <inheritdoc />
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.4.6";
+        public const string ModVersion = "0.4.7";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
@@ -126,8 +128,7 @@ namespace Trader20
                 }
             }
             Game.isModded = true;
-            
-           
+
         }
         private static void OnValChangUpdateStore()
         {

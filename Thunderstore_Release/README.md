@@ -223,3 +223,6 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.4.6
 * Completed github request, Only Sell Known will now apply to both items and materials
 
+### V0.4.7
+* Hotfix learning how the new TCLI packing system works and the last upload had improper folder format
+
