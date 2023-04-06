@@ -195,6 +195,15 @@ namespace Trader20
         [HarmonyAfter("randyknapp.mods.auga")]
         public static class ItemListPatch
         {
+            internal static UIGradient SetGradient(UIGradient gradient)
+            {
+                gradient.GradientType = UIGradient.UIGradientType.Corner;
+                gradient.CornerColorUpperLeft = Topleft;
+                gradient.CornerColorLowerLeft = LowerLeft;
+                gradient.CornerColorLowerRight = LowerRight;
+                gradient.CornerColorUpperRight = TopRight;
+                return gradient;
+            }
             internal static bool AuguaSetupRan = false;
             internal static List<ItemDrop.ItemData> m_wornItems = new List<ItemDrop.ItemData>();
             private static readonly Color Topleft = new Color(0.1254902f, 0.1019608f, 0.08235294f,1);
@@ -222,28 +231,12 @@ namespace Trader20
                         var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
                         anchor!.anchoredPosition= Trader20.StoreScreenPos!.Value;
                         
-                        
-                        OdinStore.instance!.BuyButtonImage!.sprite =
-                            __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
-                        OdinStore.instance!.BuyButtonImage!.material =
-                            augapanel.GetComponent<StoreGui>().m_buyButton.image.material;
-                        OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
-                        
                         var bkg1 = __instance.transform.Find("Store/AugaPanelBase/Background").gameObject;
                         var test = bkg1.GetComponent<Image>();
                         OdinStore.instance.Bkg2!.sprite = test.sprite;
                         OdinStore.instance.Bkg2.material = test.material;
                         OdinStore.instance.Bkg2.type = Image.Type.Sliced;
                         OdinStore.instance.Bkg2.gameObject.AddComponent<UIGradient>();
-                        var temp =OdinStore.instance.Bkg2.gameObject.GetComponent<UIGradient>();
-                        temp.GradientType = UIGradient.UIGradientType.Corner;
-                        temp.CornerColorUpperLeft = Topleft;
-                        temp.CornerColorLowerLeft = LowerLeft;
-                        temp.CornerColorLowerRight = LowerRight;
-                        temp.CornerColorUpperRight = TopRight;
-
-
-
                         var Bkg2 = __instance.transform.Find("Store/AugaPanelBase/Darken").GetComponent<Image>();
                         OdinStore.instance.Bkg1!.sprite =Bkg2 .sprite;
                         OdinStore.instance.Bkg1.material = Bkg2.material;
@@ -253,43 +246,13 @@ namespace Trader20
                         OdinStore.instance!.SelectedCost_TMP!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
                         OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(200f, -175f, 0);
                         
-                        
-                        OdinStore.instance.BuyButtonImage!.sprite =
-                            Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
+                        OdinStore.instance!.BuyButtonImage!.sprite =
+                            __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
+                        OdinStore.instance!.BuyButtonImage!.material =
+                            augapanel.GetComponent<StoreGui>().m_buyButton.image.material;
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         OdinStore.instance.SellButtonImage.material = augapanel.GetComponent<StoreGui>().m_buyButton.image.material;
                         
-                        
-                        
-                        var grad2 =OdinStore.instance.TabRect.transform.Find("BuyTab/BuyTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>();
-                        grad2.GradientType = UIGradient.UIGradientType.Corner;
-                        grad2.CornerColorUpperLeft = Topleft;
-                        grad2.CornerColorLowerLeft = LowerLeft;
-                        grad2.CornerColorLowerRight = LowerRight;
-                        grad2.CornerColorUpperRight = TopRight;
-                        
-                        var grad5 =OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject.AddComponent<JoshH.UI.UIGradient>();
-                        grad5.GradientType = UIGradient.UIGradientType.Corner;
-                        grad5.CornerColorUpperLeft = Topleft;
-                        grad5.CornerColorLowerLeft = LowerLeft;
-                        grad5.CornerColorLowerRight = LowerRight;
-                        grad5.CornerColorUpperRight = TopRight;
-                        
-                        
-                        var grad4 = OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected")
-                            .gameObject.GetComponent<UIGradient>();
-                        grad4.GradientType = UIGradient.UIGradientType.Corner;
-                        grad4.CornerColorUpperLeft = Topleft;
-                        grad4.CornerColorLowerLeft = LowerLeft;
-                        grad4.CornerColorLowerRight = LowerRight;
-                        grad4.CornerColorUpperRight = TopRight;
-                        
-                        var grad1 = OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>();
-                        grad1.GradientType = UIGradient.UIGradientType.Corner;
-                        grad1.CornerColorUpperLeft = Topleft;
-                        grad1.CornerColorLowerLeft = LowerLeft;
-                        grad1.CornerColorLowerRight = LowerRight;
-                        grad1.CornerColorUpperRight = TopRight;
                         OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
                             .GetComponent<Image>().sprite = OdinStore.instance.TabRect.transform
                             .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().sprite;
@@ -297,20 +260,14 @@ namespace Trader20
                             .GetComponent<Image>().material = OdinStore.instance.TabRect.transform
                             .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().material;
                         
-                        
-                        var grad3 = OdinStore.instance.RepairRect.gameObject.AddComponent<UIGradient>();
-                        grad3.GradientType = UIGradient.UIGradientType.Corner;
-                        grad3.CornerColorUpperLeft = Topleft;
-                        grad3.CornerColorLowerLeft = LowerLeft;
-                        grad3.CornerColorLowerRight = LowerRight;
-                        grad3.CornerColorUpperRight = TopRight;
-                        
-                        var grad6 = OdinStore.instance.repairImage.gameObject.AddComponent<UIGradient>();
-                        grad6.GradientType = UIGradient.UIGradientType.Corner;
-                        grad6.CornerColorUpperLeft = Topleft;
-                        grad6.CornerColorLowerLeft = LowerLeft;
-                        grad6.CornerColorLowerRight = LowerRight;
-                        grad6.CornerColorUpperRight = TopRight;
+                        SetGradient(OdinStore.instance.RepairRect.gameObject.AddComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.repairImage.gameObject.AddComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("BuyTab/BuyTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected")
+                            .gameObject.GetComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.Bkg2.gameObject.GetComponent<UIGradient>());
 
                         OdinStore.instance.repairHammerImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().ToList()
                             .Find(x => x.name == "RepairButtonOver");
