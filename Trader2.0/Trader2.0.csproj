@@ -455,7 +455,7 @@
      <Exec Command="$(SolutionDir)pdb2mdb.exe &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 	 <Target Name="Copy_Thunderstore" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
-     <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;..\Thunderstore_Release\plugins\$(AssemblyName).dll&quot;" />
+     <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;..\Thunderstore_Release\dist\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 
 </Project>

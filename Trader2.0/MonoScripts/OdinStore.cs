@@ -313,7 +313,7 @@ public class OdinStore : MonoBehaviour
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
                 {
                     if(itemData.Value.InvCount == 0) continue;
-                    if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name))
+                    if (Player.m_localPlayer.m_knownRecipes.Contains(itemData.Key.m_itemData.m_shared.m_name) || Player.m_localPlayer.m_knownMaterial.Contains(itemData.Key.m_itemData.m_shared.m_name))
                     {
                         AddItemToDisplayList(itemData.Key.gameObject, itemData.Value.Stack, itemData.Value.Cost, itemData.Value.InvCount, ListRoot!, false);
                     }

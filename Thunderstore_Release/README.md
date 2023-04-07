@@ -213,9 +213,16 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.4.4
 * Fix shader issue with knarrs tabs after recent game patch
 
-</details>
-
 ### V0.4.5
 * Fix issue where non dedicated hosts were having problems with their clients selling to knarr
 * Fixed more shader issues I noticed
 * Fixed git reported issue that sales tab impacted global item stack
+
+</details>
+
+### V0.4.6
+* Completed github request, Only Sell Known will now apply to both items and materials
+
+### V0.4.7
+* Hotfix learning how the new TCLI packing system works and the last upload had improper folder format
+

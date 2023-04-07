@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -12,10 +13,11 @@ namespace Trader20
 {
     /// <inheritdoc />
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.4.5";
+        public const string ModVersion = "0.4.7";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
@@ -94,11 +96,11 @@ namespace Trader20
             LOGStoreSales = config("General", "Log what/when/to whom knarr sells things", false,
                 "This is to log when a player buys an item from Knarr and in what volume");
 
-            OnlySellKnownItems = config("General", "Only sell known recipes", false,
-                "If set true Knarr will only vend a player recipes the player has discovered already");
+            OnlySellKnownItems = config("General", "Only sell known recipes and materials", false,
+                "If set true Knarr will only vend a player recipes and materials the player has discovered already");
 
-            ShowMatsWhenHidingRecipes = config("General", "Sell Mats when hiding unknown recipes", false,
-                "If set true Knarr will still vend materials");
+            ShowMatsWhenHidingRecipes = config("General", "Sell ALL Materials when hiding unknown recipes", false,
+                "If set true Knarr will still vend ALL materials");
             
             ConfigWriteSalesBuysToYml = config("General", "Change the YML file on sells/buys", true,
                 "If set true Knarr will edit the values in the YML file when a player buys or sells items to him");
@@ -126,8 +128,7 @@ namespace Trader20
                 }
             }
             Game.isModded = true;
-            
-           
+
         }
         private static void OnValChangUpdateStore()
         {

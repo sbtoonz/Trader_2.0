@@ -195,26 +195,33 @@ namespace Trader20
         [HarmonyAfter("randyknapp.mods.auga")]
         public static class ItemListPatch
         {
+            internal static UIGradient SetGradient(UIGradient gradient)
+            {
+                gradient.GradientType = UIGradient.UIGradientType.Corner;
+                gradient.CornerColorUpperLeft = Topleft;
+                gradient.CornerColorLowerLeft = LowerLeft;
+                gradient.CornerColorLowerRight = LowerRight;
+                gradient.CornerColorUpperRight = TopRight;
+                return gradient;
+            }
             internal static bool AuguaSetupRan = false;
             internal static List<ItemDrop.ItemData> m_wornItems = new List<ItemDrop.ItemData>();
+            private static readonly Color Topleft = new Color(0.1254902f, 0.1019608f, 0.08235294f,1);
+            private static readonly Color TopRight = new Color(0.282353f, 0.2352941f, 0.1882353f, 1);
+            private static readonly Color LowerLeft = new Color(0.1803922f, 0.1529412f, 0.1254902f, 1);
+            private static readonly Color LowerRight = new Color(0.3215686f, 0.2666667f, 0.2156863f, 1);
             public static void Postfix(StoreGui __instance)
             {
                 var newscreen = ZNetScene.instance.GetPrefab("CustomTrader");
                 if (newscreen)
                 {
+                   
                     if (Auga.API.IsLoaded())
                     {
                         if(AuguaSetupRan) return;
                         
                         GameObject augapanel = null!;
-                        var typeAll = Resources.FindObjectsOfTypeAll<GameObject>();
-                        foreach (var o in typeAll)
-                        {
-                            if (o.name == "AugaStoreScreen")
-                            {
-                                augapanel = o;
-                            }
-                        }
+                        augapanel = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x=>x.name=="AugaStoreScreen");
                         Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                             __instance.GetComponent<Localize>().transform, false);
                         Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
@@ -224,29 +231,12 @@ namespace Trader20
                         var anchor = Trader20.CustomTraderScreen.transform as RectTransform;
                         anchor!.anchoredPosition= Trader20.StoreScreenPos!.Value;
                         
-                        
-                        OdinStore.instance!.BuyButtonImage!.sprite =
-                            __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
-                        OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         var bkg1 = __instance.transform.Find("Store/AugaPanelBase/Background").gameObject;
                         var test = bkg1.GetComponent<Image>();
                         OdinStore.instance.Bkg2!.sprite = test.sprite;
                         OdinStore.instance.Bkg2.material = test.material;
                         OdinStore.instance.Bkg2.type = Image.Type.Sliced;
                         OdinStore.instance.Bkg2.gameObject.AddComponent<UIGradient>();
-                        var temp =OdinStore.instance.Bkg2.gameObject.GetComponent<UIGradient>();
-                        temp.GradientType = UIGradient.UIGradientType.Corner;
-                        Color topleft = new Color(0.1254902f, 0.1019608f, 0.08235294f,1);
-                        Color topRight = new Color(0.282353f, 0.2352941f, 0.1882353f, 1);
-                        Color lowerLeft = new Color(0.1803922f, 0.1529412f, 0.1254902f, 1);
-                        Color lowerRight = new Color(0.3215686f, 0.2666667f, 0.2156863f, 1);
-                        temp.CornerColorUpperLeft = topleft;
-                        temp.CornerColorLowerLeft = lowerLeft;
-                        temp.CornerColorLowerRight = lowerRight;
-                        temp.CornerColorUpperRight = topRight;
-
-
-
                         var Bkg2 = __instance.transform.Find("Store/AugaPanelBase/Darken").GetComponent<Image>();
                         OdinStore.instance.Bkg1!.sprite =Bkg2 .sprite;
                         OdinStore.instance.Bkg1.material = Bkg2.material;
@@ -254,10 +244,34 @@ namespace Trader20
                         OdinStore.instance.Coins!.sprite = Trader20.Coins;
                         OdinStore.instance.Coins.transform.localPosition = new Vector3(-174.054f, 308.3599f, 0);
                         OdinStore.instance!.SelectedCost_TMP!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
-                        OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(335.2804f, -355.26f, 0);
+                        OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(200f, -175f, 0);
+                        
                         OdinStore.instance.BuyButtonImage!.sprite =
                             Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
+                        OdinStore.instance.SellButtonImage.material = test.material;
+                        
+                        OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
+                            .GetComponent<Image>().sprite = OdinStore.instance.TabRect.transform
+                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().sprite;
+                        OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
+                            .GetComponent<Image>().material = test.material;
+                        OdinStore.instance.TabRect.transform
+                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().material = test.material;
+                        
+                        SetGradient(OdinStore.instance.RepairRect.gameObject.AddComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.repairImage.gameObject.AddComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("BuyTab/BuyTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected")
+                            .gameObject.GetComponent<UIGradient>());
+                        SetGradient(OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton").gameObject.AddComponent<JoshH.UI.UIGradient>());
+                        SetGradient(OdinStore.instance.Bkg2.gameObject.GetComponent<UIGradient>());
+
+                        OdinStore.instance.repairHammerImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().ToList()
+                            .Find(x => x.name == "RepairButtonOver");
+                        
+                        //InventoryGui.instance.transform.Find("SplitDialog")
                         AuguaSetupRan = true;
                     }
                     else
@@ -322,9 +336,13 @@ namespace Trader20
                         });
                         OdinStore.instance.repairButton.transition = Selectable.Transition.SpriteSwap;
                         OdinStore.instance.repairButton.spriteState = repairButtonButton.spriteState;
+                        
+                        OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
+                            .GetComponent<InventoryGui>();
+                        //OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
+                        OdinStore.instance!.BuildKnarrSplitDialog();
 
                     }
-                    
                 }
 
 
@@ -363,15 +381,12 @@ namespace Trader20
                     }
                 }
 
-                OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
-                    .GetComponent<InventoryGui>();
-                //OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
-                OdinStore.instance!.BuildKnarrSplitDialog();
+               
 
             }
            
         }
-
+        
         [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
         public static class SpawnKnarr
         {
