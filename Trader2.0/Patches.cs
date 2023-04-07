@@ -246,19 +246,18 @@ namespace Trader20
                         OdinStore.instance!.SelectedCost_TMP!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
                         OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(200f, -175f, 0);
                         
-                        OdinStore.instance!.BuyButtonImage!.sprite =
-                            __instance!.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
-                        OdinStore.instance!.BuyButtonImage!.material =
-                            augapanel.GetComponent<StoreGui>().m_buyButton.image.material;
+                        OdinStore.instance.BuyButtonImage!.sprite =
+                            Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
-                        OdinStore.instance.SellButtonImage.material = augapanel.GetComponent<StoreGui>().m_buyButton.image.material;
+                        OdinStore.instance.SellButtonImage.material = test.material;
                         
                         OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
                             .GetComponent<Image>().sprite = OdinStore.instance.TabRect.transform
                             .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().sprite;
                         OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
-                            .GetComponent<Image>().material = OdinStore.instance.TabRect.transform
-                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().material;
+                            .GetComponent<Image>().material = test.material;
+                        OdinStore.instance.TabRect.transform
+                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().material = test.material;
                         
                         SetGradient(OdinStore.instance.RepairRect.gameObject.AddComponent<UIGradient>());
                         SetGradient(OdinStore.instance.repairImage.gameObject.AddComponent<UIGradient>());
