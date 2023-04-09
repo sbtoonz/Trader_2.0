@@ -223,7 +223,7 @@ namespace Trader20
                         GameObject augapanel = null!;
                         augapanel = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x=>x.name=="AugaStoreScreen");
                         Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
-                            __instance.GetComponent<Localize>().transform, false);
+                            __instance.GetComponent<Localize>().transform.parent, false);
                         Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
                             .GetIcon();
                         Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
@@ -434,6 +434,17 @@ namespace Trader20
             }
         }
 
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.Shutdown))]
+        public static class Znet_Auga_patch
+        {
+            public static void Postfix(ZNet __instance)
+            {
+                if (Auga.API.IsLoaded())
+                {
+                    ItemListPatch.AuguaSetupRan = false;
+                }
+            }
+        }
 
         /// <summary>
         /// RPC to remove Knarr
