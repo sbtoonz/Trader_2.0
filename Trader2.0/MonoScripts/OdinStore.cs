@@ -1194,29 +1194,61 @@ public class OdinStore : MonoBehaviour
 
     internal void BuildKnarrSplitDialog()
     {
-        splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
-        m_splitPanel = splitDiagGO.transform;
-        m_splitIcon = splitDiagGO.transform.Find("win_bkg/Icon_bkg/Icon").gameObject.GetComponent<Image>();
-        m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
-        m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
-        m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
-        m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<Text>();
-        m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<Text>();
-        m_splitCancelButton.onClick.AddListener(delegate
+        if (Auga.API.IsLoaded())
         {
-            OnSplitCancel();
+            splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
+            m_splitPanel = splitDiagGO.transform;
+            m_splitIcon = splitDiagGO.transform.Find("Dialog/InventoryElement/icon").gameObject.GetComponent<Image>();
+            m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
+            m_splitCancelButton = splitDiagGO.transform.Find("Dialog/ButtonCancel").gameObject.GetComponent<Button>();
+            m_splitOkButton = splitDiagGO.transform.Find("Dialog/ButtonOk").gameObject.GetComponent<Button>();
+            m_splitIconName = splitDiagGO.transform.Find("Dialog/InventoryElement/DummyText").gameObject.GetComponent<Text>();
+            m_splitAmount = splitDiagGO.transform.Find("Dialog/InventoryElement/amount").gameObject.GetComponent<Text>();
+            splitDiagGO.transform.Find("Dialog/Background").gameObject.GetComponent<Image>().sprite =
+                Resources.FindObjectsOfTypeAll<Sprite>().ToList().Find(x => x.name == "Background");
+            m_splitCancelButton.onClick.AddListener(delegate
+            {
+                OnSplitCancel();
             
-        });
-        m_splitOkButton.onClick.AddListener(delegate
+            });
+            m_splitOkButton.onClick.AddListener(delegate
+            {
+                OnSplitOK(); 
+            
+            });
+            m_splitSlider.onValueChanged.AddListener(delegate(float val)
+            {
+                OnSplitSliderChanged(val);
+            
+            });
+        }
+        else
         {
-            OnSplitOK(); 
+            splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
+            m_splitPanel = splitDiagGO.transform;
+            m_splitIcon = splitDiagGO.transform.Find("win_bkg/Icon_bkg/Icon").gameObject.GetComponent<Image>();
+            m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
+            m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
+            m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
+            m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<Text>();
+            m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<Text>();
+            m_splitCancelButton.onClick.AddListener(delegate
+            {
+                OnSplitCancel();
             
-        });
-        m_splitSlider.onValueChanged.AddListener(delegate(float val)
-        {
-            OnSplitSliderChanged(val);
+            });
+            m_splitOkButton.onClick.AddListener(delegate
+            {
+                OnSplitOK(); 
             
-        });
+            });
+            m_splitSlider.onValueChanged.AddListener(delegate(float val)
+            {
+                OnSplitSliderChanged(val);
+            
+            });
+        }
+        
     }
 
     private void OnSplitCancel()

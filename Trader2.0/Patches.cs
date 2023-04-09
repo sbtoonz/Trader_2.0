@@ -251,13 +251,6 @@ namespace Trader20
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         OdinStore.instance.SellButtonImage.material = test.material;
                         
-                        OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
-                            .GetComponent<Image>().sprite = OdinStore.instance.TabRect.transform
-                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().sprite;
-                        OdinStore.instance.TabRect.transform.Find("SellTab/SellTabButton/Selected").gameObject
-                            .GetComponent<Image>().material = test.material;
-                        OdinStore.instance.TabRect.transform
-                            .Find("BuyTab/BuyTabButton").gameObject.GetComponent<Image>().material = test.material;
                         
                         SetGradient(OdinStore.instance.RepairRect.gameObject.AddComponent<UIGradient>());
                         SetGradient(OdinStore.instance.repairImage.gameObject.AddComponent<UIGradient>());
@@ -271,7 +264,10 @@ namespace Trader20
                         OdinStore.instance.repairHammerImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().ToList()
                             .Find(x => x.name == "RepairButtonOver");
                         
-                        //InventoryGui.instance.transform.Find("SplitDialog")
+                        OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
+                            .GetComponent<InventoryGui>();
+                        //OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
+                        OdinStore.instance!.BuildKnarrSplitDialog();
                         AuguaSetupRan = true;
                     }
                     else
