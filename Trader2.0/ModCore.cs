@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -23,7 +24,8 @@ namespace Trader20
         {
             DisplayName = ModName,
             CurrentVersion = ModVersion, 
-            MinimumRequiredVersion = ModVersion
+            MinimumRequiredVersion = ModVersion,
+            ModRequired = true
         };
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -33,8 +35,6 @@ namespace Trader20
         private static Dictionary<string, ItemDataEntry> entry_ { get; set; } = null!;
         internal static AssetBundle? AssetBundle { get; private set; }
         
-        internal static readonly string Paths = BepInEx.Paths.ConfigPath;
-        internal static readonly string Paths2 = BepInEx.Paths.BepInExAssemblyPath ;
         internal static ConfigEntry<bool>? _serverConfigLocked;
         internal static ConfigEntry<string>? CurrencyPrefabName;
         internal static ConfigEntry<Vector3>? StoreScreenPos;
@@ -77,9 +77,9 @@ namespace Trader20
             AssetBundle = Utilities.LoadAssetBundle("traderbundle")!;
             _serverConfigLocked = config("General", "Lock Configuration", false, "Lock Configuration");
             configSync.AddLockingConfigEntry(_serverConfigLocked);
-            if (!File.Exists(Paths + Path.DirectorySeparatorChar + "trader_config.yaml"))
+            if (!File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml"))
             {
-                File.Create(Paths + Path.DirectorySeparatorChar + "trader_config.yaml").Close();
+                File.Create(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml").Close();
             }
             ReadYamlConfigFile(null!, null!);
             TraderConfig.ValueChanged += OnValChangUpdateStore;
@@ -122,12 +122,13 @@ namespace Trader20
 
             if (LOGStoreSales.Value)
             {
-                if (!File.Exists(Paths + Path.DirectorySeparatorChar+ "TraderSales.log"))
+                if (!File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar+ "TraderSales.log"))
                 {
-                    File.Create(Paths + Path.DirectorySeparatorChar + "TraderSales.log");
+                    File.Create(Paths.ConfigPath + Path.DirectorySeparatorChar + "TraderSales.log");
                 }
             }
             Game.isModded = true;
+            
 
         }
         private static void OnValChangUpdateStore()
@@ -166,7 +167,7 @@ namespace Trader20
         }
         private void SetupWatcher()
         {
-            FileSystemWatcher watcher = new(Paths, "trader_config.yaml");
+            FileSystemWatcher watcher = new(Paths.ConfigPath, "trader_config.yaml");
             watcher.Changed += ReadYamlConfigFile;
             watcher.Created += ReadYamlConfigFile;
             watcher.Renamed += ReadYamlConfigFile;
@@ -179,7 +180,7 @@ namespace Trader20
         {
             try
             {
-                var file = File.OpenText(Trader20.Paths + Path.DirectorySeparatorChar +"trader_config.yaml");
+                var file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar +"trader_config.yaml");
                 entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 TraderConfig.AssignLocalValue(entry_);

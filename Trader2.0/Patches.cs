@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
-using AugaUnity;
+using BepInEx;
 using HarmonyLib;
 using JetBrains.Annotations;
 using JoshH.UI;
@@ -49,6 +48,8 @@ namespace Trader20
                 ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
                 ZRoutedRpc.instance.Register<string, int, bool>("SendItemInfoToServer", RPC_SendItemInfoToServer);
                 ZRoutedRpc.instance.Register<string, int>("SendLogItemToServer", RPC_SendSaleLogInfoToServer);
+                ZRoutedRpc.instance.Register("DumpAllLoadedItemsReq", RPC_DumpAllLoadedItemsToYamlReq);
+                ZRoutedRpc.instance.Register<bool>("DumpAllLoadedItems", RPC_DumpAllLoadedItemsToYaml);
             }
 
             
@@ -170,17 +171,68 @@ namespace Trader20
             }
         }
 
-        private static void RPC_InitialYMLWrite_OnClientConnect(long uid)
+        private static void RPC_DumpAllLoadedItemsToYamlReq(long uid)
         {
-            if(Utilities.GetConnectionState() == Utilities.ConnectionState.Server) return;
-            if (Trader20.TraderConfig.Value.Count >= 1)
+            switch (Utilities.GetConnectionState())
             {
-                if (Utilities.GetConnectionState() == Utilities.ConnectionState.Client)
-                {
-                    
-                }
+                case Utilities.ConnectionState.Server:
+                    if (ZNet.instance)
+                    {
+                        var p = ZNet.instance.m_players.Find(x => x.m_characterID.m_userID == uid);
+                        var peer = ZNet.instance.GetConnectedPeers().Find(x => x.m_characterID.m_userID == p.m_characterID.m_userID);
+                        if (ZNet.instance.m_adminList.Contains(peer.m_socket.GetEndPointString()))
+                        {
+                            ZRoutedRpc.instance.InvokeRoutedRPC("DumpAllLoadedItems", true);
+                        }
+                    }
+                    break;
+                case Utilities.ConnectionState.Client:
+                    break;
+                case Utilities.ConnectionState.Local:
+                    if (ZNet.instance)
+                    {
+                        
+                        ZRoutedRpc.instance.InvokeRoutedRPC("DumpAllLoadedItems", true);
+                        
+                    }
+                    break;
+                case Utilities.ConnectionState.Unknown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            // get the Trader20.TraderConfig write the contents to a temp var take the var and write those out to a yaml file 
+        }
+
+        private static void RPC_DumpAllLoadedItemsToYaml(long uid, bool arg)
+        {
+            switch (Utilities.GetConnectionState())
+            {
+                case Utilities.ConnectionState.Server:
+                    break;
+                case Utilities.ConnectionState.Client:
+                    break;
+                case Utilities.ConnectionState.Local:
+                    var file = File.CreateText(Paths.ConfigPath + Path.DirectorySeparatorChar + "Dumped_Items.yaml");
+                    file.Close();
+                    if (ObjectDB.instance != null)
+                    {
+                        foreach (var g in ObjectDB.instance.m_items)
+                        {
+                            if(g.GetComponent<ItemDrop>().m_itemData.GetIcon()==null)continue;
+                            var entry = new ItemDataEntry();
+                            entry.Invcount = 0;
+                            entry.ItemCount = 0;
+                            Dictionary<string, ItemDataEntry> entries = new Dictionary<string, ItemDataEntry>();
+                            entries.Add(g.name, entry);
+                            var serializedData = YMLParser.Serializers(entries);
+                            using var sw = File.AppendText(Paths.ConfigPath + Path.DirectorySeparatorChar + "Dumped_Items.yaml");
+                            sw.WriteLine(serializedData);
+                        }
+                    }
+                    break;
+                case Utilities.ConnectionState.Unknown:
+                    break;
+            }
         }
 
         private static void RPC_SetKnarrMapIcon(long uid, Vector3 position)
@@ -219,9 +271,6 @@ namespace Trader20
                     if (Auga.API.IsLoaded())
                     {
                         if(AuguaSetupRan) return;
-                        
-                        GameObject augapanel = null!;
-                        augapanel = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x=>x.name=="AugaStoreScreen");
                         Trader20.CustomTraderScreen = GameObject.Instantiate(newscreen,
                             __instance.GetComponent<Localize>().transform.parent, false);
                         Trader20.Coins = ZNetScene.instance.GetPrefab(Trader20.CurrencyPrefabName!.Value).GetComponent<ItemDrop>().m_itemData
@@ -235,7 +284,6 @@ namespace Trader20
                         var test = bkg1.GetComponent<Image>();
                         OdinStore.instance.Bkg2!.sprite = test.sprite;
                         OdinStore.instance.Bkg2.material = test.material;
-                        OdinStore.instance.Bkg2.type = Image.Type.Sliced;
                         OdinStore.instance.Bkg2.gameObject.AddComponent<UIGradient>();
                         var Bkg2 = __instance.transform.Find("Store/AugaPanelBase/Darken").GetComponent<Image>();
                         OdinStore.instance.Bkg1!.sprite =Bkg2 .sprite;
@@ -246,8 +294,7 @@ namespace Trader20
                         OdinStore.instance!.SelectedCost_TMP!.transform.localPosition = new Vector3(-57.6711f, 324.26f, 0);
                         OdinStore.instance.InvCountPanel!.transform.localPosition = new Vector3(200f, -175f, 0);
                         
-                        OdinStore.instance.BuyButtonImage!.sprite =
-                            Object.Instantiate(__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite);
+                        OdinStore.instance.BuyButtonImage!.sprite =__instance.transform.Find("Store/BuyButton/Image").GetComponent<Image>().sprite;
                         OdinStore.instance.SellButtonImage!.sprite = OdinStore.instance.BuyButtonImage!.sprite;
                         OdinStore.instance.SellButtonImage.material = test.material;
                         
@@ -264,7 +311,7 @@ namespace Trader20
                         OdinStore.instance.repairHammerImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().ToList()
                             .Find(x => x.name == "RepairButtonOver");
                         
-                        OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
+                        OdinStore.instance.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
                             .GetComponent<InventoryGui>();
                         //OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
                         OdinStore.instance!.BuildKnarrSplitDialog();
@@ -302,9 +349,7 @@ namespace Trader20
                         var RepairButton = Object.Instantiate(InventoryGui.instance.transform.Find("root/Crafting/RepairButton").gameObject);
                         var repairButtonButton = RepairButton.GetComponent<Button>();
                         var repairImage = RepairButton.transform.Find("Image").gameObject.GetComponent<Image>();
-                        var RepairBKGpanel =
-                            Object.Instantiate(InventoryGui.instance.transform.Find("root/Crafting/RepairSimple"))
-                                .gameObject.GetComponent<Image>();
+                        var RepairBKGpanel = InventoryGui.instance.transform.Find("root/Crafting/RepairSimple").gameObject.GetComponent<Image>();
 
                         OdinStore.instance.RepairRect!.gameObject.GetComponent<Image>().sprite = RepairBKGpanel.sprite;
                         OdinStore.instance.RepairRect.gameObject.GetComponent<Image>().material = RepairBKGpanel.material;
@@ -333,7 +378,7 @@ namespace Trader20
                         OdinStore.instance.repairButton.transition = Selectable.Transition.SpriteSwap;
                         OdinStore.instance.repairButton.spriteState = repairButtonButton.spriteState;
                         
-                        OdinStore.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
+                        OdinStore.instance.gui = __instance.transform.parent.transform.Find("Inventory_screen").gameObject
                             .GetComponent<InventoryGui>();
                         //OdinStore.gui.m_splitPanel.gameObject.transform.Find("win_bkg").gameObject.AddComponent<DragHandler>();
                         OdinStore.instance!.BuildKnarrSplitDialog();
@@ -346,8 +391,8 @@ namespace Trader20
                 if (ZNetScene.instance.m_prefabs.Count <= 0 )return;
                 Dictionary<string, ItemDataEntry> entry = new();
                 List<Dictionary<string, ItemDataEntry>> listEntry = new();
-                if (!File.ReadLines(Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml").Any()) return;
-                var file = File.OpenText(Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                if (!File.ReadLines(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml").Any()) return;
+                var file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
                 var entry_ = YMLParser.ReadSerializedData(file.ReadToEnd());
                 List<Dictionary<string, ItemDataEntry>> PopulatedList =
                     new();
@@ -455,13 +500,19 @@ namespace Trader20
                 string lower = __instance.m_input.text.ToLower();
                 if (lower.Equals("remove knarr"))
                 {
-                        ZRoutedRpc.instance.InvokeRoutedRPC("RequestRemoveKnarr", true);
-                        return false;
+                    ZRoutedRpc.instance.InvokeRoutedRPC("RequestRemoveKnarr", true);
+                    return false;
                 }
 
                 if (lower.Equals("find knarr"))
                 {
                     ZRoutedRpc.instance.InvokeRoutedRPC("FindKnarrDone", true);
+                    return false;
+                }
+
+                if (lower.Equals("dump objectlist"))
+                {
+                    ZRoutedRpc.instance.InvokeRoutedRPC("DumpAllLoadedItemsReq");
                     return false;
                 }
 

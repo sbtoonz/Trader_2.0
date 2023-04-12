@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using BepInEx;
+using JetBrains.Annotations;
 using TMPro;
 using Trader20;
 using UnityEngine;
@@ -62,8 +64,8 @@ public class OdinStore : MonoBehaviour
 
     
 //split dialog
-    internal static InventoryGui? gui = null;
-    internal static GameObject splitDiagGO;
+    internal InventoryGui? gui = null;
+    internal GameObject splitDiagGO;
     internal Transform m_splitPanel;
     internal Slider m_splitSlider;
     internal Text m_splitAmount;
@@ -167,14 +169,12 @@ public class OdinStore : MonoBehaviour
 
     private ElementFormat GetPooledElement()
     {
-        ElementFormat element = new ElementFormat(new GameObject());
         for (int i = 0; i < ElementPoolObjects.Count; i++)
         {
             if(ElementPoolObjects[i].Element.activeSelf)continue;
             if (!ElementPoolObjects[i].Element.activeSelf)
             {
-                element = ElementPoolObjects[i];
-                return element;
+                return ElementPoolObjects[i];
             }
         }
         return null;
@@ -469,7 +469,7 @@ public class OdinStore : MonoBehaviour
     {
         
         if(Trader20.Trader20.ConfigWriteSalesBuysToYml?.Value != true) return;
-        var file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+        var file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
         var currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
         file.Close();
         switch (Utilities.GetConnectionState())
@@ -483,7 +483,7 @@ public class OdinStore : MonoBehaviour
                     else test.Invcount = newInvCount;
                     currentList[sellableItem.m_dropPrefab.name] = test;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
+                    File.WriteAllText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }else
                 {
                     //Setup the data entry for the YML file 
@@ -509,7 +509,7 @@ public class OdinStore : MonoBehaviour
                     else test.Invcount = newInvCount;
                     currentList[sellableItem.m_dropPrefab.name] = test;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
+                    File.WriteAllText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }
                 else
                 {
@@ -542,7 +542,7 @@ public class OdinStore : MonoBehaviour
                     }
                     currentList[sellableItem.m_dropPrefab.name] = itemDataEntry;
                     var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
+                    File.WriteAllText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
                 }else
                 {
                     //Setup the data entry for the YML file 
@@ -572,7 +572,7 @@ public class OdinStore : MonoBehaviour
     private static async Task WriteSales(string saleInfo)
     {
         var encoding = new UnicodeEncoding();
-        string filename = Trader20.Trader20.Paths + "/TraderSales.log";
+        string filename = Paths.ConfigPath + "/TraderSales.log";
 
         byte[] result = encoding.GetBytes(saleInfo);
 
@@ -1015,8 +1015,8 @@ public class OdinStore : MonoBehaviour
                         concatinated = "[" + theTime + "] " + playerID + " - " + playerName + " Purchased: " +
                                        Localization.instance.Localize(sellableItem.m_shared.m_name) + " For: " +
                                        stack;
-                        Gogan.LogEvent("Game", "Knarr Sold Item", concatinated, 0);
-                        ZLog.Log("Knarr Sold Item " + concatinated);
+                        Gogan.LogEvent("Game", "Knarr Bought Item", concatinated, 0);
+                        ZLog.Log("Knarr Bought Item " + concatinated);
                         LogSales(concatinated).ConfigureAwait(false);
                     }
 
@@ -1052,7 +1052,7 @@ public class OdinStore : MonoBehaviour
         switch (Utilities.GetConnectionState())
         {
             case Utilities.ConnectionState.Server:
-                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
                 currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 return currentList[s].PurchaseFromPlayerCost;
@@ -1061,7 +1061,7 @@ public class OdinStore : MonoBehaviour
                 return Trader20.Trader20.TraderConfig.Value[s].PurchaseFromPlayerCost;
                 break;
             case Utilities.ConnectionState.Local:
-                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
                 currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 return currentList[s].PurchaseFromPlayerCost;
@@ -1079,7 +1079,7 @@ public class OdinStore : MonoBehaviour
         switch (Utilities.GetConnectionState())
         {
             case Utilities.ConnectionState.Server:
-                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
                 currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 return currentList.ContainsKey(s);
@@ -1088,7 +1088,7 @@ public class OdinStore : MonoBehaviour
                 if(Trader20.Trader20.TraderConfig.Value.ContainsKey(s)) return true;
                 break;
             case Utilities.ConnectionState.Local:
-                file = File.OpenText(Trader20.Trader20.Paths + Path.DirectorySeparatorChar + "trader_config.yaml");
+                file = File.OpenText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml");
                 currentList = YMLParser.ReadSerializedData(file.ReadToEnd());
                 file.Close();
                 return currentList.ContainsKey(s);
@@ -1192,6 +1192,7 @@ public class OdinStore : MonoBehaviour
         }
     }
 
+    [UsedImplicitly]
     internal void BuildKnarrSplitDialog()
     {
         if (Auga.API.IsLoaded())
