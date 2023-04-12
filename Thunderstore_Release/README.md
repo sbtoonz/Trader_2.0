@@ -218,11 +218,14 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 * Fixed more shader issues I noticed
 * Fixed git reported issue that sales tab impacted global item stack
 
-</details>
-
 ### V0.4.6
 * Completed github request, Only Sell Known will now apply to both items and materials
 
 ### V0.4.7
 * Hotfix learning how the new TCLI packing system works and the last upload had improper folder format
+
+</details>
+
+### V0.4.8
+* Update AugaAPI for Auga compatibility, Knarr now works with Auga
 

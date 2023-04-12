@@ -18,8 +18,8 @@ readme = "./README.md"
 outdir = "./"
 
 [[build.copy]]
-source = "./plugins"
-target = "./plugins"
+source = "./dist"
+target = "./"
 
 
 [publish]

@@ -832,6 +832,7 @@ MonoBehaviour:
   _renderers:
   - {fileID: 9143689905146564525}
   _shaderType: 4
+  DebugOutput: 0
 --- !u!1 &3457383995178219631
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,7 +1246,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4350403981966264916}
   - component: {fileID: 1716584098848858233}
-  - component: {fileID: 5742212542743964856}
+  - component: {fileID: 1151217111240878123}
   m_Layer: 0
   m_Name: KnarrTheTrader
   m_TagString: Untagged
@@ -1276,7 +1277,7 @@ RectTransform:
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1716584098848858233
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1289,11 +1290,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5742212542743964856
+  m_KeepAnimatorStateOnDisable: 0
+--- !u!114 &1151217111240878123
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1302,7 +1304,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5832715195778607486}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 2147295275, guid: 9cdf6f988fdc9b74dadc317171cd88de, type: 3}
+  m_Script: {fileID: 2147295275, guid: bcf2382473608e941bb0d491e502fad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5957339869930204406
@@ -1775,7 +1777,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6458935346658124851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1521249158, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
+  m_Script: {fileID: 1521249158, guid: 1e5eba4f196255a48a608a7b9d58fac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_persistent: 1
@@ -1791,7 +1793,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6458935346658124851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 712945444, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
+  m_Script: {fileID: 712945444, guid: 1e5eba4f196255a48a608a7b9d58fac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_exteriorRadius: 5
@@ -1815,7 +1817,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6458935346658124851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1214644819, guid: ed4b528a83e7de742b1c2b34cd9ba3c3, type: 3}
+  m_Script: {fileID: 1214644819, guid: 1e5eba4f196255a48a608a7b9d58fac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_offset: 0
