@@ -211,7 +211,7 @@ public class OdinStore : MonoBehaviour
     {
         return m_StorePanel!.activeSelf;
     }
-    internal async void  ClearStore()
+    internal void  ClearStore()
     {
         if (BuyPageActive)
         {
@@ -223,7 +223,7 @@ public class OdinStore : MonoBehaviour
                 }
 
                 _knarSellElements.Clear();
-                await ReadAllStoreItems().ConfigureAwait(true);
+                ReadStoreItems();
             }
         }
 
@@ -245,18 +245,30 @@ public class OdinStore : MonoBehaviour
     /// <param name="isPlayerItem"></param>
     public void AddItemToDisplayList(GameObject dropObj, int stack, int cost, int invCount, RectTransform rectForElements, bool isPlayerItem)
     {
-        ElementFormat newElement = GetPooledElement();
+        ElementFormat newElement;
+        ItemDrop? drop;
+        Text? component;
+        switch (Utilities.GetConnectionState())
+        {
+            case Utilities.ConnectionState.Server:
+                break;
+            case Utilities.ConnectionState.Client:
+                 newElement = GetPooledElement();
 
         newElement.ItemObject = dropObj;
-        var drop = dropObj.GetComponent<ItemDrop>();
+        drop = dropObj.GetComponent<ItemDrop>();
         newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
         newElement.ItemName = drop.m_itemData.m_shared.m_name;
         newElement._uiTooltip = newElement.Element.GetComponent<UITooltip>();
         newElement._uiTooltip.m_text = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
-        newElement._uiTooltip.m_topic = Localization.instance.Localize(drop.m_itemData.GetTooltip());
+        if(Player.m_localPlayer != null)
+        {
+            var s = drop.m_itemData.GetTooltip();
+            if (!s.IsNullOrWhiteSpace()) newElement._uiTooltip.m_topic = Localization.instance.Localize(s);
+        }
         newElement.InventoryCount = invCount;
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
-        var component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component = newElement.Element.transform.Find("name").GetComponent<Text>();
         component.text = newElement.ItemName;
         component.gameObject.AddComponent<Localize>();
         
@@ -293,13 +305,123 @@ public class OdinStore : MonoBehaviour
             _knarSellElements.Add(newElement);
         }
         newElement.Element.SetActive(true);
+                break;
+            case Utilities.ConnectionState.Local:
+                 newElement = GetPooledElement();
+
+        newElement.ItemObject = dropObj;
+        drop = dropObj.GetComponent<ItemDrop>();
+        newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
+        newElement.ItemName = drop.m_itemData.m_shared.m_name;
+        newElement._uiTooltip = newElement.Element.GetComponent<UITooltip>();
+        newElement._uiTooltip.m_text = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
+        if(!drop.m_itemData.m_shared.m_description.IsNullOrWhiteSpace())
+        {
+            var s = drop.m_itemData.GetTooltip();
+            if (!s.IsNullOrWhiteSpace()) newElement._uiTooltip.m_topic = Localization.instance.Localize(s);
+        }
+        newElement.InventoryCount = invCount;
+        newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
+        component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component.text = newElement.ItemName;
+        component.gameObject.AddComponent<Localize>();
+        
+        newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
+        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+        {
+            > 1 => "x" + stack,
+            1 => "",
+            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+        };
+        newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            UpdateGenDescription(newElement);
+            switch (invCount)
+            {
+                case <=0:
+                    InvCountPanel!.SetActive(false);
+                    break;
+                case >= 1:
+                    InvCountPanel!.SetActive(true);
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(FindIndex(drop)).Value.InvCount.ToString());
+                    break;
+            }
+        });
+        newElement.Element.transform.SetParent(rectForElements, false);
+        newElement.Element.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
+        newElement.Element.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
+        if (isPlayerItem)
+        {
+            _playerSellElements.Add(newElement);
+        }
+        else
+        {
+            _knarSellElements.Add(newElement);
+        }
+        newElement.Element.SetActive(true);
+                break;
+            case Utilities.ConnectionState.Unknown:
+                 newElement = GetPooledElement();
+
+        newElement.ItemObject = dropObj;
+        drop = dropObj.GetComponent<ItemDrop>();
+        newElement.Icon = drop.m_itemData.m_shared.m_icons.FirstOrDefault();
+        newElement.ItemName = drop.m_itemData.m_shared.m_name;
+        newElement._uiTooltip = newElement.Element.GetComponent<UITooltip>();
+        newElement._uiTooltip.m_text = Localization.instance.Localize(drop.m_itemData.m_shared.m_name);
+        if(!drop.m_itemData.m_shared.m_description.IsNullOrWhiteSpace())
+        {
+            var s = drop.m_itemData.GetTooltip();
+            if (!s.IsNullOrWhiteSpace()) newElement._uiTooltip.m_topic = Localization.instance.Localize(s);
+        }
+        newElement.InventoryCount = invCount;
+        newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
+        component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component.text = newElement.ItemName;
+        component.gameObject.AddComponent<Localize>();
+        
+        newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
+        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+        {
+            > 1 => "x" + stack,
+            1 => "",
+            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+        };
+        newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            UpdateGenDescription(newElement);
+            switch (invCount)
+            {
+                case <=0:
+                    InvCountPanel!.SetActive(false);
+                    break;
+                case >= 1:
+                    InvCountPanel!.SetActive(true);
+                    InventoryCount_TMP!.SetText(_storeInventory.ElementAt(FindIndex(drop)).Value.InvCount.ToString());
+                    break;
+            }
+        });
+        newElement.Element.transform.SetParent(rectForElements, false);
+        newElement.Element.transform.SetSiblingIndex(rectForElements.transform.GetSiblingIndex() - 1);
+        newElement.Element.transform.Find("coin_bkg/coin icon").GetComponent<Image>().sprite = Trader20.Trader20.Coins;
+        if (isPlayerItem)
+        {
+            _playerSellElements.Add(newElement);
+        }
+        else
+        {
+            _knarSellElements.Add(newElement);
+        }
+        newElement.Element.SetActive(true);
+                break;
+        }
     }
 
     /// <summary>
     /// Async task that reads all items in store inventory and then adds them to display list
     /// </summary>
     ///
-    private async Task  ReadStoreItems()
+    private void ReadStoreItems()
     {
         try
         {
@@ -335,20 +457,7 @@ public class OdinStore : MonoBehaviour
         catch (Exception ex)
         {
             Trader20.Trader20.knarrlogger.LogDebug(ex);
-            await Task.Yield();
         }
-        finally
-        {
-            await Task.Yield(); 
-        }
-        
-
-        
-    }
-
-    private async Task ReadAllStoreItems()
-    {
-        await Task.WhenAny(ReadStoreItems());
     }
 
     /// <summary>
@@ -498,31 +607,7 @@ public class OdinStore : MonoBehaviour
                 }
                 break;
             case Utilities.ConnectionState.Client:
-                //Patches.cs RPC_SendItemInfoToServer(string dropname, int newstack, bool playerItem)
-                ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
-                //Take Trader20.TraderConfig.Value and dump it into the local clients yml file... cuz aggressive 
-                break;
-                if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))
-                {
-                    if (!currentList.TryGetValue(sellableItem.m_dropPrefab.name, out ItemDataEntry test)) return;
-                    if (isPlayerItem) test.Invcount += sellableItem.m_stack;
-                    else test.Invcount = newInvCount;
-                    currentList[sellableItem.m_dropPrefab.name] = test;
-                    var tempdict = YMLParser.Serializers(currentList);
-                    File.WriteAllText(Paths.ConfigPath + Path.DirectorySeparatorChar + "trader_config.yaml", tempdict);
-                }
-                else
-                {
-                    //Setup the data entry for the YML file 
-                    var entry = new ItemDataEntry();
-                    entry.Invcount += sellableItem.m_stack;
-                    entry.ItemCount += sellableItem.m_stack;
-                    //if none found make an entry
-                    Dictionary<string, ItemDataEntry> itemDataEntries = new Dictionary<string, ItemDataEntry>();
-                    itemDataEntries.Add(sellableItem.m_dropPrefab.name, entry);
-                    var serializeddata = YMLParser.Serializers(itemDataEntries);
-                    YMLParser.AppendYmLfile(serializeddata);
-                }
+                 ZRoutedRpc.instance.InvokeRoutedRPC("SendItemInfoToServer", sellableItem.m_dropPrefab.name, (object)newInvCount, (object)isPlayerItem);
                 break;
             case Utilities.ConnectionState.Local:
                 if(YMLParser.CheckForEntry(currentList, sellableItem.m_dropPrefab.name))

@@ -42,11 +42,16 @@ namespace Trader20
             public static void Postfix()
             {
                     
-                ZRoutedRpc.instance.Register<bool>("RemoveKnarrDone", RPC_RemoveKnarrRespons);
+                ZRoutedRpc.instance.Register<bool>("RemoveKnarrDone", RPC_RemoveKnarrResponse);
                 ZRoutedRpc.instance.Register<bool>("RequestRemoveKnarr", RPC_RemoveKnarrReq);
+                
+                
                 ZRoutedRpc.instance.Register<bool>("FindKnarrDone", RPC_FindKnarrResponse);
                 ZRoutedRpc.instance.Register<Vector3>("SetKnarrMapPin", RPC_SetKnarrMapIcon);
-                ZRoutedRpc.instance.Register<string, int, bool>("SendItemInfoToServer", RPC_SendItemInfoToServer);
+                
+                
+                
+                ZRoutedRpc.instance.Register<string, int, bool>("SendItemInfoToServer", RPC_ServerRecvItemInfo);
                 ZRoutedRpc.instance.Register<string, int>("SendLogItemToServer", RPC_SendSaleLogInfoToServer);
                 ZRoutedRpc.instance.Register("DumpAllLoadedItemsReq", RPC_DumpAllLoadedItemsToYamlReq);
                 ZRoutedRpc.instance.Register<bool>("DumpAllLoadedItems", RPC_DumpAllLoadedItemsToYaml);
@@ -81,7 +86,7 @@ namespace Trader20
             }
         }
         private static List<ZDO> zdolist = new List<ZDO>();
-        private static void RPC_RemoveKnarrRespons(long UID, bool s)
+        private static void RPC_RemoveKnarrResponse(long UID, bool s)
         {
             if (!ZNet.instance.IsServer()) return;
             if (s)
@@ -106,39 +111,90 @@ namespace Trader20
         
         private static void RPC_FindKnarrResponse(long uid, bool s)
         {
-            if (!ZNet.instance.IsServer()) return;
-            if (s)
+            switch (Utilities.GetConnectionState())
             {
-                ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
-                foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
-                {
-                    ZLog.LogWarning("Knarr Random Spawn location = " + KP.Value.m_position);
-                    ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
-                    Minimap.instance.AddPin(KP.Value.m_position, Minimap.PinType.Boss, "Knarr", true, false,
-                        Game.instance.GetPlayerProfile().GetPlayerID());
-                }
-                if (zdolist.Count <= 0)
-                {
-                    ZLog.LogError("No instances of Knarr found marking potential spawn points");
-                }
-                foreach (var zdo in zdolist)
-                {
-                    ZLog.LogWarning("/Spawned Knarr instances at: " + zdo.m_position);
-                }
+                case Utilities.ConnectionState.Server:
+                    if (s)
+                    {
+                        ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
+                        foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
+                        {
+                            ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
+                        }
+                        if (zdolist.Count <= 0)
+                        {
+                            ZLog.LogError("No instances of Knarr found marking potential spawn points");
+                        }
+                        foreach (var zdo in zdolist)
+                        {
+                            ZLog.LogWarning("/Spawned Knarr instances at: " + zdo.m_position);
+                        }
+                    }
+                    else
+                    {
+                        ZLog.LogError("Non Admin invoking locator command");
+                    }
+                    break;
+                case Utilities.ConnectionState.Client:
+                    break;
+                case Utilities.ConnectionState.Local:
+                    if (s)
+                    {
+                        ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
+                        foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
+                        {
+                            ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
+                        }
+                        if (zdolist.Count <= 0)
+                        {
+                            ZLog.LogError("No instances of Knarr found marking potential spawn points");
+                        }
+                        foreach (var zdo in zdolist)
+                        {
+                            ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", zdo.m_position);
+                            ZLog.LogWarning("/Spawned Knarr instances at: " + zdo.m_position);
+                        }
+                    }
+                    else
+                    {
+                        ZLog.LogError("Non Admin invoking locator command");
+                    }
+                    break;
+                case Utilities.ConnectionState.Unknown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            else
-            {
-                ZLog.LogError("Non Admin invoking locator command");
-            }
+            
         }
         
-        private static void RPC_SendItemInfoToServer(long uid, string drop, int stack, bool playerItem)
+        private static void RPC_ServerRecvItemInfo(long uid, string drop, int stack, bool playerItem)
         {
-            if(Utilities.GetConnectionState() != Utilities.ConnectionState.Server) return;
-            var id = ZNetScene.instance.GetPrefab(drop).gameObject.GetComponent<ItemDrop>();
-            id.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(drop);
-            if (OdinStore.instance != null)
-                OdinStore.instance.UpdateYmlFileFromSaleOrBuy(id.m_itemData, stack, playerItem);
+            ItemDrop? id;
+            switch (Utilities.GetConnectionState())
+            {
+                case Utilities.ConnectionState.Server:
+                    id = ZNetScene.instance.GetPrefab(drop).gameObject.GetComponent<ItemDrop>();
+                    id.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(drop);
+                    ZLog.LogWarning($"Heard Item from client {uid} itemname {drop} stack volume: {stack} is player Item {playerItem}");
+                    Gogan.LogEvent("Game", $"Heard Item from client {uid} itemname {drop} stack volume: {stack} is player Item {playerItem}", $"Heard Item from client {uid} itemname {drop} stack volume: {stack} is player Item {playerItem}", 0);
+                    ZLog.Log($"Heard Item from client {uid} itemname {drop} stack volume: {stack} is player Item {playerItem}");
+                    if (OdinStore.instance != null)
+                        OdinStore.instance.UpdateYmlFileFromSaleOrBuy(id.m_itemData, stack, playerItem);
+                    break;
+                case Utilities.ConnectionState.Client:
+                    break;
+                case Utilities.ConnectionState.Local:
+                    break;
+                case Utilities.ConnectionState.Unknown:
+                    id = ZNetScene.instance.GetPrefab(drop).gameObject.GetComponent<ItemDrop>();
+                    id.m_itemData.m_dropPrefab = ZNetScene.instance.GetPrefab(drop);
+                    if (OdinStore.instance != null)
+                        OdinStore.instance.UpdateYmlFileFromSaleOrBuy(id.m_itemData, stack, playerItem);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static void RPC_SendSaleLogInfoToServer(long uid, string dropName, int i)
@@ -176,20 +232,13 @@ namespace Trader20
             switch (Utilities.GetConnectionState())
             {
                 case Utilities.ConnectionState.Server:
-                    if (ZNet.instance)
-                    {
-                        var p = ZNet.instance.m_players.Find(x => x.m_characterID.m_userID == uid);
-                        var peer = ZNet.instance.GetConnectedPeers().Find(x => x.m_characterID.m_userID == p.m_characterID.m_userID);
-                        if (ZNet.instance.m_adminList.Contains(peer.m_socket.GetEndPointString()))
-                        {
+                    if (!Trader20._serverConfigLocked!.Value)
                             ZRoutedRpc.instance.InvokeRoutedRPC("DumpAllLoadedItems", true);
-                        }
-                    }
                     break;
                 case Utilities.ConnectionState.Client:
                     break;
                 case Utilities.ConnectionState.Local:
-                    if (ZNet.instance)
+                    if (!Trader20._serverConfigLocked!.Value)
                     {
                         
                         ZRoutedRpc.instance.InvokeRoutedRPC("DumpAllLoadedItems", true);
@@ -237,6 +286,7 @@ namespace Trader20
 
         private static void RPC_SetKnarrMapIcon(long uid, Vector3 position)
         {
+            ZLog.LogWarning("Knarr Random Spawn location = " + position);
             Minimap.instance.AddPin(position, Minimap.PinType.Boss, "Knarr", true, false,
                 Game.instance.GetPlayerProfile().GetPlayerID());
         }

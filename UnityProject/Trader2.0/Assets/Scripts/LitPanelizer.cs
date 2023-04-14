@@ -16,6 +16,7 @@ public class LitPanelizer : MonoBehaviour
     private void Awake()
     {
         litpanel = repairBkg!.material;
+        
         var list = gameObject.GetComponentsInChildren<Transform>();
         foreach (var t in list)
         {
