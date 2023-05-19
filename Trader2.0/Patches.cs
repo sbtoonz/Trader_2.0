@@ -91,7 +91,9 @@ namespace Trader20
             if (!ZNet.instance.IsServer()) return;
             if (s)
             {
-                ZDOMan.instance.GetAllZDOsWithPrefab("Knarr", zdolist);
+                var t = 0;
+                ZDOMan.instance.GetAllZDOsWithPrefabIterative("Knarr", zdolist, ref t);
+                //ZDOMan.instance.GetAllZDOsWithPrefab("Knarr", zdolist);
                 if (zdolist.Count <= 0)
                 {
                     ZLog.LogError("No instances of Knarr found");
@@ -116,9 +118,12 @@ namespace Trader20
                 case Utilities.ConnectionState.Server:
                     if (s)
                     {
-                        ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
+                        var t = 0;
+                        ZDOMan.instance.GetAllZDOsWithPrefabIterative("Knarr", zdolist, ref t);
+                        //ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
                         foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
                         {
+                            
                             ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
                         }
                         if (zdolist.Count <= 0)
@@ -140,7 +145,9 @@ namespace Trader20
                 case Utilities.ConnectionState.Local:
                     if (s)
                     {
-                        ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
+                        var t = 0;
+                        ZDOMan.instance.GetAllZDOsWithPrefabIterative("Knarr", zdolist, ref t);
+                        //ZDOMan.instance.GetAllZDOsWithPrefab("Vendor_Knarr", zdolist);
                         foreach (var KP in ZoneSystem.instance.m_locationInstances.Where(KP => KP.Value.m_location.m_prefabName == ZNetScene.instance.GetPrefab("Knarr").name))
                         {
                             ZRoutedRpc.instance.InvokeRoutedRPC(uid, "SetKnarrMapPin", KP.Value.m_position);
@@ -204,9 +211,9 @@ namespace Trader20
             var playlist = ZNet.instance.GetPlayerList();
             string playerID = "";
             string? playerName = "";
-            foreach (var playerInfo in playlist.Where(playerInfo => playerInfo.m_characterID.m_userID == uid))
+            foreach (var playerInfo in playlist.Where(playerInfo => playerInfo.m_characterID.UserID == uid))
             {
-                playerID = playerInfo.m_characterID.m_userID.ToString();
+                playerID = playerInfo.m_characterID.UserID.ToString();
                 playerName = playerInfo.m_name;
                 break;
             }

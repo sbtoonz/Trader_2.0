@@ -24,7 +24,8 @@ namespace Trader20
         {
             DisplayName = ModName,
             CurrentVersion = ModVersion, 
-            MinimumRequiredVersion = ModVersion
+            MinimumRequiredVersion = ModVersion,
+            ModRequired = true
         };
         public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
@@ -127,7 +128,10 @@ namespace Trader20
                 }
             }
             Game.isModded = true;
-            
+
+
+            //var traderpanel = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x => x.name == "IngameGui").transform.Find("Store_Screen/Store").gameObject;
+            //var StoreScreenHolder = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x => x.name == "IngameGui").transform.Find("Store_Screen").gameObject;
 
         }
         private static void OnValChangUpdateStore()
