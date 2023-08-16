@@ -18,7 +18,7 @@ namespace Trader20
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
-        public const string ModVersion = "0.4.9";
+        public const string ModVersion = "0.5.0";
         private const string ModGUID = "com.zarboz.KnarrTheTrader";
         internal static ConfigSync configSync = new(ModGUID)
         {
@@ -128,11 +128,6 @@ namespace Trader20
                 }
             }
             Game.isModded = true;
-
-
-            //var traderpanel = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x => x.name == "IngameGui").transform.Find("Store_Screen/Store").gameObject;
-            //var StoreScreenHolder = Resources.FindObjectsOfTypeAll<GameObject>().ToList().Find(x => x.name == "IngameGui").transform.Find("Store_Screen").gameObject;
-
         }
         private static void OnValChangUpdateStore()
         {

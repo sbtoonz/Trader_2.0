@@ -92,6 +92,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="ui_lib">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\ui_lib.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Auga">
       <HintPath>Libs\Unity.Auga.dll</HintPath>
     </Reference>
