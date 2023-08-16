@@ -1,2 +1,1101 @@
-﻿Acorn:
+﻿ArrowBronze:
+  cost: 5
+  stack: 10
+  inventory count: -5
+  purchase price: 2
+ArrowFire:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ArrowFlint:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+ArrowFrost:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ArrowIron:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ArrowNeedle:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ArrowObsidian:
+  cost: 15
+  stack: 10
+  inventory count: -10
+  purchase price: 7
+ArrowPoison:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ArrowSilver:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+ArrowWood:
   cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+Amber:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+AmberPearl:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+AncientSeed:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+Barley:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+BarleyFlour:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BarleyWine:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+BarleyWineBase:
+  cost: 15
+  stack: 10
+  inventory count: -10
+  purchase price: 7
+BeechSeeds:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BlackMetal:
+  cost: 100
+  stack: 10
+  inventory count: -10
+  purchase price: 50
+BlackMetalScrap:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Bloodbag:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+BoneFragments:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+Bronze:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+BronzeNails:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+BoneFragments:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+CarrotSeeds:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Chitin:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+Coal:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Copper:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+CopperOre:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+CryptKey:
+  cost: 50
+  stack: 1
+  inventory count: -10
+  purchase price: 25
+Crystal:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+Dandelion:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+DeerHide:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+DragonEgg:
+  cost: 1000
+  stack: 1
+  inventory count: -10
+  purchase price: 500
+DragonTear:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+ElderBark:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+Entrails:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Feathers:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FineWood:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FirCone:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+FishingBait:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+FishRaw:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+FishWraps:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Flax:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Flint:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+FreezeGland:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+GreydwarfEye:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Guck:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+HardAntler:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+Iron:
+  cost: 100
+  stack: 10
+  inventory count: -10
+  purchase price: 50
+IronNails:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+IronOre:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+IronScrap:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+LeatherScraps:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+LinenThread:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+LoxMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+LoxPelt:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+LoxPie:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+Needle:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+Obsidian:
+  cost: 100
+  stack: 10
+  inventory count: -10
+  purchase price: 50
+Ooze:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+PineCone:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+QueenBee:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+Ruby:
+  cost: 100
+  stack: 10
+  inventory count: -10
+  purchase price: 50
+SerpentScale:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+SharpeningStone:
+  cost: 5
+  stack: 1
+  inventory count: -1
+  purchase price: 2
+Silver:
+  cost: 200
+  stack: 10
+  inventory count: -10
+  purchase price: 100
+SilverNecklace:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+SilverOre:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Stone:
+  cost: 1
+  stack: 100
+  inventory count: -10
+  purchase price: 1
+SurtlingCore:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+Thistle:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Tin:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+TinOre:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+TrollHide:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+TurnipSeeds:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+WitheredBone:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+WolfFang:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+WolfPelt:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+Wood:
+  cost: 1
+  stack: 100
+  inventory count: -100
+  purchase price: 1
+YmirRemains:
+  cost: 1000
+  stack: 1
+  inventory count: -10
+  purchase price: 500
+NeckTail:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+RawMeat:
+  cost: 1
+  stack: 10
+  inventory count: -10
+  purchase price: 1
+Resin:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+RoundLog:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+SerpentMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+YagluthDrop:
+  cost: 1000
+  stack: 1
+  inventory count: -1
+  purchase price: 500
+Bread:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BloodPudding:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+Blueberries:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Carrot:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+CarrotSoup:
+  cost: 15
+  stack: 10
+  inventory count: -10
+  purchase price: 7
+Cloudberry:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+CookedLoxMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+CookedMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishCooked:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+Honey:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Mushroom:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+MushroomBlue:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+MushroomYellow:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+NeckTailGrilled:
+  cost: 20
+  stack: 10
+  inventory count: -10
+  purchase price: 10
+Raspberry:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+QueensJam:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+Sausages:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+SerpentMeatCooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+SerpentStew:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+Turnip:
+  cost: 5
+  stack: 10
+  inventory count: -10
+  purchase price: 2
+TurnipStew:
+  cost: 15
+  stack: 10
+  inventory count: -10
+  purchase price: 7
+TrophyBlob:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophyBoar:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyBonemass:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+TrophyDeathsquito:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyDeer:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyDragonQueen:
+  cost: 1000
+  stack: 1
+  inventory count: -1
+  purchase price: 500
+TrophyDraugr:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyDraugrElite:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyDraugrFem:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyEikthyr:
+  cost: 250
+  stack: 1
+  inventory count: -1
+  purchase price: 125
+TrophyFenring:
+  cost: 250
+  stack: 1
+  inventory count: -1
+  purchase price: 125
+TrophyForestTroll:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyFrostTroll:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyGoblin:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyGoblinBrute:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyGoblinKing:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophyGoblinShaman:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophyGreydwarf:
+  cost: 10
+  stack: 1
+  inventory count: -1
+  purchase price: 5
+TrophyGreydwarfBrute:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyGreydwarfShaman:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyHatchling:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyLeech:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyLox:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyNeck:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophySerpent:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+TrophySGolem:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophySkeleton:
+  cost: 10
+  stack: 1
+  inventory count: -1
+  purchase price: 5
+TrophySkeletonPoison:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophySurtling:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyTheElder:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+TrophyWolf:
+  cost: 25
+  stack: 1
+  inventory count: -1
+  purchase price: 12
+TrophyWraith:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+  purchase price: 25
+FishingBaitCave:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitSwamp:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitForest:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitPlains:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitOcean:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitMistlands:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitAshlands:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishingBaitDeepnorth:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+SoftTissue:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Demister:
+  cost: 50
+  stack: 1
+  inventory count: -1
+  purchase price: 25
+ChickenMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BugMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+CookedBugMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+CookedChickenMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+CookedEgg:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+CookedHareMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+ChickenEgg:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+HareMeat:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+QueenDrop:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophySeekerQueen:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+CrossbowArbalest:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+BoltIron:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BoltBlackmetal:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+BoltBone:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Sap:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+YggdrasilWood:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Carapace:
+  cost: 50
+  stack: 10
+  inventory count: -10
+  purchase price: 25
+BlackMarble:
+  cost: 100
+  stack: 10
+  inventory count: -10
+  purchase price: 50
+Salad:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishAndBreadUncooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+FishAndBread:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MeatPlatterUncooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MeatPlatter:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MisthareSupreme:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+MisthareSupremeUncooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MushroomOmelette:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+YggdrasilPorridge:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+SeekerAspic:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+JotunPuffs:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+Magecap:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+RoyalJelly:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+TrophyDvergr:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+GiantBloodSack:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+ScaleHide:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Mandible:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Bilebag:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophyTick:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophyHare:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophySeeker:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+MeadBaseHealthMajor:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+MeadHealthMajor:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+MeadBaseStaminaLingering:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+MeadStaminaLingering:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+MeadBaseEitrMinor:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+MeadEitrMinor:
+  cost: 25
+  stack: 10
+  inventory count: -10
+  purchase price: 12
+TurretBolt:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+TurretBoltWood:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MechanicalSpring:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+CopperScrap:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+JuteBlue:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Eitr:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+TrophySeekerBrute:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+TrophyGjall:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+DvergrKeyFragment:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+DvergrKey:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+ArrowCarapace:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+  BoltCarapace:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+YagluthDrop:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+CapeFeather:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BlackCore:
+  cost: 100
+  stack: 1
+  inventory count: -1
+  purchase price: 50
+Wisp:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+BronzeScrap:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+DvergrTankard:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+BombBile:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+Lantern:
+  cost: 500
+  stack: 1
+  inventory count: -1
+  purchase price: 250
+HoneyGlazedChickenUncooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+HoneyGlazedChicken:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MagicallyStuffedMushroom:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
+MagicallyStuffedMushroomUncooked:
+  cost: 10
+  stack: 10
+  inventory count: -10
+  purchase price: 5
