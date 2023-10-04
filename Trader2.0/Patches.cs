@@ -261,14 +261,30 @@ namespace Trader20
 
         private static void RPC_DumpAllLoadedItemsToYaml(long uid, bool arg)
         {
+            var file = File.CreateText(Paths.ConfigPath + Path.DirectorySeparatorChar + "Dumped_Items.yaml");
             switch (Utilities.GetConnectionState())
             {
                 case Utilities.ConnectionState.Server:
+                    file.Close();
+                    if (ObjectDB.instance != null)
+                    {
+                        foreach (var g in ObjectDB.instance.m_items)
+                        {
+                            if(g.GetComponent<ItemDrop>().m_itemData.GetIcon()==null)continue;
+                            var entry = new ItemDataEntry();
+                            entry.Invcount = 0;
+                            entry.ItemCount = 0;
+                            Dictionary<string, ItemDataEntry> entries = new Dictionary<string, ItemDataEntry>();
+                            entries.Add(g.name, entry);
+                            var serializedData = YMLParser.Serializers(entries);
+                            using var sw = File.AppendText(Paths.ConfigPath + Path.DirectorySeparatorChar + "Dumped_Items.yaml");
+                            sw.WriteLine(serializedData);
+                        }
+                    }
                     break;
                 case Utilities.ConnectionState.Client:
                     break;
                 case Utilities.ConnectionState.Local:
-                    var file = File.CreateText(Paths.ConfigPath + Path.DirectorySeparatorChar + "Dumped_Items.yaml");
                     file.Close();
                     if (ObjectDB.instance != null)
                     {
@@ -296,6 +312,9 @@ namespace Trader20
             ZLog.LogWarning("Knarr Random Spawn location = " + position);
             Minimap.instance.AddPin(position, Minimap.PinType.Boss, "Knarr", true, false,
                 Game.instance.GetPlayerProfile().GetPlayerID());
+
+            var ghostlist = Resources.FindObjectsOfTypeAll<GameObject>().ToList()
+                .Find(x => x.GetComponentInChildren<Humanoid>() != null);
         }
         
         

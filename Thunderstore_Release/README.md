@@ -224,8 +224,12 @@ where you see PrefabName you need to put the prefab the trader should sell. Yes 
 ### V0.4.7
 * Hotfix learning how the new TCLI packing system works and the last upload had improper folder format
 
-</details>
+
 
 ### V0.4.8
 * Update AugaAPI for Auga compatibility, Knarr now works with Auga
+</details>
+
+### V0.5.1
+* Hildir compat update
 
