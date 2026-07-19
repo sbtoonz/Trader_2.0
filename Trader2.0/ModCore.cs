@@ -1,20 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
-using ServerSync;
+using ConfigSyncAPI;
 
 namespace Trader20
 {
     /// <inheritdoc />
     [BepInPlugin(ModGUID, ModName, ModVersion)]
-    [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
     public class Trader20 : BaseUnityPlugin
     {
         private const string ModName = "KnarrTheTrader";
@@ -23,11 +20,10 @@ namespace Trader20
         internal static ConfigSync configSync = new(ModGUID)
         {
             DisplayName = ModName,
-            CurrentVersion = ModVersion, 
-            MinimumRequiredVersion = ModVersion,
-            ModRequired = true
+            CurrentVersion = ModVersion,
+            MinimumRequiredVersion = ModVersion
         };
-        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig 
+        public static readonly CustomSyncedValue<Dictionary<string, ItemDataEntry>> TraderConfig
             = new(configSync, "trader config", new Dictionary<string, ItemDataEntry>());
         internal static GameObject? Knarr;
         internal static GameObject? CustomTraderScreen;
