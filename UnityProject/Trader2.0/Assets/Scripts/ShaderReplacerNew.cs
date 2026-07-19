@@ -44,34 +44,72 @@ enum ShaderType
 
 public class ShaderReplacerNew : MonoBehaviour
 {
-    [Tooltip("Use this Field For Normal Renderers")] 
+    [Tooltip("Use this Field For Normal Renderers")]
     [SerializeField] internal Renderer[] _renderers = null!;
     [SerializeField] internal ShaderType _shaderType = ShaderType.Creature;
     [SerializeField] internal bool DebugOutput = false;
     private void Awake()
     {
         if (IsHeadlessMode()) return;
-        if(_renderers.Length <=0) return;
-        if(!this.gameObject.activeInHierarchy)return;
+        if (_renderers.Length <= 0)
+        {
+            if (DebugOutput) Debug.LogWarning($"[ShaderReplacer] {gameObject.name}: No renderers assigned!", this);
+            return;
+        }
+        if (!this.gameObject.activeInHierarchy) return;
+
+        string targetShader = ReturnEnumString(_shaderType);
+        if (DebugOutput) Debug.Log($"[ShaderReplacer] {gameObject.name}: Looking for shader '{targetShader}'", this);
+
         foreach (var renderer in _renderers)
         {
-            if(renderer == null) continue;
+            if (renderer == null) continue;
             foreach (var material in renderer.sharedMaterials)
             {
                 if (material == null)
                 {
                     renderer.gameObject.SetActive(false);
+                    if (DebugOutput) Debug.LogWarning($"[ShaderReplacer] {gameObject.name}: Null material, disabling renderer", this);
                     continue;
                 }
-                
-                material.shader = Shader.Find(ReturnEnumString(_shaderType));
+
+                // Try real Valheim shader first
+                Shader foundShader = Shader.Find(targetShader);
+
+                // If not found, try REPLACE_ prefixed version (the placeholder in AssetBundle)
+                if (foundShader == null)
+                {
+                    string replaceVersion = "REPLACE_" + targetShader;
+                    foundShader = Shader.Find(replaceVersion);
+                    if (foundShader != null && DebugOutput)
+                    {
+                        Debug.Log($"[ShaderReplacer] {gameObject.name}: Using placeholder shader '{replaceVersion}'", this);
+                    }
+                }
+
+                // If still not found, fall back to Standard
+                if (foundShader == null)
+                {
+                    Debug.LogWarning($"[ShaderReplacer] {gameObject.name}: Shader '{targetShader}' NOT FOUND! Trying fallback 'Standard'", this);
+                    foundShader = Shader.Find("Standard");
+                    if (foundShader == null)
+                    {
+                        Debug.LogError($"[ShaderReplacer] {gameObject.name}: Even 'Standard' shader not found! Material '{material.name}' will be pink.", this);
+                    }
+                }
+
+                if (foundShader != null)
+                {
+                    material.shader = foundShader;
+                    if (DebugOutput) Debug.Log($"[ShaderReplacer] {gameObject.name}: Applied shader '{foundShader.name}' to material '{material.name}'", this);
+                }
             }
         }
     }
 
     internal string ReturnEnumString(ShaderType shaderchoice)
     {
-        var s="";
+        var s = "";
         switch (shaderchoice)
         {
             case ShaderType.Alpha:
@@ -166,7 +204,7 @@ public class ShaderReplacerNew : MonoBehaviour
         }
         return s;
     }
-    
+
     public static bool IsHeadlessMode()
     {
         return UnityEngine.SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null;
