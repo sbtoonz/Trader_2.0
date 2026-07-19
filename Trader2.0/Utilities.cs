@@ -18,21 +18,21 @@ namespace Trader20
 	    internal static ConnectionState GetConnectionState()
 	    {
 			if (ZNet.instance == null) return ConnectionState.Local;
-		    if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) //server
+		    if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated())
 		    {
 			    return ConnectionState.Server;
 		    }
-		    
-		    if (ZNet.m_isServer && ZNet.m_openServer) // Local server
+
+		    if (ZNet.m_isServer && ZNet.m_openServer)
 		    {
-			    return ConnectionState.Server;
+			    return ConnectionState.Local;
 		    }
-		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated()) //client
+		    if (!ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
 		    {
 			    return ConnectionState.Client;
 		    }
 
-		    if (ZNet.IsSinglePlayer) 
+		    if (ZNet.IsSinglePlayer)
 		    {
 			    return ConnectionState.Local;
 		    }
@@ -52,12 +52,24 @@ namespace Trader20
             var tmp = bundle?.LoadAllAssets();
             if (zNetScene.m_prefabs.Count <= 0) return;
             if (tmp == null) return;
+
             foreach (var o in tmp)
             {
-                var obj = (GameObject)o;
-                zNetScene.m_prefabs.Add(obj);
-                var hashcode = obj.GetHashCode();
-                zNetScene.m_namedPrefabs.Add(hashcode, obj);
+                // Only process GameObjects (skip materials, textures, audio clips, etc.)
+                if (o is not GameObject obj) continue;
+
+                var hashcode = obj.name.GetStableHashCode();
+
+                // Check if prefab already exists before adding
+                if (!zNetScene.m_namedPrefabs.ContainsKey(hashcode))
+                {
+                    zNetScene.m_prefabs.Add(obj);
+                    zNetScene.m_namedPrefabs.Add(hashcode, obj);
+                }
+                else
+                {
+                    Trader20.knarrlogger.LogWarning($"Prefab '{obj.name}' (hash: {hashcode}) already exists in ZNetScene, skipping duplicate");
+                }
             }
         }
         public static int seed = 0;
