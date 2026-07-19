@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using BepInEx;
@@ -68,11 +68,11 @@ public class OdinStore : MonoBehaviour
     internal GameObject splitDiagGO;
     internal Transform m_splitPanel;
     internal Slider m_splitSlider;
-    internal Text m_splitAmount;
+    internal TMP_Text m_splitAmount;
     internal Button m_splitCancelButton;
     internal Button m_splitOkButton;
     internal Image m_splitIcon;
-    internal Text m_splitIconName;
+    internal TMP_Text m_splitIconName;
     internal ItemDrop.ItemData m_splitItem;
     private string m_splitInput = "";
     private DateTime m_lastSplitInput;
@@ -102,6 +102,12 @@ public class OdinStore : MonoBehaviour
     {
         _playerSellElements = new List<ElementFormat>();
         m_instance = this;
+        // m_StorePanel may point to root (serialization issue) — force it to "Store" child
+        var storeChild = transform.Find("Store");
+        if (storeChild != null)
+        {
+            m_StorePanel = storeChild.gameObject;
+        }
         var rect = m_StorePanel!.transform as RectTransform;
         rect!.anchoredPosition = Trader20.Trader20.StoreScreenPos!.Value;
         StoreTitle_TMP!.SetText("Knarr's Shop");
@@ -171,17 +177,21 @@ public class OdinStore : MonoBehaviour
     {
         for (int i = 0; i < ElementPoolObjects.Count; i++)
         {
-            if(ElementPoolObjects[i].Element.activeSelf)continue;
-            if (!ElementPoolObjects[i].Element.activeSelf)
+            if(!ElementPoolObjects[i].Element.activeSelf)
             {
                 return ElementPoolObjects[i];
             }
         }
-        return null;
+        GameObject obj = (GameObject)Instantiate(ElementGO, ElementPoolGO!.transform, false)!;
+        obj.SetActive(false);
+        ElementFormat element = new ElementFormat(element: obj);
+        ElementPoolObjects.Add(element);
+        return element;
     }
 
     private void ReturnPooledElement(ElementFormat element)
     {
+        element.Element.GetComponent<Button>().onClick.RemoveAllListeners();
         element.Element.transform.SetParent(ElementPoolGO.transform);
         element.Element.transform.SetSiblingIndex(-1);
         element.Element.SetActive(false);
@@ -201,6 +211,12 @@ public class OdinStore : MonoBehaviour
         {
             GameObject obj = (GameObject)Instantiate(ElementGO, ElementPoolGO!.transform, false)!;
             obj.SetActive(false);
+            var le = obj.GetComponent<LayoutElement>();
+            if (le == null) le = obj.AddComponent<LayoutElement>();
+            le.minHeight = 40f;
+            le.preferredHeight = 40f;
+            le.minWidth = 200f;
+            le.flexibleWidth = 1f;
             ElementFormat element = new ElementFormat(element: obj);
             ElementPoolObjects.Add(element);
         }
@@ -247,7 +263,7 @@ public class OdinStore : MonoBehaviour
     {
         ElementFormat newElement;
         ItemDrop? drop;
-        Text? component;
+        TextMeshProUGUI? component;
         switch (Utilities.GetConnectionState())
         {
             case Utilities.ConnectionState.Server:
@@ -268,16 +284,27 @@ public class OdinStore : MonoBehaviour
         }
         newElement.InventoryCount = invCount;
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
-        component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component = newElement.Element.transform.Find("name").GetComponent<TextMeshProUGUI>();
+        component.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        component.enableAutoSizing = false;
+        component.overflowMode = TextOverflowModes.Ellipsis;
         component.text = newElement.ItemName;
         component.gameObject.AddComponent<Localize>();
-        
-        newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+
+        var priceComp = newElement.Element.transform.Find("price").GetComponent<TextMeshProUGUI>();
+        priceComp.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        priceComp.enableAutoSizing = false;
+        priceComp.overflowMode = TextOverflowModes.Truncate;
+        priceComp.text = cost.ToString();
+        var stackComp = newElement.Element.transform.Find("stack").GetComponent<TextMeshProUGUI>();
+        stackComp.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        stackComp.enableAutoSizing = false;
+        stackComp.overflowMode = TextOverflowModes.Truncate;
+        stackComp.text = stack switch
         {
             > 1 => "x" + stack,
             1 => "",
-            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+            _ => stackComp.text
         };
         newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
         {
@@ -322,16 +349,27 @@ public class OdinStore : MonoBehaviour
         }
         newElement.InventoryCount = invCount;
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
-        component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component = newElement.Element.transform.Find("name").GetComponent<TextMeshProUGUI>();
+        component.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        component.enableAutoSizing = false;
+        component.overflowMode = TextOverflowModes.Ellipsis;
         component.text = newElement.ItemName;
         component.gameObject.AddComponent<Localize>();
-        
-        newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+
+        var priceComp2 = newElement.Element.transform.Find("price").GetComponent<TextMeshProUGUI>();
+        priceComp2.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        priceComp2.enableAutoSizing = false;
+        priceComp2.overflowMode = TextOverflowModes.Truncate;
+        priceComp2.text = cost.ToString();
+        var stackComp2 = newElement.Element.transform.Find("stack").GetComponent<TextMeshProUGUI>();
+        stackComp2.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        stackComp2.enableAutoSizing = false;
+        stackComp2.overflowMode = TextOverflowModes.Truncate;
+        stackComp2.text = stack switch
         {
             > 1 => "x" + stack,
             1 => "",
-            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+            _ => stackComp2.text
         };
         newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
         {
@@ -376,16 +414,27 @@ public class OdinStore : MonoBehaviour
         }
         newElement.InventoryCount = invCount;
         newElement.Element!.transform.Find("icon").GetComponent<Image>().sprite = newElement.Icon;
-        component = newElement.Element.transform.Find("name").GetComponent<Text>();
+        component = newElement.Element.transform.Find("name").GetComponent<TextMeshProUGUI>();
+        component.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        component.enableAutoSizing = false;
+        component.overflowMode = TextOverflowModes.Ellipsis;
         component.text = newElement.ItemName;
         component.gameObject.AddComponent<Localize>();
-        
-        newElement.Element.transform.Find("price").GetComponent<Text>().text = cost.ToString();
-        newElement.Element.transform.Find("stack").GetComponent<Text>().text = stack switch
+
+        var priceComp3 = newElement.Element.transform.Find("price").GetComponent<TextMeshProUGUI>();
+        priceComp3.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        priceComp3.enableAutoSizing = false;
+        priceComp3.overflowMode = TextOverflowModes.Truncate;
+        priceComp3.text = cost.ToString();
+        var stackComp3 = newElement.Element.transform.Find("stack").GetComponent<TextMeshProUGUI>();
+        stackComp3.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        stackComp3.enableAutoSizing = false;
+        stackComp3.overflowMode = TextOverflowModes.Truncate;
+        stackComp3.text = stack switch
         {
             > 1 => "x" + stack,
             1 => "",
-            _ => newElement.Element.transform.Find("stack").GetComponent<Text>().text
+            _ => stackComp3.text
         };
         newElement.Element.GetComponent<Button>().onClick.AddListener(delegate
         {
@@ -425,6 +474,7 @@ public class OdinStore : MonoBehaviour
     {
         try
         {
+            Debug.Log($"[OdinStore] ReadStoreItems called. _knarSellElements={_knarSellElements.Count}, _storeInventory={_storeInventory.Count}, ConnectionState={Utilities.GetConnectionState()}");
             if (_knarSellElements.Count >= 1)
             {
                 _knarSellElements.Clear();
@@ -432,6 +482,7 @@ public class OdinStore : MonoBehaviour
             if(_storeInventory.Count <=0 )return;
             foreach (var itemData in _storeInventory)
             {
+                Debug.Log($"[OdinStore] Processing item: {itemData.Key?.name}, InvCount={itemData.Value?.InvCount}, OnlySellKnown={Trader20.Trader20.OnlySellKnownItems?.Value}");
                 if (Trader20.Trader20.OnlySellKnownItems is { Value: true })
                 {
                     if(itemData.Value.InvCount == 0) continue;
@@ -456,7 +507,7 @@ public class OdinStore : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Trader20.Trader20.knarrlogger.LogDebug(ex);
+            Debug.LogError($"[OdinStore] ReadStoreItems FAILED: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -660,11 +711,12 @@ public class OdinStore : MonoBehaviour
         string filename = Paths.ConfigPath + "/TraderSales.log";
 
         byte[] result = encoding.GetBytes(saleInfo);
+        byte[] newline = encoding.GetBytes(Environment.NewLine);
 
         using var sourceStream = File.Open(filename, FileMode.OpenOrCreate);
         sourceStream.Seek(0, SeekOrigin.End);
         await sourceStream.WriteAsync(result, 0, result.Length).ConfigureAwait(false);
-        await sourceStream.WriteAsync(encoding.GetBytes(Environment.NewLine),0, Environment.NewLine.Length).ConfigureAwait(false);
+        await sourceStream.WriteAsync(newline, 0, newline.Length).ConfigureAwait(false);
     }
 
 
@@ -1280,61 +1332,26 @@ public class OdinStore : MonoBehaviour
     [UsedImplicitly]
     internal void BuildKnarrSplitDialog()
     {
-        if (Auga.API.IsLoaded())
+        splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
+        m_splitPanel = splitDiagGO.transform;
+        m_splitIcon = splitDiagGO.transform.Find("win_bkg/Icon_bkg/Icon").gameObject.GetComponent<Image>();
+        m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
+        m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
+        m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
+        m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<TMP_Text>();
+        m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<TMP_Text>();
+        m_splitCancelButton.onClick.AddListener(delegate
         {
-            splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
-            m_splitPanel = splitDiagGO.transform;
-            m_splitIcon = splitDiagGO.transform.Find("Dialog/InventoryElement/icon").gameObject.GetComponent<Image>();
-            m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
-            m_splitCancelButton = splitDiagGO.transform.Find("Dialog/ButtonCancel").gameObject.GetComponent<Button>();
-            m_splitOkButton = splitDiagGO.transform.Find("Dialog/ButtonOk").gameObject.GetComponent<Button>();
-            m_splitIconName = splitDiagGO.transform.Find("Dialog/InventoryElement/DummyText").gameObject.GetComponent<Text>();
-            m_splitAmount = splitDiagGO.transform.Find("Dialog/InventoryElement/amount").gameObject.GetComponent<Text>();
-            splitDiagGO.transform.Find("Dialog/Background").gameObject.GetComponent<Image>().sprite =
-                Resources.FindObjectsOfTypeAll<Sprite>().ToList().Find(x => x.name == "Background");
-            m_splitCancelButton.onClick.AddListener(delegate
-            {
-                OnSplitCancel();
-            
-            });
-            m_splitOkButton.onClick.AddListener(delegate
-            {
-                OnSplitOK(); 
-            
-            });
-            m_splitSlider.onValueChanged.AddListener(delegate(float val)
-            {
-                OnSplitSliderChanged(val);
-            
-            });
-        }
-        else
+            OnSplitCancel();
+        });
+        m_splitOkButton.onClick.AddListener(delegate
         {
-            splitDiagGO = Instantiate(gui!.m_splitPanel.gameObject, transform, false);
-            m_splitPanel = splitDiagGO.transform;
-            m_splitIcon = splitDiagGO.transform.Find("win_bkg/Icon_bkg/Icon").gameObject.GetComponent<Image>();
-            m_splitSlider = splitDiagGO.GetComponentInChildren<Slider>();
-            m_splitCancelButton = splitDiagGO.transform.Find("win_bkg/Button_cancel").gameObject.GetComponent<Button>();
-            m_splitOkButton = splitDiagGO.transform.Find("win_bkg/Button_ok").gameObject.GetComponent<Button>();
-            m_splitIconName = splitDiagGO.transform.Find("win_bkg/Icon_bkg/res_name").gameObject.GetComponent<Text>();
-            m_splitAmount = splitDiagGO.transform.Find("win_bkg/amount").gameObject.GetComponent<Text>();
-            m_splitCancelButton.onClick.AddListener(delegate
-            {
-                OnSplitCancel();
-            
-            });
-            m_splitOkButton.onClick.AddListener(delegate
-            {
-                OnSplitOK(); 
-            
-            });
-            m_splitSlider.onValueChanged.AddListener(delegate(float val)
-            {
-                OnSplitSliderChanged(val);
-            
-            });
-        }
-        
+            OnSplitOK();
+        });
+        m_splitSlider.onValueChanged.AddListener(delegate(float val)
+        {
+            OnSplitSliderChanged(val);
+        });
     }
 
     private void OnSplitCancel()
@@ -1345,13 +1362,11 @@ public class OdinStore : MonoBehaviour
     }
     private void OnSplitSliderChanged(float value)
     {
-        Text splitAmount = m_splitAmount;
         int num = (int) value;
         string str1 = num.ToString();
         num = (int) m_splitSlider.maxValue;
         string str2 = num.ToString();
-        string str3 = str1 + "/" + str2;
-        splitAmount.text = str3;
+        m_splitAmount.text = str1 + "/" + str2;
     }
     
     private void ShowSplitDialog(ItemDrop.ItemData item)
