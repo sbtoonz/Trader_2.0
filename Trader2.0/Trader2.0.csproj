@@ -106,11 +106,12 @@
       <Private>false</Private>
     </Reference>
 
-    <!-- Local libs -->
-    <Reference Include="ConfigSyncAPI">
-      <HintPath>..\..\ConfigSyncAPI\bin\Release\net48\ConfigSyncAPI.dll</HintPath>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConfigSync\ConfigSyncAPI.csproj">
       <Private>true</Private>
-    </Reference>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

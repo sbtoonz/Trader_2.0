@@ -1,0 +1,3 @@
+[submodule "ConfigSync"]
+	path = ConfigSync
+	url = https://github.com/sbtoonz/ConfigSync.git
