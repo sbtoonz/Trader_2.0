@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class NewTrader : MonoBehaviour, Hoverable, Interactable
 {
@@ -58,7 +57,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
     private static readonly int Stand = Animator.StringToHash("Stand");
 
     [SerializeField] private float nextTime { get; set; }
-    [SerializeField] private float modifier { get; set; }
 
     [SerializeField] internal ZNetView? m_netview;
 
@@ -68,7 +66,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
         m_lookAt = GetComponentInChildren<LookAt>();
         InvokeRepeating(nameof(RandomTalk), m_randomTalkInterval, m_randomTalkInterval);
         nextTime = 0.0f;
-        SnapToGround.SnappAll();
         _snapper = GetComponent<SnapToGround>();
         if(_snapper)_snapper.Snap();
     }
@@ -86,10 +83,6 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
         }
     }
 
-    private void Update()
-    {
-        modifier = Random.Range(-0.08f, 40.0f);
-    }
 
     private void LateUpdate()
     {
@@ -100,35 +93,28 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
             m_animator!.SetBool(Stand, value: true);
             m_lookAt!.SetLoockAtTarget(closestPlayer.GetHeadPoint());
             var position = closestPlayer.transform.position;
-            float num = Vector3.Distance(position, instance!.transform.position);
+            float num = Vector3.Distance(position, base.transform.position);
 			
 			
-            if (!m_didGreet && num <= m_greetRange)
+            if (!m_didGreet && num < m_greetRange)
             {
                 m_didGreet = true;
                 m_didGoodbye = false;
                 Say(m_randomGreets, "Greet");
                 if(Trader20.Trader20.KnarrPlaySound!.Value)
                 {
-                    GameObject FxGreet =
-                        m_randomGreetFX.m_effectPrefabs[Random.Range(0, m_randomGreetFX.m_effectPrefabs.Length)].m_prefab;
-                    FxGreet.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                    Instantiate(FxGreet, transform.position, Quaternion.identity);
+                    m_randomGreetFX.Create(transform.position, Quaternion.identity);
                 }
             }
 
-            if (m_didGreet && !m_didGoodbye && num >= m_byeRange)
+            if (m_didGreet && !m_didGoodbye && num > m_byeRange)
             {
                 m_didGoodbye = true;
                 m_didGreet = false;
                 Say(m_randomGoodbye, "Greet");
                 if (Trader20.Trader20.KnarrPlaySound!.Value)
                 {
-                    GameObject FxBye =
-                        m_randomGoodbyeFX.m_effectPrefabs[Random.Range(0, m_randomGoodbyeFX.m_effectPrefabs.Length)]
-                            .m_prefab;
-                    FxBye.GetComponent<AudioSource>().outputAudioMixerGroup = AudioMan.instance.m_ambientMixer;
-                    Instantiate(FxBye, transform.position, Quaternion.identity);
+                    m_randomGoodbyeFX.Create(transform.position, Quaternion.identity);
                 }
             }
         }
@@ -151,31 +137,16 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
     public string GetHoverText()
     {
         return Localization.instance.Localize(m_name + "\n[<color=yellow><b>$KEY_Use</b></color>] $raven_interact");
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
     public string GetHoverName()
     {
         return Localization.instance.Localize(m_name);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="character"></param>
-    /// <param name="hold"></param>
-    /// <param name="alt"></param>
-    /// <returns></returns>
     public bool Interact(Humanoid character, bool hold, bool alt)
     {
         if (hold)
@@ -191,6 +162,7 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
 
     private void Say(List<string> texts, string trigger)
     {
+        if (texts.Count == 0) return;
         Say(texts[UnityEngine.Random.Range(0, texts.Count)], trigger);
     }
 
@@ -203,47 +175,14 @@ public class NewTrader : MonoBehaviour, Hoverable, Interactable
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="user"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
     public bool UseItem(Humanoid user, ItemDrop.ItemData item)
     {
         return false;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public void OnSold()
     {
         Say(m_randomSell, "Sell");
-        var test = RandomSellFX(1);
-        GameObject RandomSell = test[Random.Range(0, test.Length)]
-            .m_prefab;
-        Instantiate(RandomSell, transform.position, Quaternion.identity);
-    }
-
-    private EffectList.EffectData[] RandomSellFX(int numRequired)
-    {
-        EffectList.EffectData[] result = new EffectList.EffectData[numRequired];
-
-        int numToChoose = numRequired;
-
-        for (int numLeft = m_randomSellFX.m_effectPrefabs.Length; numLeft > 0; numLeft--) {
-
-            float prob = (float)numToChoose/(float)numLeft;
-
-            if (!(Random.value <= prob)) continue;
-            numToChoose--;
-            result[numToChoose] = m_randomSellFX.m_effectPrefabs[numLeft - 1];
-
-            if (numToChoose == 0) {
-                break;
-            }
-        }
-        return result;
+        m_randomSellFX.Create(transform.position, Quaternion.identity);
     }
 }
