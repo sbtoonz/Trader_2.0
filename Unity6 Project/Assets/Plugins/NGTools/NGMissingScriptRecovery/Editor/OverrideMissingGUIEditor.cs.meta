@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: df393be75b0038e4b8ca5e71d4c631a8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102272
+  packageName: NG Missing Script Recovery
+  packageVersion: 2.2
+  assetPath: Assets/Plugins/NGTools/NGMissingScriptRecovery/Editor/OverrideMissingGUIEditor.cs
+  uploadId: 424374

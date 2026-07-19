@@ -1,0 +1,212 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.0.61f1
+CRC: 3495435583
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 634169370470c33727ff80e332c7af6c
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: d2c03ecbae7f25fa9108db62dec77f36
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: c03b2670458ea303f7c67db42fe0b70e
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: c9b0d0e4b560e794882856b79505d3da, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5aed9a4da95cb5d4bb29063f343ffb2f, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: cc4b029062ba12e4cb6e29523043deee, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7eced40c5f892d4479c84ff0e4865094, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8b3a3b834d5f35a44abe4ff61d75c576, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 66aa8387d0a846e44831bc805bd3446d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5f7fd0124e19a5d4fa56d44840545fb8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b59e1fd2097a47b69a2f83f8f12df491, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
+- Class: 114
+  Script: {fileID: 313648218, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: -259742986, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 702673311, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 1521249158, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 269728403, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 712945444, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 1214644819, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 469224316, guid: dad101e73ec14ca448692d03de39660e, type: 3}
+- Class: 114
+  Script: {fileID: 2147295275, guid: 5707493a23124e94e991e0184a3966d9, type: 3}
+- Class: 114
+  Script: {fileID: -1593939647, guid: 1b78022a8d25cdb43be5c81dc3d5d55b, type: 3}
+- Class: 114
+  Script: {fileID: 438561839, guid: 1b78022a8d25cdb43be5c81dc3d5d55b, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Trader20
+  ClassName: ShaderType
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.VertexGradient
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.ArgumentCache
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentListenerMode
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.RectOffset
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphAdjustmentRecord
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphPairAdjustmentRecord
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.LowLevel.GlyphValueRecord
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.AnimationTriggers
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Button/ButtonClickedEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.ColorBlock
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Navigation
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.ScrollRect/ScrollRectEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.Scrollbar/ScrollEvent
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.SpriteState
+- AssemblyName: assembly_valheim
+  ClassName: EffectList
+- AssemblyName: assembly_valheim
+  ClassName: EffectList/EffectData
+- AssemblyName: assembly_valheim
+  ClassName: TabHandler/Tab
+Assets:
+- Assets/Font/AveriaSerifLibre-Bold.ttf
+- Assets/Prefab_Instance/SalesPanel/CustomTrader.prefab
+- Assets/Font/AveriaSerifLibre-Regular SDF.asset
+- Assets/Prefab_Instance/SalesPanel/InventoryTooltip.prefab
+- Assets/Font/AveriaSansLibre-Bold.ttf
+- Assets/Font/AveriaSansLibre-Regular.ttf
+- Assets/Font/Norsebold SDF.asset
+- Assets/Font/AveriaSansLibre-Bold SDF.asset
+- Assets/Prefab_Instance/SalesPanel/Element/NewItemElement.prefab
+- Assets/Font/AveriaSerifLibre-BoldItalic.ttf
+- Assets/Font/AveriaSerifLibre-Light.ttf
+- Assets/Font/Norsebold.otf
+- Assets/Prefab_Instance/InteriorEnvironmentZone.prefab
+- Assets/Prefab_Instance/SalesPanel/Tooltip.prefab
+- Assets/Font/AveriaSansLibre-Regular SDF.asset
+- Assets/Font/AveriaSerifLibre-Light SDF.asset
+- Assets/Prefab_Instance/interior_cube.mat
+- Assets/Font/AveriaSerifLibre-Regular.ttf
+- Assets/Prefab_Instance/SalesPanel/Element/ItemElement.prefab
+- Assets/Prefab_Instance/FatTroll/Knarr.prefab
+- Assets/Font/AveriaSerifLibre-Italic.ttf
+- Assets/Font/AveriaSerifLibre-Bold SDF.asset
+Dependencies: []
